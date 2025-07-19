@@ -1,0 +1,124 @@
+<div class="user-management-container">
+  <div class="header">
+    <h2>Gestión de Usuarios</h2>
+    <p class="subtitle">Solo administradores senior pueden gestionar roles de usuarios</p>
+    <button (click)="navigateToDashboard()" class="btn-secondary">Volver al Dashboard</button>
+  </div>
+
+  <div class="message" *ngIf="message" [ngClass]="messageType">
+    {{ message }}
+  </div>
+
+  <!-- Barra de búsqueda -->
+  <div class="search-container">
+    <input 
+      type="text" 
+      [(ngModel)]="searchTerm" 
+      (input)="onSearchChange()"
+      placeholder="Buscar usuarios por nombre, email, rol o ID..."
+      class="search-input"
+    >
+    <span class="search-icon">🔍</span>
+  </div>
+
+  <div class="loading" *ngIf="loading">
+    <p>Cargando usuarios...</p>
+  </div>
+
+  <!-- Información de resultados -->
+  <div class="results-info" *ngIf="!loading && filteredUsers.length > 0">
+    <p>
+      Mostrando {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, filteredUsers.length) }} 
+      de {{ filteredUsers.length }} usuarios
+      <span *ngIf="searchTerm">(filtrados por "{{ searchTerm }}")</span>
+    </p>
+  </div>
+
+  <div class="users-table" *ngIf="!loading && getCurrentPageUsers().length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Usuario</th>
+          <th>Email</th>
+          <th>Rol Actual</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of getCurrentPageUsers()" [ngClass]="{ 'current-user': isCurrentUser(user) }">
+          <td>{{ user.id }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <span class="role-badge" [ngClass]="user.role">
+              {{ getRoleDisplayName(user.role) }}
+            </span>
+          </td>
+          <td>
+            <div class="actions" *ngIf="canChangeRole(user)">
+              <select 
+                [value]="user.role" 
+                (change)="onRoleChange(user.id, $event)"
+                [disabled]="user.role === 'senior_admin'">
+                <option value="user">Usuario</option>
+                <option value="admin">Administrador</option>
+              </select>
+            </div>
+            <span class="no-actions" *ngIf="!canChangeRole(user)">
+              No editable
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  <div class="pagination" *ngIf="!loading && totalPages > 1">
+    <div class="pagination-info">
+      Página {{ currentPage }} de {{ totalPages }}
+    </div>
+    <div class="pagination-controls">
+      <button 
+        (click)="goToPage(currentPage - 1)" 
+        [disabled]="currentPage === 1"
+        class="page-btn">
+        ← Anterior
+      </button>
+      
+      <button 
+        *ngFor="let page of getPageNumbers()" 
+        (click)="goToPage(page)"
+        [class.active]="page === currentPage"
+        class="page-btn">
+        {{ page }}
+      </button>
+      
+      <button 
+        (click)="goToPage(currentPage + 1)" 
+        [disabled]="currentPage === totalPages"
+        class="page-btn">
+        Siguiente →
+      </button>
+    </div>
+  </div>
+
+  <div class="no-users" *ngIf="!loading && filteredUsers.length === 0">
+    <p *ngIf="searchTerm">No se encontraron usuarios que coincidan con "{{ searchTerm }}"</p>
+    <p *ngIf="!searchTerm">No hay usuarios registrados</p>
+  </div>
+
+  <div class="info-panel">
+    <h3>Información</h3>
+    <ul>
+      <li><strong>Usuario:</strong> Acceso básico al sistema</li>
+      <li><strong>Administrador:</strong> Puede crear, editar y eliminar datos</li>
+      <li><strong>Admin Senior:</strong> Puede gestionar roles de usuarios</li>
+    </ul>
+    <p class="note">
+      <strong>Nota:</strong> Solo los administradores senior pueden cambiar roles. 
+      Los roles de admin senior no se pueden modificar.
+    </p>
+  </div>
+</div> 

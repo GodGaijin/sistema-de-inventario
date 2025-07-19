@@ -1,0 +1,49 @@
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: inventory-db
+    env: postgres
+    plan: free
+    ipAllowList: []
+
+  # Backend API
+  - type: web
+    name: inventory-backend
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node app.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromService:
+          name: inventory-db
+          type: pserv
+          property: connectionString
+      - key: ACCESS_TOKEN_SECRET
+        value: dfb6142abb974a046a6af857f7c2d0dbfe0039d19ab15b97e5fd7b8af36bab911ae16ada15ca4512ac7ba0487e85cf1460e617eaf28c1621112d89ac22ca69f6
+      - key: REFRESH_TOKEN_SECRET
+        value: 6278b0cc016e83a96494cb705d353f605df86fa627fccb0116b2fbd47f471b091ef52c60ecd403b26c7d56c95ea0c7169b73741dab91141ae5d2629d8f73c789
+      - key: EMAIL_USER
+        value: juanportillo.0509@gmail.com
+      - key: EMAIL_PASS
+        value: xpdl qfcq vbkh oppv
+      - key: SENIOR_ADMIN_EMAIL
+        value: juanportillo.0509@gmail.com
+      - key: SENIOR_ADMIN_USERNAME
+        value: admin_senior
+
+  # Frontend Static Site
+  - type: web
+    name: inventory-frontend
+    env: static
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist/inventory-system
+    envVars:
+      - key: NODE_ENV
+        value: production 

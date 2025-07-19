@@ -1,0 +1,60 @@
+<div class="container">
+  <div *ngIf="!showRegister && !showForgotPassword">
+    <h2>Iniciar Sesión</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+      <input 
+        type="text" 
+        formControlName="username" 
+        placeholder="Usuario" 
+        required>
+      <input 
+        type="password" 
+        formControlName="password" 
+        placeholder="Contraseña" 
+        required>
+      <button type="submit" [disabled]="!loginForm.valid">Entrar</button>
+    </form>
+    <p>¿No tienes una cuenta? <a href="#" (click)="toggleRegister(); $event.preventDefault()">Regístrate aquí</a></p>
+    <p>¿Olvidaste tu contraseña? <a href="#" (click)="toggleForgotPassword(); $event.preventDefault()">Recupérala aquí</a></p>
+  </div>
+
+  <div *ngIf="showRegister">
+    <h2>Registro</h2>
+    <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+      <input 
+        type="text" 
+        formControlName="username" 
+        placeholder="Usuario" 
+        required>
+      <input 
+        type="email" 
+        formControlName="email" 
+        placeholder="Email" 
+        required>
+      <input 
+        type="password" 
+        formControlName="password" 
+        placeholder="Contraseña" 
+        required>
+      <button type="submit" [disabled]="!registerForm.valid">Registrarse</button>
+    </form>
+    <button (click)="toggleRegister()" class="btn-secondary">Volver a Iniciar Sesión</button>
+  </div>
+
+  <div *ngIf="showForgotPassword">
+    <h2>Recuperar Contraseña</h2>
+    <form [formGroup]="forgotPasswordForm" (ngSubmit)="onForgotPassword()">
+      <input 
+        type="email" 
+        formControlName="email" 
+        placeholder="Email registrado" 
+        required>
+      <button type="submit" [disabled]="!forgotPasswordForm.valid">Enviar enlace de recuperación</button>
+    </form>
+    <button (click)="toggleForgotPassword()" class="btn-secondary">Volver a Iniciar Sesión</button>
+  </div>
+
+  <div *ngIf="message" class="message" [ngClass]="messageType">
+    {{ message }}
+  </div>
+</div> 

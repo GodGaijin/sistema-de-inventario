@@ -1,0 +1,153 @@
+<div class="database-management-container">
+  <div class="header">
+    <div class="header-content">
+      <div class="header-text">
+        <h2>🛠️ Gestión de Base de Datos</h2>
+        <p class="subtitle">Panel exclusivo para Administradores Senior</p>
+      </div>
+      <button class="btn btn-secondary back-btn" (click)="goBack()">
+        🏠 Volver al Inicio
+      </button>
+    </div>
+  </div>
+
+  <!-- Información en tiempo real -->
+  <div class="realtime-info">
+    <div class="info-card">
+      <span class="info-label">📊 Total de Backups:</span>
+      <span class="info-value">{{ backupCount() }}</span>
+    </div>
+    <div class="info-card">
+      <span class="info-label">💾 Tamaño Total:</span>
+      <span class="info-value">{{ formatFileSize(totalSize()) }}</span>
+    </div>
+    <div class="info-card">
+      <span class="info-label">🕒 Última Actualización:</span>
+      <span class="info-value">{{ lastUpdate() | date:'HH:mm:ss' }}</span>
+    </div>
+    <div class="info-card">
+      <span class="info-label">🔄 Auto-actualización:</span>
+      <span class="info-value">Cada 10 segundos</span>
+    </div>
+  </div>
+
+  <!-- Panel de acciones principales -->
+  <div class="actions-panel">
+    <div class="action-card">
+      <h3>💾 Guardar Backup</h3>
+      <p>Crea una copia de seguridad del estado actual de la base de datos</p>
+      <button 
+        class="btn btn-primary" 
+        (click)="saveBackup()" 
+        [disabled]="loading()">
+        <span *ngIf="loading()">⏳ Guardando...</span>
+        <span *ngIf="!loading()">💾 Guardar Backup</span>
+      </button>
+    </div>
+
+    <div class="action-card">
+      <h3>🔄 Restaurar Backup</h3>
+      <p>Restaura la base de datos desde un backup guardado anteriormente</p>
+      <select 
+        class="form-control" 
+        [ngModel]="selectedBackup()"
+        (ngModelChange)="selectBackup($event)"
+        [disabled]="backups().length === 0">
+        <option value="">Seleccionar backup...</option>
+        <option *ngFor="let backup of backups()" [value]="backup.name">
+          {{ backup.name }} ({{ formatDate(backup.modified) }})
+        </option>
+      </select>
+      <button 
+        class="btn btn-warning" 
+        (click)="restoreBackup()" 
+        [disabled]="loading() || !selectedBackup()">
+        <span *ngIf="loading()">⏳ Restaurando...</span>
+        <span *ngIf="!loading()">🔄 Restaurar</span>
+      </button>
+    </div>
+
+
+  </div>
+
+  <!-- Lista de backups -->
+  <div class="backups-section">
+    <div class="section-header">
+      <h3>📋 Backups Disponibles</h3>
+      <button 
+        class="btn btn-secondary" 
+        (click)="loadBackups()" 
+        [disabled]="loading()">
+        <span *ngIf="loading()">⏳ Cargando...</span>
+        <span *ngIf="!loading()">🔄 Actualizar</span>
+      </button>
+    </div>
+
+    <div *ngIf="backups().length === 0" class="no-backups">
+      <p>No hay backups disponibles</p>
+    </div>
+
+    <div *ngIf="backups().length > 0" class="backups-list">
+      <div *ngFor="let backup of backups()" class="backup-item">
+        <div class="backup-info">
+          <h4>{{ backup.name }}</h4>
+          <div class="backup-details">
+            <span class="detail">
+              <strong>Tamaño:</strong> {{ formatFileSize(backup.size) }}
+            </span>
+            <span class="detail">
+              <strong>Creado:</strong> {{ formatDate(backup.created) }}
+            </span>
+            <span class="detail">
+              <strong>Modificado:</strong> {{ formatDate(backup.modified) }}
+            </span>
+          </div>
+        </div>
+        <div class="backup-actions">
+          <button 
+            class="btn btn-sm btn-warning" 
+            (click)="selectBackup(backup.name); restoreBackup()"
+            [disabled]="loading()">
+            🔄 Restaurar
+          </button>
+          <button 
+            class="btn btn-sm btn-danger" 
+            (click)="deleteBackup(backup.name)"
+            [disabled]="loading()">
+            🗑️ Eliminar
+          </button>
+              </div>
+    </div>
+  </div>
+
+  <!-- Botón de volver al final -->
+  <div class="bottom-actions">
+    <button class="btn btn-secondary" (click)="goBack()">
+      🏠 Volver al Dashboard
+    </button>
+  </div>
+</div>
+
+  <!-- Información de seguridad -->
+  <div class="security-info">
+    <h3>🔒 Información de Seguridad</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <h4>💾 Backups Automáticos</h4>
+        <p>Se crean automáticamente antes de restaurar o resetear la base de datos</p>
+      </div>
+      <div class="info-item">
+        <h4>📝 Auditoría Completa</h4>
+        <p>Todas las acciones se registran en el sistema de auditoría</p>
+      </div>
+      <div class="info-item">
+        <h4>⚠️ Confirmaciones</h4>
+        <p>Las acciones destructivas requieren confirmación múltiple</p>
+      </div>
+      <div class="info-item">
+        <h4>🔐 Acceso Restringido</h4>
+        <p>Solo administradores senior pueden acceder a este panel</p>
+      </div>
+    </div>
+  </div>
+</div> 

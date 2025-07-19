@@ -1,0 +1,39 @@
+<div class="table-container">
+  <div class="header-actions">
+    <h2>Registro de Auditoría</h2>
+    <div class="actions">
+      <button (click)="navigateToDashboard()" class="btn-secondary">Volver al Menú</button>
+    </div>
+  </div>
+
+  <div *ngIf="message" class="message" [ngClass]="messageType">
+    {{ message }}
+  </div>
+
+  <div *ngIf="!isAdmin" class="no-access">
+    <p>No tienes permisos para acceder a esta sección.</p>
+    <button (click)="navigateToDashboard()" class="btn-secondary">Volver al Menú</button>
+  </div>
+
+  <div *ngIf="isAdmin">
+    <div *ngIf="loading" class="spinner"></div>
+
+    <div *ngIf="!loading">
+      <div class="audit-entries">
+        <div *ngFor="let audit of audits" class="audit-entry">
+          <div class="audit-meta">
+            <span class="audit-user">{{ audit.username }}</span>
+            <span class="audit-timestamp">{{ formatTimestamp(audit.timestamp) }}</span>
+          </div>
+          <div class="audit-action">
+            {{ audit.action }} {{ audit.entity }} #{{ audit.entity_id }}
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="audits.length === 0" class="no-data">
+        <p>No hay registros de auditoría.</p>
+      </div>
+    </div>
+  </div>
+</div> 

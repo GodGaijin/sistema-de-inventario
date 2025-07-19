@@ -1,0 +1,71 @@
+<div class="table-container">
+  <div class="header-actions">
+    <h2>Gestión de Categorías</h2>
+    <div class="actions">
+      <button *ngIf="isUser" (click)="downloadPDF()" class="pdf-download">Descargar PDF</button>
+      <button (click)="navigateToDashboard()" class="btn-secondary">Volver al Menú</button>
+    </div>
+  </div>
+
+  <div *ngIf="message" class="message" [ngClass]="messageType">
+    {{ message }}
+  </div>
+
+  <div *ngIf="loading" class="spinner"></div>
+
+  <div *ngIf="!loading">
+    <!-- Category Form -->
+    <div *ngIf="isAdmin" class="form-container">
+      <h3>{{ editingCategory ? 'Editar Categoría' : 'Nueva Categoría' }}</h3>
+      <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Nombre *</label>
+            <input type="text" id="name" formControlName="name" required>
+          </div>
+          <div class="form-group">
+            <label for="description">Descripción *</label>
+            <textarea id="description" formControlName="description" rows="3" required></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" (click)="cancelEdit()" class="btn-secondary">
+            {{ editingCategory ? 'Cancelar' : 'Limpiar' }}
+          </button>
+          <button type="submit" [disabled]="!categoryForm.valid" class="btn-success">
+            {{ editingCategory ? 'Actualizar' : 'Crear' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Search Bar -->
+    <input type="text" placeholder="Buscar categorías..." [(ngModel)]="searchTerm" (input)="filterCategories()" class="search-bar" />
+
+    <!-- Categories Table -->
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th *ngIf="isAdmin">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let category of filteredCategories">
+          <td>{{ category.name }}</td>
+          <td>{{ category.description }}</td>
+          <td *ngIf="isAdmin" class="action-buttons">
+            <button (click)="editCategory(category)" class="btn-warning">Editar</button>
+            <button (click)="deleteCategory(category.id)" class="btn-danger">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="filteredCategories.length === 0" class="no-data">
+      <p>No hay categorías registradas.</p>
+    </div>
+  </div>
+</div> 

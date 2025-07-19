@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: inventory-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node app.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sistema-de-inventario
+          property: connectionString
+      - key: ACCESS_TOKEN_SECRET
+        generateValue: true
+      - key: REFRESH_TOKEN_SECRET
+        generateValue: true
+      - key: EMAIL_USER
+        value: juanportillo.0509@gmail.com
+      - key: EMAIL_PASS
+        value: xpdl qfcq vbkh oppv
+      - key: SENIOR_ADMIN_EMAIL
+        value: juanportillo.0509@gmail.com
+      - key: SENIOR_ADMIN_USERNAME
+        value: admin_senior
+      - key: FRONTEND_URL
+        value: https://inventory-frontend.onrender.com
+    healthCheckPath: /api/health 

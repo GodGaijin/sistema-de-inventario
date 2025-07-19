@@ -1,0 +1,111 @@
+<div class="table-container">
+  <div class="header-actions">
+    <h2>Gestión de Productos</h2>
+    <div class="actions">
+      <button *ngIf="isUser" (click)="downloadPDF()" class="pdf-download">Descargar PDF</button>
+      <button (click)="navigateToDashboard()" class="btn-secondary">Volver al Menú</button>
+    </div>
+  </div>
+
+  <div *ngIf="message" class="message" [ngClass]="messageType">
+    {{ message }}
+  </div>
+
+  <div *ngIf="loading" class="spinner"></div>
+
+  <div *ngIf="!loading">
+    <!-- Product Form -->
+    <div *ngIf="isAdmin" class="form-container">
+      <h3>{{ editingProduct ? 'Editar Producto' : 'Nuevo Producto' }}</h3>
+      <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Nombre *</label>
+            <input type="text" id="name" formControlName="name" required>
+          </div>
+          <div class="form-group">
+            <label for="price">Precio (Bs) *</label>
+            <input type="number" id="price" formControlName="price" step="0.01" min="0" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="stock">Stock *</label>
+            <input type="number" id="stock" formControlName="stock" min="0" required>
+          </div>
+          <div class="form-group">
+            <label for="category">Categoría *</label>
+            <select id="category" formControlName="category_id" required>
+              <option value="">Seleccionar categoría</option>
+              <option *ngFor="let category of categories" [value]="category.id">
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="distributor">Distribuidor *</label>
+            <select id="distributor" formControlName="distributor_id" required>
+              <option value="">Seleccionar distribuidor</option>
+              <option *ngFor="let distributor of distributors" [value]="distributor.id">
+                {{ distributor.name }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="description">Descripción *</label>
+            <textarea id="description" formControlName="description" rows="3" required></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" (click)="cancelEdit()" class="btn-secondary">
+            {{ editingProduct ? 'Cancelar' : 'Limpiar' }}
+          </button>
+          <button type="submit" [disabled]="!productForm.valid" class="btn-success">
+            {{ editingProduct ? 'Actualizar' : 'Crear' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Search Bar -->
+    <input type="text" placeholder="Buscar productos..." [(ngModel)]="searchTerm" (input)="filterProducts()" class="search-bar" />
+
+    <!-- Products Table -->
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          <th>Categoría</th>
+          <th>Distribuidor</th>
+          <th *ngIf="isAdmin">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of filteredProducts">
+          <td>{{ product.name }}</td>
+          <td>{{ product.description }}</td>
+          <td>{{ formatPrice(product.price) }}</td>
+          <td>{{ product.stock }}</td>
+          <td>{{ getCategoryName(product.category_id) }}</td>
+          <td>{{ getDistributorName(product.distributor_id) }}</td>
+          <td *ngIf="isAdmin" class="action-buttons">
+            <button (click)="editProduct(product)" class="btn-warning">Editar</button>
+            <button (click)="deleteProduct(product.id)" class="btn-danger">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="filteredProducts.length === 0" class="no-data">
+      <p>No hay productos registrados.</p>
+    </div>
+  </div>
+</div> 

@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: inventory-frontend
+    env: static
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist/frontend
+    envVars:
+      - key: NODE_ENV
+        value: production 

@@ -1,0 +1,99 @@
+<div class="table-container">
+  <div class="header-actions">
+    <h2>Gestión de Distribuidores</h2>
+    <div class="actions">
+      <button *ngIf="isUser" (click)="downloadPDF()" class="pdf-download">Descargar PDF</button>
+      <button (click)="navigateToDashboard()" class="btn-secondary">Volver al Menú</button>
+    </div>
+  </div>
+
+  <div *ngIf="message" class="message" [ngClass]="messageType">
+    {{ message }}
+  </div>
+
+  <div *ngIf="loading" class="spinner"></div>
+
+  <div *ngIf="!loading">
+    <!-- Distributor Form -->
+    <div *ngIf="isAdmin" class="form-container">
+      <h3>{{ editingDistributor ? 'Editar Distribuidor' : 'Nuevo Distribuidor' }}</h3>
+      <form [formGroup]="distributorForm" (ngSubmit)="onSubmit()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Nombre *</label>
+            <input type="text" id="name" formControlName="name" required>
+          </div>
+          <div class="form-group">
+            <label for="contact">Contacto *</label>
+            <input type="text" id="contact" formControlName="contact" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">Teléfono *</label>
+            <input type="text" id="phone" formControlName="phone" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email *</label>
+            <input type="email" id="email" formControlName="email" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="rif">RIF *</label>
+            <input type="text" id="rif" formControlName="rif" required>
+          </div>
+          <div class="form-group">
+            <label for="location">Ubicación *</label>
+            <input type="text" id="location" formControlName="location" required>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" (click)="cancelEdit()" class="btn-secondary">
+            {{ editingDistributor ? 'Cancelar' : 'Limpiar' }}
+          </button>
+          <button type="submit" [disabled]="!distributorForm.valid" class="btn-success">
+            {{ editingDistributor ? 'Actualizar' : 'Crear' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Distributors Table -->
+    <input type="text" placeholder="Buscar distribuidores..." [(ngModel)]="searchTerm" (input)="filterDistributors()" class="search-bar" />
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Contacto</th>
+          <th>Teléfono</th>
+          <th>Email</th>
+          <th>RIF</th>
+          <th>Ubicación</th>
+          <th *ngIf="isAdmin">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let distributor of filteredDistributors">
+          <td>{{ distributor.name }}</td>
+          <td>{{ distributor.contact }}</td>
+          <td>{{ distributor.phone }}</td>
+          <td>{{ distributor.email }}</td>
+          <td>{{ distributor.rif }}</td>
+          <td>{{ distributor.location }}</td>
+          <td *ngIf="isAdmin" class="action-buttons">
+            <button (click)="editDistributor(distributor)" class="btn-warning">Editar</button>
+            <button (click)="deleteDistributor(distributor.id)" class="btn-danger">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="filteredDistributors.length === 0" class="no-data">
+      <p>No hay distribuidores registrados.</p>
+    </div>
+  </div>
+</div> 

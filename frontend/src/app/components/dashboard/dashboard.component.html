@@ -1,0 +1,50 @@
+<div class="dashboard">
+  <div class="dashboard-header">
+    <h1>Sistema de Inventario</h1>
+    <div class="user-info">
+      <span>Bienvenido, {{ currentUser()?.username }}</span>
+      <button (click)="logout()" class="btn-danger">Cerrar Sesión</button>
+    </div>
+  </div>
+
+
+
+  <div class="menu-grid">
+    <div class="menu-item" (click)="navigateTo('/products')">
+      <h3>Productos</h3>
+      <p>Gestionar inventario de productos</p>
+    </div>
+
+    <div class="menu-item" (click)="navigateTo('/categories')">
+      <h3>Categorías</h3>
+      <p>Administrar categorías de productos</p>
+    </div>
+
+    <div class="menu-item" (click)="navigateTo('/distributors')">
+      <h3>Distribuidores</h3>
+      <p>Gestionar proveedores y distribuidores</p>
+    </div>
+
+    <div class="menu-item" (click)="navigateTo('/commerce-data')">
+      <h3>Datos del Comercio</h3>
+      <p>Información de la empresa</p>
+    </div>
+
+    <div *ngIf="isAdmin()" class="menu-item" (click)="navigateTo('/audits')">
+      <h3>Auditoría</h3>
+      <p>Registro de actividades del sistema</p>
+    </div>
+
+    <div *ngIf="isSeniorAdmin()" class="menu-item admin-senior" (click)="navigateTo('/user-management')">
+      <h3>Gestión de Usuarios</h3>
+      <p>Administrar roles de usuarios del sistema</p>
+      <span class="admin-badge">Admin Senior</span>
+    </div>
+
+    <div *ngIf="isSeniorAdmin()" class="menu-item admin-senior danger" (click)="navigateTo('/database-management')">
+      <h3>🛠️ Gestión de Base de Datos</h3>
+      <p>Backup, restauración y reset de la base de datos</p>
+      <span class="admin-badge danger">Admin Senior</span>
+    </div>
+  </div>
+</div> 

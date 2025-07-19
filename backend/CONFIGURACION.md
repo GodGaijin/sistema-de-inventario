@@ -2,6 +2,11 @@
 
 Este archivo te guía paso a paso para configurar las variables de entorno necesarias para el sistema de inventario.
 
+## 📋 Nota Importante
+
+**Para Desarrollo Local:** Usa `config.env` (instrucciones abajo)
+**Para Producción (Render):** Las variables se configuran automáticamente desde `render.yaml`
+
 ## 📋 Pasos de Configuración
 
 ### 1. Crear el archivo de configuración

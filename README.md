@@ -131,8 +131,8 @@ npm install
 
 # Configurar variables de entorno (OBLIGATORIO)
 # Lee CONFIGURACION.md para instrucciones detalladas
-cp .env_template config.env
-# Edita config.env con tus propias variables
+# Para desarrollo local: cp .env_template config.env
+# Para producción: Configurar variables en Render
 ```
 
 ### 3. Configurar el Frontend
@@ -148,6 +148,7 @@ npm install
 
 **⚠️ OBLIGATORIO:** Antes de ejecutar el sistema, debes configurar las variables de entorno:
 
+#### Para Desarrollo Local:
 1. **Lee la guía completa:** `backend/CONFIGURACION.md`
 2. **Copia la plantilla:**
    ```bash
@@ -158,7 +159,14 @@ npm install
 4. **Configura Gmail** para el envío de correos
 5. **Genera JWT secrets** seguros
 
-**📖 Documentación detallada:** Consulta `backend/CONFIGURACION.md` para instrucciones paso a paso.
+#### Para Producción (Render):
+1. **Configurar variables en Render Dashboard**
+2. **Usar `render.yaml`** para configuración automática
+3. **Ver `DEPLOYMENT.md`** para instrucciones detalladas
+
+**📖 Documentación detallada:** 
+- Desarrollo: `backend/CONFIGURACION.md`
+- Producción: `DEPLOYMENT.md`
 
 ## 🚀 Tecnología Angular 18
 

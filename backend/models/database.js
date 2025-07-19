@@ -11,12 +11,22 @@ class Database {
     console.log('🔍 Configuración de base de datos:');
     console.log('NODE_ENV:', process.env.NODE_ENV);
     console.log('DATABASE_URL configurada:', !!process.env.DATABASE_URL);
-    console.log('SSL requerido:', process.env.NODE_ENV === 'production');
+    console.log('RENDER:', !!process.env.RENDER);
+    
+    // Determinar si necesitamos SSL (Render o producción)
+    const needsSSL = process.env.RENDER || 
+                     process.env.NODE_ENV === 'production' || 
+                     process.env.DATABASE_URL?.includes('render.com');
+    console.log('SSL requerido:', needsSSL);
+    
+    // Configuración SSL
+    const sslConfig = needsSSL ? { rejectUnauthorized: false } : false;
+    console.log('SSL config:', sslConfig);
     
     // Usar PostgreSQL
     this.db = new Pool({
       connectionString: process.env.DATABASE_URL,
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+      ssl: sslConfig
     });
     console.log('✅ Pool de PostgreSQL creado');
   }

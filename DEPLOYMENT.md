@@ -82,7 +82,10 @@ SENIOR_ADMIN_EMAIL=juanportillo.0509@gmail.com
 SENIOR_ADMIN_USERNAME=admin_senior
 ```
 
-**⚠️ IMPORTANTE:** Estas variables ya están configuradas en el `render.yaml`, pero si usas el método manual, usa estos valores exactos.
+**⚠️ IMPORTANTE:** 
+- Estas variables ya están configuradas en el `render.yaml` para deployment automático
+- Si usas el método manual, usa estos valores exactos
+- El sistema ya no depende de `config.env` en producción
 
 ### 3.4 Conectar PostgreSQL al Backend
 1. **En la sección "Environment Variables"**

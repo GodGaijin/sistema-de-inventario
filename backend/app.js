@@ -1,7 +1,6 @@
-// Cargar variables de entorno solo en desarrollo
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config({ path: './config.env' });
-}
+// Las variables de entorno se cargan automáticamente desde el sistema
+// En desarrollo local: desde config.env (manualmente)
+// En Render: desde las variables de entorno configuradas en el dashboard
 const express = require('express');
 const cors = require('cors');
 const db = require('./models/database');

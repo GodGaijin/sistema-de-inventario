@@ -22,42 +22,13 @@ const findUserByEmail = async (email) => {
 
 const createUser = async (username, password, role, email) => {
   try {
-    console.log('Creating user with:', { username, role, email });
-    
-    // Validar datos de entrada
-    if (!username || !password || !role || !email) {
-      throw new Error('Todos los campos son requeridos para crear un usuario');
-    }
-    
-    // Validar que el rol sea válido
-    if (!['user', 'admin', 'senior_admin'].includes(role)) {
-      throw new Error('Rol inválido');
-    }
-    
     const hashedPassword = bcrypt.hashSync(password, 10);
-    
-    console.log('Executing INSERT user query...');
     const result = await db.run(
       'INSERT INTO users (username, password, role, email) VALUES ($1, $2, $3, $4) RETURNING id',
-      [username.trim(), hashedPassword, role, email.trim()]
+      [username, hashedPassword, role, email]
     );
-    
-    console.log('INSERT user result:', result);
-    
-    // Extraer el ID del resultado
-    let userId;
-    if (result.rows && result.rows.length > 0) {
-      userId = result.rows[0].id;
-    } else if (result.lastID) {
-      userId = result.lastID;
-    } else {
-      throw new Error('No se pudo obtener el ID del usuario creado');
-    }
-    
-    console.log('User created with ID:', userId);
-    return userId;
+    return result.lastID || result.rows[0].id;
   } catch (error) {
-    console.error('Error in createUser:', error);
     throw error;
   }
 };
@@ -75,28 +46,27 @@ const findUserById = async (id) => {
   }
 };
 
-const generateResetCode = async (email) => {
+const generateResetToken = async (email) => {
   try {
-    // Generar código de 6 dígitos
-    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const resetCodeExpires = new Date(Date.now() + 900000); // 15 minutes from now
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpires = new Date(Date.now() + 3600000); // 1 hour from now
     
     await db.run(
       'UPDATE users SET reset_token = $1, reset_token_expires = $2 WHERE email = $3',
-      [resetCode, resetCodeExpires.toISOString(), email]
+      [resetToken, resetTokenExpires.toISOString(), email]
     );
     
-    return resetCode;
+    return resetToken;
   } catch (error) {
     throw error;
   }
 };
 
-const findUserByResetCode = async (resetCode) => {
+const findUserByResetToken = async (resetToken) => {
   try {
     const result = await db.query(
       'SELECT * FROM users WHERE reset_token = $1 AND reset_token_expires > NOW()',
-      [resetCode]
+      [resetToken]
     );
     return result.rows ? result.rows[0] : result[0];
   } catch (error) {
@@ -144,7 +114,7 @@ const findOrCreateSeniorAdmin = async () => {
     
     // Retornar el usuario creado con la contraseña temporal
     const newUser = {
-      id: userId.lastID || (userId.rows && userId.rows[0] ? userId.rows[0].id : null),
+      id: userId.lastID || userId.rows[0].id,
       username: seniorAdminUsername,
       password: tempPassword, // Contraseña temporal sin hashear
       role: 'senior_admin',
@@ -206,8 +176,8 @@ module.exports = {
   createUser,
   validatePassword,
   findUserById,
-  generateResetCode,
-  findUserByResetCode,
+  generateResetToken,
+  findUserByResetToken,
   updatePassword,
   findOrCreateSeniorAdmin,
   generateSeniorAdminPassword,

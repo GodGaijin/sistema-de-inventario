@@ -2,7 +2,7 @@
 
 ## Descripción General
 
-Este es un sistema completo de inventario desarrollado con **Node.js/Express/SQLite** en el backend y **Angular 18** en el frontend. El sistema permite gestionar productos, categorías, distribuidores, auditoría de acciones y gestión de usuarios con diferentes niveles de permisos.
+Este es un sistema completo de inventario desarrollado con **Node.js/Express/PostgreSQL** en el backend y **Angular 18** en el frontend. El sistema permite gestionar productos, categorías, distribuidores, auditoría de acciones y gestión de usuarios con diferentes niveles de permisos.
 
 ## Características Principales
 
@@ -15,6 +15,7 @@ Este es un sistema completo de inventario desarrollado con **Node.js/Express/SQL
   - **Administrador Senior**: Gestión completa de usuarios y sistema
 - **Recuperación de contraseña** por email (excepto para admin senior)
 - **Gestión de roles** solo por administradores senior
+- **Usuario admin_senior por defecto** creado automáticamente
 
 ### ⚡ Tecnología Angular 18
 - **Angular 18** con componentes standalone
@@ -56,18 +57,24 @@ Este es un sistema completo de inventario desarrollado con **Node.js/Express/SQL
 - **Cambiar roles** de usuarios (regular a admin)
 - **Gestión de permisos** del sistema
 
-### 🛠️ Gestión de Base de Datos (Solo Admin Senior)
-- **Guardar backup** del estado actual de la base de datos
-- **Restaurar backup** desde un punto anterior guardado
-- **Eliminar backups** antiguos para liberar espacio
-- **Actualización automática** de la lista de backups cada 10 segundos
-- **Backups automáticos** antes de acciones destructivas
-
 ### 📋 Auditoría
 - **Ver registro** de todas las acciones realizadas
 - **Filtros por fecha** y tipo de acción
 - **Solo visible para administradores**
 - **Registro automático** de todas las operaciones CRUD
+
+## 🚀 Despliegue en Producción
+
+### Plataforma de Despliegue
+- **Render.com** para backend y frontend
+- **PostgreSQL** como base de datos en la nube
+- **Variables de entorno** configuradas en Render
+- **SSL/TLS** automático para conexiones seguras
+
+### URLs de Producción
+- **Frontend:** https://inventory-frontend-2syh.onrender.com
+- **Backend:** https://sistema-de-inventario-tavd.onrender.com
+- **Base de Datos:** PostgreSQL en Render (configurado automáticamente)
 
 ## Instalación y Configuración
 
@@ -175,7 +182,7 @@ npm install
 - **Notificaciones en tiempo real**: Sistema de alertas automático
 - **Componentes standalone**: Mejor modularidad y rendimiento
 - **Zone.js**: Detección de cambios automática
-- **Gestión de base de datos reactiva**: Actualización automática cada 10 segundos
+- **Async/await**: Manejo moderno de promesas en todo el backend
 
 ## Ejecución del Sistema
 
@@ -222,6 +229,8 @@ La aplicación se abrirá en: `http://localhost:4200`
 1. Ir a la página de login
 2. Ingresar usuario y contraseña
 3. Hacer clic en "Iniciar Sesión"
+
+**👤 Usuario por defecto:** `admin_senior` (se crea automáticamente al iniciar el sistema)
 
 ### 📦 Gestión de Productos
 
@@ -355,25 +364,6 @@ La aplicación se abrirá en: `http://localhost:4200`
 **⚠️ Restricciones:**
 - Solo se pueden cambiar roles de **Usuario** a **Administrador** y viceversa
 - **No se puede cambiar** el rol de un Administrador Senior
-- **No se puede cambiar** el rol del usuario actual
-
-### 🛠️ Gestión de Base de Datos (Solo Admin Senior)
-
-#### Guardar Backup
-1. Hacer clic en "🛠️ Gestión de Base de Datos" en el menú
-2. Hacer clic en "💾 Guardar Backup"
-3. El sistema creará una copia de seguridad con timestamp
-
-#### Restaurar Backup
-1. En el panel de gestión, seleccionar un backup de la lista
-2. Hacer clic en "🔄 Restaurar"
-3. Confirmar la acción (se creará un backup automático del estado actual)
-
-#### Gestionar Backups
-- **Ver lista** de todos los backups disponibles (se actualiza automáticamente cada 10 segundos)
-- **Eliminar backups** antiguos para liberar espacio
-- **Información detallada** de cada backup (tamaño, fecha)
-- **Botón "Volver al Inicio"** para regresar al dashboard
 
 ## Funciones Técnicas
 
@@ -400,16 +390,16 @@ La aplicación se abrirá en: `http://localhost:4200`
 - **Auditoría automática** de todas las acciones
 - **Recuperación de contraseña** por email seguro (excepto admin senior)
 - **Variables de entorno** para configuración segura
-- **Backups automáticos** antes de acciones destructivas
-- **Confirmaciones múltiples** para operaciones críticas
 - **Gestión de roles restringida** solo a administradores senior
 - **Validación de emails únicos** en el registro
+- **CORS configurado** para seguridad en producción
 
 ## Solución de Problemas
 
 ### Error de Conexión
 - Verificar que el backend esté ejecutándose en el puerto 3001
 - Verificar que el frontend esté ejecutándose en el puerto 4200
+- Para producción, verificar las URLs de Render
 
 ### Error de Autenticación
 - Verificar que el usuario y contraseña sean correctos
@@ -425,21 +415,31 @@ La aplicación se abrirá en: `http://localhost:4200`
 - Verificar que el navegador permita descargas
 - Verificar que no haya bloqueadores de pop-ups activos
 
+### Errores de Base de Datos
+- **Desarrollo:** Verificar que PostgreSQL esté configurado correctamente
+- **Producción:** Verificar las variables de entorno en Render
+- **SSL/TLS:** Configurado automáticamente para PostgreSQL en Render
+
 ## Estructura del Proyecto
 
 ```
 pagina-javascript-angular/
 ├── .gitignore              # Archivos excluidos del repositorio
 ├── README.md               # Este archivo
+├── DEPLOYMENT.md           # Guía de despliegue en Render
+├── render.yaml             # Configuración de Render
 ├── backend/                # Servidor Node.js/Express
 │   ├── app.js              # Servidor principal
 │   ├── package.json        # Dependencias del backend
-│   ├── .env_template       # Plantilla de configuración
+│   ├── config.env          # Variables de entorno (desarrollo)
 │   ├── CONFIGURACION.md    # Guía de configuración
-│   ├── db/                 # Base de datos SQLite
-│   │   ├── inventory.db    # Base de datos principal
-│   │   └── backups/        # Directorio de backups
 │   ├── routes/             # Rutas de la API
+│   │   ├── authRoutes.js   # Autenticación
+│   │   ├── productRoutes.js # Productos
+│   │   ├── categoryRoutes.js # Categorías
+│   │   ├── distributorRoutes.js # Distribuidores
+│   │   ├── auditRoutes.js  # Auditoría
+│   │   └── ownCommerceRoutes.js # Datos del comercio
 │   ├── controllers/        # Controladores
 │   ├── models/             # Modelos de datos
 │   ├── middlewares/        # Middlewares
@@ -489,12 +489,11 @@ ng build             # Construir para producción
    - Puede crear, editar y eliminar productos, categorías y distribuidores
    - Puede ver el registro de auditoría
    - Puede editar datos del comercio
-   - No puede gestionar usuarios ni base de datos
+   - No puede gestionar usuarios
 
 3. **Administrador Senior (senior_admin)**
    - Todos los permisos de administrador
    - Puede gestionar usuarios (cambiar roles)
-   - Puede gestionar la base de datos (backups, restauración)
    - Acceso completo al sistema
 
 #### Gestión de Roles
@@ -506,17 +505,28 @@ ng build             # Construir para producción
 ### Variables de Entorno
 El sistema utiliza variables de entorno para la configuración segura. Consulta `backend/CONFIGURACION.md` para instrucciones detalladas.
 
-### Gestión de Base de Datos
-- **Backups automáticos**: Se crean en `backend/db/backups/`
-- **Restauración segura**: Verificación de integridad antes de restaurar
-- **Auditoría completa**: Todas las acciones se registran
-- **Confirmaciones**: Múltiples confirmaciones para acciones destructivas
-- **Actualización automática**: La lista de backups se actualiza cada 10 segundos sin mostrar mensajes
-
 ### Base de Datos
-- **SQLite**: Base de datos local para desarrollo
-- **Migración**: Para producción, considera migrar a PostgreSQL o MySQL
-- **Backup**: Realiza copias de seguridad regulares de `backend/db/inventory.db`
+- **PostgreSQL**: Base de datos en la nube para producción
+- **SSL/TLS**: Conexiones seguras automáticas
+- **Migración automática**: Las tablas se crean automáticamente al iniciar
+- **Backup automático**: Render maneja los backups automáticamente
+
+### Tecnologías Utilizadas
+
+#### Backend
+- **Node.js/Express**: Servidor web
+- **PostgreSQL**: Base de datos
+- **JWT**: Autenticación
+- **Nodemailer**: Envío de emails
+- **bcryptjs**: Encriptación de contraseñas
+- **CORS**: Configuración de seguridad
+
+#### Frontend
+- **Angular 18**: Framework principal
+- **Signals**: Estado reactivo
+- **Standalone Components**: Componentes independientes
+- **Zone.js**: Detección de cambios
+- **RxJS**: Programación reactiva
 
 ## 📞 Contacto y Soporte
 
@@ -524,3 +534,4 @@ Para reportar problemas o solicitar nuevas funcionalidades:
 1. Verifica la configuración de variables de entorno
 2. Revisa los logs del servidor
 3. Consulta la documentación de configuración
+4. Verifica el estado de los servicios en Render

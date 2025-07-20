@@ -1,3 +1,16 @@
+// Cargar variables de entorno
+// En desarrollo local: desde config.env
+// En producción (Render): desde variables de entorno del sistema
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: './config.env' });
+}
+
+// Log para debug
+console.log('🔧 Configuración del servidor:');
+console.log(`   NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
+console.log(`   PORT: ${process.env.PORT || 10000}`);
+console.log(`   DATABASE_URL: ${process.env.DATABASE_URL ? 'CONFIGURADA' : 'NO CONFIGURADA'}`);
+
 // Las variables de entorno se cargan automáticamente desde el sistema
 // En desarrollo local: desde config.env (manualmente)
 // En Render: desde las variables de entorno configuradas en el dashboard
@@ -7,30 +20,22 @@ const db = require('./models/database');
 const app = express();
 
 // Configurar CORS para permitir el frontend en Render
-app.use(cors({
-  origin: function (origin, callback) {
-    // Permitir requests sin origin (como aplicaciones móviles)
-    if (!origin) return callback(null, true);
-    
-    // Permitir localhost para desarrollo
-    if (origin === 'http://localhost:4200' || origin === 'http://127.0.0.1:4200') {
-      return callback(null, true);
-    }
-    
-    // Permitir dominios de Render
-    if (origin.includes('onrender.com') || origin.includes('render.com')) {
-      return callback(null, true);
-    }
-    
-    // Permitir tu dominio específico (reemplazar con tu URL)
-    if (origin === 'https://tu-frontend-url.onrender.com') {
-      return callback(null, true);
-    }
-    
-    callback(new Error('Not allowed by CORS'));
-  },
-  credentials: true
-}));
+const corsOptions = {
+  origin: [
+    'https://inventory-frontend-2syh.onrender.com',
+    'https://inventory-frontend.onrender.com',
+    'http://localhost:4200',
+    'http://localhost:3000'
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+
+// Log de CORS para debug
+console.log('🌐 Configuración CORS:');
+console.log('   Origins permitidos:', corsOptions.origin);
 app.use(express.json());
 
 // Import routes
@@ -57,11 +62,36 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ 
     status: 'OK', 
     message: 'Inventory System API is running',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    database: 'PostgreSQL',
+    cors: {
+      origins: corsOptions.origin,
+      credentials: corsOptions.credentials
+    }
   });
 });
 
-const PORT = process.env.PORT || 3001;
+// Database test endpoint
+app.get('/api/database/test', async (req, res) => {
+  try {
+    const result = await db.query('SELECT 1 as test');
+    res.status(200).json({ 
+      status: 'OK', 
+      message: 'Database connection successful',
+      test: result.rows ? result.rows[0] : result[0]
+    });
+  } catch (error) {
+    console.error('Database test error:', error);
+    res.status(500).json({ 
+      status: 'ERROR', 
+      message: 'Database connection failed',
+      error: error.message 
+    });
+  }
+});
+
+const PORT = process.env.PORT || 10000;
 
 // Inicializar la aplicación
 async function startServer() {

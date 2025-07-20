@@ -10,6 +10,7 @@ frontend/out-tsc/
 # Environment files
 backend/config.env
 backend/.env
+.env
 
 # Database files (PostgreSQL only - no local files needed)
 backend/db/
@@ -68,4 +69,90 @@ Thumbs.db
 
 # Temporary files
 *.tmp
-*.temp 
+*.temp
+
+# ========================================
+# ARCHIVOS DE PRUEBA Y DESARROLLO
+# ========================================
+
+# Backend test files
+backend/test-*.js
+backend/verify-*.js
+backend/debug-*.js
+backend/check-*.js
+backend/cleanup-*.js
+backend/fix-*.js
+backend/get-*.js
+backend/simple-test.js
+backend/CONFIGURACION.md
+backend/.env_template
+
+# Frontend test files
+frontend/test-*.js
+frontend/verify-*.js
+frontend/debug-*.js
+frontend/check-*.js
+frontend/final-*.js
+frontend/spa-configuration.js
+frontend/explain-*.js
+frontend/summary-*.js
+frontend/summary-changes.md
+frontend/new-*.md
+frontend/reset-password-*.md
+frontend/render-*.md
+frontend/render-*.js
+frontend/final-spa-summary.md
+
+# Root level test and development files
+setup-render.js
+NUEVO_SISTEMA_TOKENS.md
+RESUMEN_IMPLEMENTACION_TOKENS.md
+VALIDACION_EMAIL_PROBLEMA.md
+SOLUCION_REGISTRO_USUARIOS.md
+CORRECCIONES_CRUD_AUDITORIAS.md
+SOLUCION_COMPLETA.md
+CHANGES_SUMMARY.md
+TROUBLESHOOTING.md
+POSTGRESQL_SETUP.md
+
+# ========================================
+# ARCHIVOS DE CONFIGURACIÓN TEMPORAL
+# ========================================
+
+# Render configuration files (keep only the main one)
+render.yaml
+!render.yaml
+
+# ========================================
+# ARCHIVOS DE DESARROLLO ESPECÍFICOS
+# ========================================
+
+# Package lock files (optional - some teams prefer to commit them)
+# package-lock.json
+# */package-lock.json
+
+# Angular specific
+frontend/.angular/
+frontend/dist/
+
+# ========================================
+# ARCHIVOS ESPECÍFICOS ADICIONALES
+# ========================================
+
+# Test and development scripts
+**/test-*
+**/verify-*
+**/debug-*
+**/check-*
+**/setup-*
+**/final-*
+**/summary-*
+**/new-*
+**/reset-password-*
+**/render-*
+**/spa-*
+**/explain-*
+**/cleanup-*
+**/fix-*
+**/get-*
+**/simple-* 

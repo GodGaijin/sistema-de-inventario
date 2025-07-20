@@ -1,0 +1,18 @@
+# SPA Routing Configuration for Render
+# Redirect all routes to index.html for Angular SPA
+
+/*    /index.html   200
+
+# Ensure all Angular routes work
+/login    /index.html   200
+/reset-password    /index.html   200
+/dashboard    /index.html   200
+/products    /index.html   200
+/categories    /index.html   200
+/distributors    /index.html   200
+/audits    /index.html   200
+/commerce-data    /index.html   200
+/user-management    /index.html   200
+
+# Handle any other routes
+/*    /index.html   200 

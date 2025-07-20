@@ -37,7 +37,7 @@ const createProduct = async (product) => {
       'INSERT INTO products (name, description, price, stock, category_id, distributor_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
       [name, description, price, stock, category_id, distributor_id]
     );
-    return result.lastID || result.rows[0].id;
+    return result.lastID || (result.rows && result.rows[0] ? result.rows[0].id : null);
   } catch (error) {
     throw error;
   }

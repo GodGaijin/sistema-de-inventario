@@ -21,12 +21,35 @@ const getCategoryById = async (id) => {
 const createCategory = async (category) => {
   try {
     const { name, description } = category;
+    
+    // Validar que el nombre no esté vacío
+    if (!name || name.trim() === '') {
+      throw new Error('El nombre de la categoría es requerido');
+    }
+    
+    console.log('Executing INSERT query with:', { name, description });
+    
     const result = await db.run(
       'INSERT INTO categories (name, description) VALUES ($1, $2) RETURNING id',
-      [name, description]
+      [name.trim(), description || '']
     );
-    return result.lastID || result.rows[0].id;
+    
+    console.log('INSERT result:', result);
+    
+    // Extraer el ID del resultado
+    let id;
+    if (result.rows && result.rows.length > 0) {
+      id = result.rows[0].id;
+    } else if (result.lastID) {
+      id = result.lastID;
+    } else {
+      throw new Error('No se pudo obtener el ID de la categoría creada');
+    }
+    
+    console.log('Category created with ID:', id);
+    return id;
   } catch (error) {
+    console.error('Error in createCategory:', error);
     throw error;
   }
 };

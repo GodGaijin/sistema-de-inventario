@@ -13,6 +13,11 @@ class Database {
     console.log('DATABASE_URL configurada:', !!process.env.DATABASE_URL);
     console.log('RENDER:', !!process.env.RENDER);
     
+    if (!process.env.DATABASE_URL) {
+      console.error('❌ DATABASE_URL no está configurada');
+      throw new Error('DATABASE_URL environment variable is required');
+    }
+    
     // Determinar si necesitamos SSL (Render o producción)
     const needsSSL = process.env.RENDER || 
                      process.env.NODE_ENV === 'production' || 
@@ -23,11 +28,23 @@ class Database {
     const sslConfig = needsSSL ? { rejectUnauthorized: false } : false;
     console.log('SSL config:', sslConfig);
     
-    // Usar PostgreSQL
+    // Usar PostgreSQL con configuración robusta
     this.db = new Pool({
       connectionString: process.env.DATABASE_URL,
-      ssl: sslConfig
+      ssl: sslConfig,
+      // Configuraciones adicionales para estabilidad
+      connectionTimeoutMillis: 10000,
+      idleTimeoutMillis: 30000,
+      max: 20,
+      // Manejo de errores de conexión
+      allowExitOnIdle: true
     });
+    
+    // Manejar errores del pool
+    this.db.on('error', (err) => {
+      console.error('❌ Error en el pool de PostgreSQL:', err);
+    });
+    
     console.log('✅ Pool de PostgreSQL creado');
   }
 
@@ -53,7 +70,13 @@ class Database {
           console.error('PostgreSQL Error:', err);
           reject(err);
         } else {
-          resolve({ changes: result.rowCount });
+          // Para PostgreSQL, manejar tanto rowCount como rows
+          const response = { changes: result.rowCount };
+          if (result.rows && result.rows.length > 0) {
+            response.rows = result.rows;
+            response.lastID = result.rows[0].id;
+          }
+          resolve(response);
         }
       });
     });

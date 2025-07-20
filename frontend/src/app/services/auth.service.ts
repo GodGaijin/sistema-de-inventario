@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StateService } from './state.service';
+import { environment } from '../../environments/environment';
 
 export interface User {
   id: number;
@@ -21,7 +22,7 @@ export interface AuthResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3001/api';
+  private apiUrl = environment.apiUrl;
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
   private stateService = inject(StateService);
@@ -80,9 +81,9 @@ export class AuthService {
     });
   }
 
-  resetPassword(token: string, newPassword: string): Observable<any> {
+  resetPassword(code: string, newPassword: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/reset-password`, {
-      token,
+      code,
       newPassword
     });
   }
@@ -111,8 +112,45 @@ export class AuthService {
     );
   }
 
+  // Nuevo método para verificar si el usuario quiere continuar
+  checkSession(): Observable<any> {
+    const refreshToken = localStorage.getItem('refreshToken');
+    return this.http.post(`${this.apiUrl}/auth/check-session`, {
+      refreshToken
+    }).pipe(
+      map((response: any) => {
+        if (!response.sessionExpired) {
+          localStorage.setItem('accessToken', response.accessToken);
+          localStorage.setItem('refreshToken', response.refreshToken);
+          this.currentUserSubject.next(response.user);
+          this.stateService.setUser(response.user);
+        }
+        return response;
+      })
+    );
+  }
+
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('accessToken');
+    const token = localStorage.getItem('accessToken');
+    if (!token) return false;
+    
+    // Verificar si el token no ha expirado
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Date.now() / 1000;
+      
+      if (payload.exp && payload.exp < currentTime) {
+        // Token expirado, pero no limpiar automáticamente
+        // El interceptor se encargará de mostrar el mensaje
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error validating token:', error);
+      this.logout();
+      return false;
+    }
   }
 
   isAdmin(): boolean {

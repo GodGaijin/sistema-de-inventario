@@ -8,16 +8,22 @@ import { AuditsComponent } from './components/audits/audits.component';
 import { CommerceDataComponent } from './components/commerce-data/commerce-data.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { UserManagementComponent } from './components/user-management/user-management.component';
-import { DatabaseManagementComponent } from './components/database-management/database-management.component';
 
 import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
 import { SeniorAdminGuard } from './guards/senior-admin.guard';
+import { RedirectGuard } from './guards/redirect.guard';
+import { ResetPasswordGuard } from './guards/reset-password.guard';
 
 export const routes: Routes = [
+  // Ruta raíz - redirige inteligentemente basado en autenticación
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'reset-password', component: ResetPasswordComponent },
+  
+  // Rutas públicas con verificación de token
+  { path: 'login', component: LoginComponent, canActivate: [RedirectGuard] },
+  { path: 'reset-password', component: ResetPasswordComponent, canActivate: [ResetPasswordGuard] },
+  
+  // Rutas protegidas
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'products', component: ProductsComponent, canActivate: [AuthGuard] },
   { path: 'categories', component: CategoriesComponent, canActivate: [AuthGuard] },
@@ -25,6 +31,7 @@ export const routes: Routes = [
   { path: 'audits', component: AuditsComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'commerce-data', component: CommerceDataComponent, canActivate: [AuthGuard] },
   { path: 'user-management', component: UserManagementComponent, canActivate: [AuthGuard, SeniorAdminGuard] },
-  { path: 'database-management', component: DatabaseManagementComponent, canActivate: [AuthGuard, SeniorAdminGuard] },
+  
+  // Catch-all route - redirige inteligentemente (SIN pathMatch: 'full')
   { path: '**', redirectTo: '/login' }
 ]; 

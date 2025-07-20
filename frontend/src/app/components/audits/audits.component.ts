@@ -48,17 +48,42 @@ export class AuditsComponent {
   }
 
   formatTimestamp(timestamp: string): string {
-    // Convert UTC timestamp to Venezuelan time
-    const date = new Date(timestamp + 'Z');
-    return date.toLocaleString('es-VE', {
-      timeZone: 'America/Caracas',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
+    try {
+      // Verificar si el timestamp ya es válido
+      let date: Date;
+      
+      if (!timestamp || timestamp === 'Invalid Date') {
+        return 'Fecha no disponible';
+      }
+      
+      // Si el timestamp ya termina en Z, no agregar otra Z
+      if (timestamp.endsWith('Z')) {
+        date = new Date(timestamp);
+      } else {
+        // Si no termina en Z, agregar Z para indicar UTC
+        date = new Date(timestamp + 'Z');
+      }
+      
+      // Verificar si la fecha es válida
+      if (isNaN(date.getTime())) {
+        console.error('Timestamp inválido:', timestamp);
+        return 'Fecha inválida';
+      }
+      
+      // Convert UTC timestamp to Venezuelan time
+      return date.toLocaleString('es-VE', {
+        timeZone: 'America/Caracas',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    } catch (error) {
+      console.error('Error formateando timestamp:', error, timestamp);
+      return 'Error en fecha';
+    }
   }
 
   navigateToDashboard(): void {

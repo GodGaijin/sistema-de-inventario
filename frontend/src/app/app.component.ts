@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { SessionService } from './services/session.service';
@@ -9,7 +10,7 @@ import { SidebarService } from './services/sidebar.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NotificationsComponent, SidebarComponent],
+  imports: [RouterOutlet, CommonModule, NotificationsComponent, SidebarComponent],
   template: `
     <div class="app-container" [class.authenticated]="isAuthenticated()" [class.sidebar-collapsed]="sidebarService.isCollapsed()">
       <!-- Debug info -->
@@ -27,7 +28,7 @@ import { SidebarService } from './services/sidebar.service';
 })
 export class AppComponent implements OnInit {
   title = 'Sistema de Inventario';
-  private stateService = inject(StateService);
+  public stateService = inject(StateService);
   public sidebarService = inject(SidebarService);
 
   constructor(

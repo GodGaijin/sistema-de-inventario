@@ -45,6 +45,8 @@ export class AuthService {
     const user = this.getUserFromToken();
     if (user) {
       this.currentUserSubject.next(user);
+      // Sincronizar con StateService
+      this.stateService.setUser(user);
     }
   }
 

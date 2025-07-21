@@ -1,6 +1,7 @@
-import { Injectable, signal, computed, effect } from '@angular/core';
+import { Injectable, signal, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject } from 'rxjs';
+import { AuthService } from './auth.service';
 
 export interface User {
   id: number;
@@ -28,6 +29,8 @@ export interface Notification {
   providedIn: 'root'
 })
 export class StateService {
+  private authService = inject(AuthService);
+  
   // Signals principales
   private _user = signal<User | null>(null);
   private _isLoading = signal(false);
@@ -53,6 +56,12 @@ export class StateService {
 
     // Cargar usuario desde localStorage al inicializar
     this.loadUserFromStorage();
+    
+    // Verificar autenticación desde token
+    this.checkAuthenticationFromToken();
+    
+    // Sincronizar con AuthService
+    this.syncWithAuthService();
   }
 
   // Métodos para manejar el usuario
@@ -134,6 +143,49 @@ export class StateService {
       }
     } else {
       console.log('🔍 StateService - no stored user found');
+    }
+  }
+
+  private syncWithAuthService(): void {
+    // Verificar si hay un token válido y sincronizar
+    if (this.authService.isAuthenticated()) {
+      const authUser = this.authService.currentUserValue;
+      if (authUser && !this._user()) {
+        console.log('🔍 StateService - syncing with AuthService user:', authUser);
+        this._user.set(authUser);
+      }
+    }
+  }
+
+  // Método para verificar autenticación usando token directamente
+  public checkAuthenticationFromToken(): void {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const currentTime = Date.now() / 1000;
+        
+        if (payload.exp && payload.exp > currentTime) {
+          // Token válido, crear usuario si no existe
+          if (!this._user()) {
+            const user: User = {
+              id: payload.id,
+              username: payload.username,
+              email: payload.email || '',
+              role: payload.role
+            };
+            console.log('🔍 StateService - creating user from token:', user);
+            this._user.set(user);
+          }
+        } else {
+          // Token expirado, limpiar
+          console.log('🔍 StateService - token expired, clearing user');
+          this._user.set(null);
+        }
+      } catch (error) {
+        console.error('Error parsing token:', error);
+        this._user.set(null);
+      }
     }
   }
 

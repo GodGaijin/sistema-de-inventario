@@ -14,6 +14,13 @@ export const TokenInterceptor: HttpInterceptorFn = (request, next) => {
     catchError((error: HttpErrorResponse) => {
       // Si es un error 401 (Unauthorized), puede ser token expirado
       if (error.status === 401) {
+        // Verificar si es un logout manual
+        const isManualLogout = localStorage.getItem('manualLogout');
+        if (isManualLogout) {
+          // Es un logout manual, no mostrar mensajes de sesión inválida
+          return throwError(() => error);
+        }
+        
         const refreshToken = localStorage.getItem('refreshToken');
         
         if (refreshToken) {

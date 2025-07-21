@@ -10,11 +10,22 @@
   transition: margin-left 0.3s ease;
   background: #f8f9fa;
   min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 /* Cuando la barra lateral está colapsada */
 .sidebar.collapsed + .main-content {
   margin-left: 70px;
+}
+
+/* Cuando no hay sidebar (login, etc.) */
+.main-content:not(.with-sidebar) {
+  margin-left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
 /* Responsive */

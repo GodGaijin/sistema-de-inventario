@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { SessionService } from './services/session.service';
+import { StateService } from './services/state.service';
 
 @Component({
   selector: 'app-root',
@@ -10,8 +11,8 @@ import { SessionService } from './services/session.service';
   imports: [RouterOutlet, NotificationsComponent, SidebarComponent],
   template: `
     <div class="app-container">
-      <app-sidebar></app-sidebar>
-      <main class="main-content">
+      <app-sidebar *ngIf="isAuthenticated()"></app-sidebar>
+      <main class="main-content" [class.with-sidebar]="isAuthenticated()">
         <router-outlet></router-outlet>
       </main>
     </div>
@@ -21,11 +22,16 @@ import { SessionService } from './services/session.service';
 })
 export class AppComponent implements OnInit {
   title = 'Sistema de Inventario';
+  private stateService = inject(StateService);
 
   constructor(
     private router: Router,
     private sessionService: SessionService
   ) {}
+
+  isAuthenticated() {
+    return this.stateService.isAuthenticated();
+  }
 
   ngOnInit() {
     // Log para debugging - Angular manejará las rutas directamente

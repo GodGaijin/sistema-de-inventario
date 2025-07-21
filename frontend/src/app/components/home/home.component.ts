@@ -23,7 +23,7 @@ interface DashboardStats {
       </div>
 
       <div class="stats-grid">
-        <div class="stat-card users">
+        <div *ngIf="isSeniorAdmin()" class="stat-card users">
           <div class="stat-icon">👥</div>
           <div class="stat-content">
             <h3>Usuarios Registrados</h3>
@@ -118,6 +118,7 @@ export class HomeComponent implements OnInit {
   // Signals reactivos
   currentUser = this.stateService.currentUser;
   isAdmin = this.stateService.isAdmin;
+  isSeniorAdmin = this.stateService.isSeniorAdmin;
   
   // Estadísticas del dashboard
   stats = signal<DashboardStats>({

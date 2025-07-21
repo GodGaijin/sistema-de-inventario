@@ -89,6 +89,8 @@ export class AuthService {
   }
 
   logout(): void {
+    // Marcar que es un logout manual para evitar mensajes de sesión inválida
+    localStorage.setItem('manualLogout', 'true');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     this.currentUserSubject.next(null);
@@ -97,6 +99,10 @@ export class AuthService {
       message: 'Sesión cerrada exitosamente',
       type: 'info'
     });
+    // Limpiar la bandera después de un breve delay
+    setTimeout(() => {
+      localStorage.removeItem('manualLogout');
+    }, 1000);
   }
 
   refreshToken(): Observable<AuthResponse> {

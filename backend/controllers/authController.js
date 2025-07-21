@@ -17,7 +17,7 @@ const ACCESS_TOKEN_EXPIRY = '30m'; // 30 minutos para todos los usuarios
 const REFRESH_TOKEN_EXPIRY = '1h'; // 1 hora para refresh token
 
 const generateTokens = (user) => {
-  const payload = { id: user.id, username: user.username, role: user.role };
+  const payload = { id: user.id, username: user.username, email: user.email, role: user.role };
   const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY });
   const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRY });
   return { accessToken, refreshToken };
@@ -182,6 +182,7 @@ exports.login = async (req, res) => {
           user: {
             id: user.id,
             username: user.username,
+            email: user.email,
             role: user.role
           }
         });
@@ -221,6 +222,7 @@ exports.login = async (req, res) => {
       user: {
         id: user.id,
         username: user.username,
+        email: user.email,
         role: user.role
       }
     });
@@ -313,6 +315,7 @@ exports.checkSession = async (req, res) => {
         user: {
           id: user.id,
           username: user.username,
+          email: user.email,
           role: user.role
         },
         sessionExpired: false

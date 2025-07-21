@@ -4,13 +4,14 @@ import { NotificationsComponent } from './components/notifications/notifications
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { SessionService } from './services/session.service';
 import { StateService } from './services/state.service';
+import { SidebarService } from './services/sidebar.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, NotificationsComponent, SidebarComponent],
   template: `
-    <div class="app-container">
+    <div class="app-container" [class.authenticated]="isAuthenticated()" [class.sidebar-collapsed]="sidebarService.isCollapsed()">
       <app-sidebar *ngIf="isAuthenticated()"></app-sidebar>
       <main class="main-content" [class.with-sidebar]="isAuthenticated()">
         <router-outlet></router-outlet>
@@ -23,6 +24,7 @@ import { StateService } from './services/state.service';
 export class AppComponent implements OnInit {
   title = 'Sistema de Inventario';
   private stateService = inject(StateService);
+  public sidebarService = inject(SidebarService);
 
   constructor(
     private router: Router,

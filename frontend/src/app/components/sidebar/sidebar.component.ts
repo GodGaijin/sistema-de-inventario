@@ -1,8 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { StateService } from '../../services/state.service';
+import { SidebarService } from '../../services/sidebar.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -78,6 +79,7 @@ export class SidebarComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
   private stateService = inject(StateService);
+  private sidebarService = inject(SidebarService);
 
   // Signals reactivos
   currentUser = this.stateService.currentUser;
@@ -85,10 +87,10 @@ export class SidebarComponent {
   isSeniorAdmin = this.stateService.isSeniorAdmin;
   
   // Estado de la barra lateral
-  isCollapsed = signal(false);
+  isCollapsed = this.sidebarService.isCollapsed;
 
   toggleSidebar(): void {
-    this.isCollapsed.update(current => !current);
+    this.sidebarService.toggleSidebar();
   }
 
   navigateTo(route: string): void {

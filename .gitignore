@@ -278,6 +278,7 @@ test-fixes-verification.js
 test-post-deployment-fixes.js
 test-sidebar-visibility.js
 test-sidebar-authentication.js
+test-token-refresh-system.js
 
 # Documentación de implementación
 SISTEMA_USUARIOS_ACTIVOS_IMPLEMENTADO.md

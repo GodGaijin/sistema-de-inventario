@@ -1,0 +1,129 @@
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { SessionConfirmationService } from '../../services/session-confirmation.service';
+
+@Component({
+  selector: 'app-session-confirmation',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div *ngIf="confirmation" class="session-confirmation-overlay">
+      <div class="session-confirmation-modal">
+        <div class="modal-header">
+          <h3>🕐 Sesión por Expirar</h3>
+        </div>
+        <div class="modal-body">
+          <p>{{ confirmation.message }}</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="confirmation.onCancel()">
+            Cerrar Sesión
+          </button>
+          <button class="btn btn-primary" (click)="confirmation.onConfirm()">
+            Continuar
+          </button>
+        </div>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .session-confirmation-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
+
+    .session-confirmation-modal {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      color: #333;
+      font-size: 1.2rem;
+    }
+
+    .modal-body {
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .modal-body p {
+      margin: 0;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #007bff;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #0056b3;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #545b62;
+    }
+  `]
+})
+export class SessionConfirmationComponent {
+  private sessionConfirmationService = inject(SessionConfirmationService);
+  confirmation: any = null;
+
+  constructor() {
+    this.sessionConfirmationService.confirmation$.subscribe(confirmation => {
+      this.confirmation = confirmation;
+    });
+  }
+} 

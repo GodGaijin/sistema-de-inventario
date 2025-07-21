@@ -3,6 +3,7 @@ import { RouterOutlet, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { SessionConfirmationComponent } from './components/session-confirmation/session-confirmation.component';
 import { SessionService } from './services/session.service';
 import { StateService } from './services/state.service';
 import { SidebarService } from './services/sidebar.service';
@@ -10,7 +11,7 @@ import { SidebarService } from './services/sidebar.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, NotificationsComponent, SidebarComponent],
+  imports: [RouterOutlet, CommonModule, NotificationsComponent, SidebarComponent, SessionConfirmationComponent],
   template: `
     <div class="app-container" [class.authenticated]="isAuthenticated()" [class.sidebar-collapsed]="sidebarService.isCollapsed()">
       <app-sidebar *ngIf="isAuthenticated()"></app-sidebar>
@@ -19,6 +20,7 @@ import { SidebarService } from './services/sidebar.service';
       </main>
     </div>
     <app-notifications></app-notifications>
+    <app-session-confirmation></app-session-confirmation>
   `,
   styleUrls: ['./app.component.css']
 })

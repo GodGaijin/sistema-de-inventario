@@ -97,7 +97,7 @@ export class AuthService {
     // Llamar al backend para invalidar la sesión
     const refreshToken = localStorage.getItem('refreshToken');
     if (refreshToken) {
-      this.http.post(`${this.apiUrl}/api/auth/logout`, { refreshToken }).subscribe({
+      this.http.post(`${this.apiUrl}/auth/logout`, { refreshToken }).subscribe({
         next: () => {
           console.log('✅ Sesión invalidada en el servidor');
         },

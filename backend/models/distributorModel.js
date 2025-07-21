@@ -21,12 +21,35 @@ const getDistributorById = async (id) => {
 const createDistributor = async (distributor) => {
   try {
     const { name, contact, phone, email, rif, location } = distributor;
+    
+    // Validar que todos los campos estén presentes
+    if (!name || !contact || !phone || !email || !rif || !location) {
+      throw new Error('Todos los campos son requeridos');
+    }
+    
+    console.log('Executing INSERT distributor query with:', { name, contact, phone, email, rif, location });
+    
     const result = await db.run(
       'INSERT INTO distributors (name, contact, phone, email, rif, location) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
-      [name, contact, phone, email, rif, location]
+      [name.trim(), contact.trim(), phone.trim(), email.trim(), rif.trim(), location.trim()]
     );
-    return result.lastID || result.rows[0].id;
+    
+    console.log('INSERT distributor result:', result);
+    
+    // Extraer el ID del resultado
+    let id;
+    if (result.rows && result.rows.length > 0) {
+      id = result.rows[0].id;
+    } else if (result.lastID) {
+      id = result.lastID;
+    } else {
+      throw new Error('No se pudo obtener el ID del distribuidor creado');
+    }
+    
+    console.log('Distributor created with ID:', id);
+    return id;
   } catch (error) {
+    console.error('Error in createDistributor:', error);
     throw error;
   }
 };

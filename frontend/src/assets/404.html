@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Página no encontrada</title>
+    <script>
+        // Función para redirigir a la aplicación Angular
+        function redirectToApp() {
+            const path = window.location.pathname;
+            const search = window.location.search;
+            const hash = window.location.hash;
+            
+            // Redirigir a la aplicación Angular
+            const redirectUrl = '/index.html' + path + search + hash;
+            console.log('404 - Redirigiendo a:', redirectUrl);
+            window.location.href = redirectUrl;
+        }
+        
+        // Redirigir inmediatamente
+        redirectToApp();
+    </script>
+</head>
+<body>
+    <div style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+        <h2>Página no encontrada</h2>
+        <p>Redirigiendo a la aplicación...</p>
+        <p>Si no eres redirigido automáticamente, <a href="/index.html">haz clic aquí</a></p>
+    </div>
+</body>
+</html> 

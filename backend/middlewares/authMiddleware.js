@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 
-const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'access_secret';
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+if (!ACCESS_TOKEN_SECRET) {
+  throw new Error('ACCESS_TOKEN_SECRET environment variable is required');
+}
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];

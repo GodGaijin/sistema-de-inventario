@@ -74,18 +74,23 @@ export class CategoriesComponent {
             this.loadData();
           },
           error: (error: any) => {
-            this.showMessage(error.error?.message || 'Error al actualizar categoría', 'error');
+            console.error('Error updating category:', error);
+            const errorMessage = error.error?.message || error.message || 'Error al actualizar categoría';
+            this.showMessage(errorMessage, 'error');
           }
         });
       } else {
         this.apiService.createCategory(categoryData).subscribe({
-          next: () => {
+          next: (response: any) => {
+            console.log('Category created successfully:', response);
             this.showMessage('Categoría creada exitosamente', 'success');
             this.resetForm();
             this.loadData();
           },
           error: (error: any) => {
-            this.showMessage(error.error?.message || 'Error al crear categoría', 'error');
+            console.error('Error creating category:', error);
+            const errorMessage = error.error?.message || error.message || 'Error al crear categoría';
+            this.showMessage(errorMessage, 'error');
           }
         });
       }

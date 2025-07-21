@@ -1,39 +1,56 @@
 const nodemailer = require('nodemailer');
 
+// Validar variables de entorno requeridas
+if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+  console.error('❌ Variables de entorno de email no configuradas');
+  console.error('EMAIL_USER:', !!process.env.EMAIL_USER);
+  console.error('EMAIL_PASS:', !!process.env.EMAIL_PASS);
+}
+
 // Configuración del transportador de email
 // Para desarrollo, usaremos Gmail con autenticación de aplicación
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER || 'tu-email@gmail.com',
-    pass: process.env.EMAIL_PASS || 'tu-contraseña-de-aplicación'
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
 });
 
-const sendPasswordResetEmail = (email, resetToken, username) => {
-  // Usar URL de producción si está disponible, sino localhost
-  const baseUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
-  const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
+const sendPasswordResetEmail = (email, resetCode, username) => {
+  // Usar URL de producción si está disponible, sino frontend de Render
+  const baseUrl = process.env.FRONTEND_URL || 'https://inventory-frontend-2syh.onrender.com';
+  const resetUrl = `${baseUrl}/reset-password?code=${resetCode}`;
   
   const mailOptions = {
-    from: process.env.EMAIL_USER || 'tu-email@gmail.com',
+    from: process.env.EMAIL_USER,
     to: email,
-    subject: 'Recuperación de Contraseña - Sistema de Inventario',
+    subject: 'Código de Verificación - Sistema de Inventario',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #333;">Recuperación de Contraseña</h2>
+        <h2 style="color: #333;">Código de Verificación</h2>
         <p>Hola <strong>${username}</strong>,</p>
         <p>Has solicitado restablecer tu contraseña en el Sistema de Inventario.</p>
-        <p>Para continuar con el proceso, haz clic en el siguiente enlace:</p>
+        <p>Tu código de verificación es:</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <div style="background-color: #f8f9fa; border: 2px solid #007bff; border-radius: 8px; padding: 20px; display: inline-block;">
+            <h1 style="color: #007bff; font-size: 32px; margin: 0; font-family: monospace; letter-spacing: 4px;">${resetCode}</h1>
+          </div>
+        </div>
+        <p>Ingresa este código en la página de restablecimiento de contraseña:</p>
         <div style="text-align: center; margin: 30px 0;">
           <a href="${resetUrl}" 
              style="background-color: #007bff; color: white; padding: 12px 24px; 
                     text-decoration: none; border-radius: 5px; display: inline-block;">
-            Restablecer Contraseña
+            Ir a Restablecer Contraseña
           </a>
         </div>
-        <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
-        <p>Este enlace expirará en 1 hora por seguridad.</p>
+        <p><strong>⚠️ Importante:</strong></p>
+        <ul>
+          <li>Este código expirará en 15 minutos</li>
+          <li>No compartas este código con nadie</li>
+          <li>Si no solicitaste este cambio, puedes ignorar este correo</li>
+        </ul>
         <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
         <p style="color: #666; font-size: 12px;">
           Este es un correo automático, por favor no respondas a este mensaje.
@@ -47,7 +64,7 @@ const sendPasswordResetEmail = (email, resetToken, username) => {
 
 const sendSeniorAdminPassword = (email, tempPassword) => {
   const mailOptions = {
-    from: process.env.EMAIL_USER || 'tu-email@gmail.com',
+    from: process.env.EMAIL_USER,
     to: email,
     subject: 'Contraseña Temporal - Administrador Senior',
     html: `

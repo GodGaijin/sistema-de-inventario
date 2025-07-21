@@ -167,8 +167,11 @@ export class ProductsComponent {
     return distributor ? distributor.name : 'N/A';
   }
 
-  formatPrice(price: number): string {
-    return `${price.toFixed(2)} Bs`;
+  formatPrice(price: any): string {
+    if (price === null || price === undefined || isNaN(Number(price))) {
+      return '0.00 Bs';
+    }
+    return `${Number(price).toFixed(2)} Bs`;
   }
 
   async downloadPDF(): Promise<void> {

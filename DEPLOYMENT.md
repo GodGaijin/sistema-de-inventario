@@ -59,7 +59,7 @@ git push origin main
 3. **Conectar tu repositorio de GitHub**
 
 ### 3.2 Configurar Backend
-- **Name:** `inventory-backend`
+- **Name:** `sistema-de-inventario`
 - **Environment:** `Node`
 - **Region:** Misma que PostgreSQL
 - **Branch:** `main`
@@ -74,11 +74,11 @@ git push origin main
 ```env
 NODE_ENV=production
 PORT=10000
-ACCESS_TOKEN_SECRET=dfb6142abb974a046a6af857f7c2d0dbfe0039d19ab15b97e5fd7b8af36bab911ae16ada15ca4512ac7ba0487e85cf1460e617eaf28c1621112d89ac22ca69f6
-REFRESH_TOKEN_SECRET=6278b0cc016e83a96494cb705d353f605df86fa627fccb0116b2fbd47f471b091ef52c60ecd403b26c7d56c95ea0c7169b73741dab91141ae5d2629d8f73c789
-EMAIL_USER=juanportillo.0509@gmail.com
-EMAIL_PASS=xpdl qfcq vbkh oppv
-SENIOR_ADMIN_EMAIL=juanportillo.0509@gmail.com
+ACCESS_TOKEN_SECRET=EJEMPLO_DE_TOKEN_SECRETO
+REFRESH_TOKEN_SECRET=EJEMPLO_DE_TOKEN_SECRETO
+EMAIL_USER=tu_email@tu_dominio.com
+EMAIL_PASS=abcd efgh ijkl mnop
+SENIOR_ADMIN_EMAIL=tu_email@tu_dominio.com
 SENIOR_ADMIN_USERNAME=admin_senior
 ```
 
@@ -91,8 +91,10 @@ SENIOR_ADMIN_USERNAME=admin_senior
 1. **En la sección "Environment Variables"**
 2. **Hacer clic en "Add Environment Variable"**
 3. **Key:** `DATABASE_URL`
-4. **Value:** Pegar la URL de PostgreSQL que copiaste antes
+4. **Value:** `postgresql://admin:hCINTLj7YG0OfieH4dXoelOAlZKAyZVP@dpg-d1tu7a3e5dus73e0sau0-a.oregon-postgres.render.com/inventory_db_u4cl`
 5. **Hacer clic en "Save Changes"**
+
+**✅ URL configurada automáticamente en render.yaml**
 
 ### 3.5 Crear el Backend
 - **Hacer clic en "Create Web Service"**
@@ -101,7 +103,7 @@ SENIOR_ADMIN_USERNAME=admin_senior
 ### 3.6 Obtener URL del Backend
 1. **Una vez desplegado, copiar la URL**
    ```
-   https://inventory-backend-abc123.onrender.com
+   https://sistema-de-inventario-tavd.onrender.com
    ```
 2. **Guardar esta URL** - la necesitarás para el frontend
 
@@ -112,20 +114,22 @@ SENIOR_ADMIN_USERNAME=admin_senior
 ```typescript
 export const environment = {
   production: true,
-  apiUrl: 'https://tu-backend-url-real.onrender.com/api'
+  apiUrl: 'https://sistema-de-inventario-tavd.onrender.com/api'
 };
 ```
 
-**Reemplazar `tu-backend-url-real.onrender.com`** con la URL real de tu backend.
+**✅ URL configurada:** `https://sistema-de-inventario-tavd.onrender.com`
 
 ### 4.2 Actualizar CORS en el backend
 **Editar `backend/app.js`** en la sección CORS:
 ```javascript
-// Permitir tu dominio específico (reemplazar con tu URL)
-if (origin === 'https://tu-frontend-url-real.onrender.com') {
+// Permitir tu dominio específico del frontend
+if (origin === 'https://inventory-frontend-2syh.onrender.com') {
   return callback(null, true);
 }
 ```
+
+**✅ URL configurada:** `https://inventory-frontend-2syh.onrender.com`
 
 ### 4.3 Commit y push de los cambios
 ```bash
@@ -158,14 +162,14 @@ git push origin main
 ### 5.4 Obtener URL del Frontend
 1. **Una vez desplegado, copiar la URL**
    ```
-   https://inventory-frontend-abc123.onrender.com
+   https://inventory-frontend-2syh.onrender.com
    ```
 2. **Esta será la URL principal** de tu aplicación
 
 ## 🔄 **Paso 6: Verificar el Deployment**
 
 ### 6.1 Verificar Backend
-1. **Visitar:** `https://tu-backend-url.onrender.com/api/health`
+1. **Visitar:** `https://sistema-de-inventario-tavd.onrender.com/api/health`
 2. **Deberías ver:**
    ```json
    {
@@ -176,7 +180,7 @@ git push origin main
    ```
 
 ### 6.2 Verificar Frontend
-1. **Visitar:** `https://tu-frontend-url.onrender.com`
+1. **Visitar:** `https://inventory-frontend-2syh.onrender.com`
 2. **Deberías ver** la página de login de tu aplicación
 
 ### 6.3 Verificar Base de Datos
@@ -189,10 +193,12 @@ git push origin main
 ### 7.1 Actualizar CORS con URL real del frontend
 **Editar `backend/app.js`** con la URL real:
 ```javascript
-if (origin === 'https://inventory-frontend-abc123.onrender.com') {
+if (origin === 'https://inventory-frontend-2syh.onrender.com') {
   return callback(null, true);
 }
 ```
+
+**✅ URL configurada:** `https://inventory-frontend-2syh.onrender.com`
 
 ### 7.2 Commit y push final
 ```bash
@@ -232,9 +238,9 @@ git push origin main
 ## 📊 **URLs Finales**
 
 ### Tu aplicación estará disponible en:
-- **Frontend:** `https://inventory-frontend-abc123.onrender.com`
-- **Backend:** `https://inventory-backend-abc123.onrender.com`
-- **API Health:** `https://inventory-backend-abc123.onrender.com/api/health`
+- **Frontend:** `https://inventory-frontend-2syh.onrender.com`
+- **Backend:** `https://sistema-de-inventario-tavd.onrender.com`
+- **API Health:** `https://sistema-de-inventario-tavd.onrender.com/api/health`
 
 ### Credenciales por defecto:
 - **Usuario:** `admin_senior`

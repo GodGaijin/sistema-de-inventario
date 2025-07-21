@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: inventory-backend
+    name: sistema-de-inventario
     env: node
     plan: free
     rootDir: backend
@@ -28,5 +28,5 @@ services:
       - key: SENIOR_ADMIN_USERNAME
         value: admin_senior
       - key: FRONTEND_URL
-        value: https://inventory-frontend.onrender.com
+        value: https://inventory-frontend-2syh.onrender.com
     healthCheckPath: /api/health 

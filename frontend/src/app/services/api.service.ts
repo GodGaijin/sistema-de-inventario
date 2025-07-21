@@ -107,24 +107,8 @@ export class ApiService {
     return this.http.put(`${this.apiUrl}/own-commerce`, data, { headers: this.getHeaders() });
   }
 
-  // Database Management (Senior Admin only)
-  saveBackup(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/database/backup`, {}, { headers: this.getHeaders() });
+  // Active Users Statistics
+  getActiveUsersStats(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/auth/active-users-stats`, { headers: this.getHeaders() });
   }
-
-  getBackups(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/database/backups`, { headers: this.getHeaders() });
-  }
-
-  restoreBackup(backupName: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/database/restore`, { backupName }, { headers: this.getHeaders() });
-  }
-
-
-
-  deleteBackup(backupName: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/database/backup/${backupName}`, { headers: this.getHeaders() });
-  }
-
-
 } 

@@ -46,7 +46,7 @@ export class AuthService {
     if (user) {
       this.currentUserSubject.next(user);
       // Sincronizar con StateService
-      this.stateService.setUser(user);
+      this.stateService.syncWithAuthService(user);
     }
   }
 

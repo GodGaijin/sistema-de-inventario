@@ -1,7 +1,6 @@
-import { Injectable, signal, computed, effect, inject } from '@angular/core';
+import { Injectable, signal, computed, effect } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject } from 'rxjs';
-import { AuthService } from './auth.service';
 
 export interface User {
   id: number;
@@ -29,8 +28,6 @@ export interface Notification {
   providedIn: 'root'
 })
 export class StateService {
-  private authService = inject(AuthService);
-  
   // Signals principales
   private _user = signal<User | null>(null);
   private _isLoading = signal(false);
@@ -59,9 +56,6 @@ export class StateService {
     
     // Verificar autenticación desde token
     this.checkAuthenticationFromToken();
-    
-    // Sincronizar con AuthService
-    this.syncWithAuthService();
   }
 
   // Métodos para manejar el usuario
@@ -146,14 +140,11 @@ export class StateService {
     }
   }
 
-  private syncWithAuthService(): void {
-    // Verificar si hay un token válido y sincronizar
-    if (this.authService.isAuthenticated()) {
-      const authUser = this.authService.currentUserValue;
-      if (authUser && !this._user()) {
-        console.log('🔍 StateService - syncing with AuthService user:', authUser);
-        this._user.set(authUser);
-      }
+  // Método para sincronizar con AuthService (llamado externamente)
+  public syncWithAuthService(authUser: User | null): void {
+    if (authUser && !this._user()) {
+      console.log('🔍 StateService - syncing with AuthService user:', authUser);
+      this._user.set(authUser);
     }
   }
 

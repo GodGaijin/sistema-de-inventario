@@ -34,16 +34,12 @@ export class ResetPasswordComponent implements OnInit {
     // Leer el código desde query params si existe
     this.route.queryParams.subscribe(params => {
       const code = params['code'];
-      // Reset Password - Query Params
-      console.log('📝 Code from params:', code);
       
       if (code) {
         // Setting verification code
         this.resetPasswordForm.patchValue({
           verificationCode: code
         });
-      } else {
-        console.log('⚠️ No code found in query params');
       }
     });
 

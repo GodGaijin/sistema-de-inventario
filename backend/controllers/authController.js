@@ -25,7 +25,7 @@ const generateTokens = (user) => {
 
 exports.register = async (req, res) => {
   try {
-    console.log('📝 Registrando nuevo usuario:', { username: req.body.username, email: req.body.email });
+
     
     const { username, password, email } = req.body;
     
@@ -42,7 +42,7 @@ exports.register = async (req, res) => {
     
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const regexTest = emailRegex.test(email);
-    console.log('📧 Regex test result:', regexTest);
+    
     
     if (!regexTest) {
       // Email inválido (regex)
@@ -84,7 +84,7 @@ exports.register = async (req, res) => {
     // Validar que tenga al menos un punto después del @
     const atIndex = email.indexOf('@');
     const domainPart = email.substring(atIndex + 1);
-    console.log('🌐 Domain part:', domainPart);
+    
     
     if (!domainPart.includes('.')) {
       return res.status(400).json({ message: 'Formato de email inválido.' });

@@ -223,4 +223,116 @@
   .stat-number {
     font-size: 2rem;
   }
+}
+
+/* Estilos para usuarios activos */
+.active-users-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.active-users-section h3 {
+  color: #333;
+  margin: 0 0 15px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #666;
+  font-style: italic;
+  padding: 20px;
+  text-align: center;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.active-users-table {
+  margin-top: 15px;
+}
+
+.active-users-table table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.active-users-table th,
+.active-users-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.active-users-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.active-users-table td {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.active-users-table tr:hover {
+  background: #f8f9fa;
+}
+
+.role-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.role-badge.user {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.role-badge.admin {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.role-badge.senior_admin {
+  background: #fce4ec;
+  color: #c2185b;
+}
+
+.no-active-users {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+  background: white;
+  border-radius: 8px;
+  border: 2px dashed #ddd;
+  margin-top: 15px;
+}
+
+.no-active-users p {
+  margin: 0;
 } 

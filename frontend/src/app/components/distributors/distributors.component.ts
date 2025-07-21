@@ -133,9 +133,6 @@ export class DistributorsComponent {
 
   async downloadPDF(): Promise<void> {
     try {
-      console.log('Iniciando descarga de PDF...');
-      console.log('Distribuidores:', this.distributors);
-      
       // Importación dinámica de jsPDF
       const jsPDF = (await import('jspdf')).default;
       const doc = new jsPDF();
@@ -151,8 +148,6 @@ export class DistributorsComponent {
         distributor.rif,
         distributor.location
       ]);
-
-      console.log('Datos de la tabla:', tableData);
 
       // Importación dinámica de autoTable
       const autoTable = (await import('jspdf-autotable')).default;
@@ -171,7 +166,6 @@ export class DistributorsComponent {
       });
 
       doc.save('distribuidores.pdf');
-      console.log('PDF generado exitosamente');
       this.showMessage('PDF descargado exitosamente', 'success');
     } catch (error: any) {
       console.error('Error al generar PDF:', error);

@@ -105,6 +105,42 @@ interface DashboardStats {
             <span class="info-value status-online">🟢 En línea</span>
           </div>
         </div>
+
+        <!-- Usuarios Conectados -->
+        <div *ngIf="isAdmin() || isSeniorAdmin()" class="active-users-section">
+          <h3>Usuarios Conectados ({{ activeUsersCount }})</h3>
+          
+          <div class="loading-spinner" *ngIf="loadingActiveUsers">
+            <div class="spinner"></div>
+            <span>Cargando usuarios activos...</span>
+          </div>
+          
+          <!-- Tabla de Usuarios Conectados -->
+          <div class="active-users-table" *ngIf="!loadingActiveUsers && activeUsers.length > 0">
+            <table>
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Rol</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let user of activeUsers">
+                  <td>{{ user.username }}</td>
+                  <td>
+                    <span class="role-badge" [ngClass]="user.role">
+                      {{ getRoleDisplayName(user.role) }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="no-active-users" *ngIf="!loadingActiveUsers && activeUsers.length === 0">
+            <p>No hay usuarios conectados actualmente.</p>
+          </div>
+        </div>
       </div>
     </div>
   `,
@@ -130,8 +166,14 @@ export class HomeComponent implements OnInit {
 
   lastUpdate = signal(new Date());
 
+  // Información de usuarios activos
+  activeUsers: any[] = [];
+  activeUsersCount = 0;
+  loadingActiveUsers = false;
+
   ngOnInit(): void {
     this.loadDashboardStats();
+    this.loadActiveUsers();
     // Actualizar estadísticas cada 30 segundos
     setInterval(() => {
       this.loadDashboardStats();
@@ -144,21 +186,21 @@ export class HomeComponent implements OnInit {
       next: (users) => {
         this.stats.update(current => ({ ...current, totalUsers: users.length }));
       },
-      error: (error) => console.error('Error loading users:', error)
+      error: (error) => {}
     });
 
     this.apiService.getProducts().subscribe({
       next: (products) => {
         this.stats.update(current => ({ ...current, totalProducts: products.length }));
       },
-      error: (error) => console.error('Error loading products:', error)
+      error: (error) => {}
     });
 
     this.apiService.getDistributors().subscribe({
       next: (distributors) => {
         this.stats.update(current => ({ ...current, totalDistributors: distributors.length }));
       },
-      error: (error) => console.error('Error loading distributors:', error)
+      error: (error) => {}
     });
 
     // Obtener usuarios activos reales desde la base de datos
@@ -170,7 +212,6 @@ export class HomeComponent implements OnInit {
         }));
       },
       error: (error) => {
-        console.error('Error loading active users:', error);
         // Fallback a 0 si hay error
         this.stats.update(current => ({ 
           ...current, 
@@ -184,6 +225,35 @@ export class HomeComponent implements OnInit {
 
   navigateTo(route: string): void {
     this.router.navigate([route]);
+  }
+
+  loadActiveUsers(): void {
+    // Solo cargar si es admin o senior admin
+    const isAdminUser = this.isAdmin();
+    const isSeniorAdminUser = this.isSeniorAdmin();
+    
+    if (isAdminUser || isSeniorAdminUser) {
+      this.loadingActiveUsers = true;
+      this.apiService.getActiveUsersWithRoles().subscribe({
+        next: (data) => {
+          this.activeUsers = data.activeUsers || [];
+          this.activeUsersCount = data.activeUsersCount || 0;
+          this.loadingActiveUsers = false;
+        },
+        error: (error) => {
+          this.loadingActiveUsers = false;
+        }
+      });
+    }
+  }
+
+  getRoleDisplayName(role: string): string {
+    switch (role) {
+      case 'user': return 'Usuario';
+      case 'admin': return 'Administrador';
+      case 'senior_admin': return 'Admin Senior';
+      default: return role;
+    }
   }
 
   getRoleText(): string {

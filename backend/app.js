@@ -6,10 +6,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Log para debug
-console.log('🔧 Configuración del servidor:');
-console.log(`   NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
-console.log(`   PORT: ${process.env.PORT || 10000}`);
-console.log(`   DATABASE_URL: ${process.env.DATABASE_URL ? 'CONFIGURADA' : 'NO CONFIGURADA'}`);
+
 
 // Las variables de entorno se cargan automáticamente desde el sistema
 // En desarrollo local: desde config.env (manualmente)
@@ -35,8 +32,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Log de CORS para debug
-console.log('🌐 Configuración CORS:');
-console.log('   Origins permitidos:', corsOptions.origin);
+
 app.use(express.json());
 
 // Import routes
@@ -112,9 +108,6 @@ async function startServer() {
     // Iniciar el servidor
     app.listen(PORT, () => {
       console.log(`✅ Server running on port ${PORT}`);
-      console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`🗄️  Database: PostgreSQL`);
-      console.log(`🧹 Limpieza automática de sesiones configurada (cada 30 minutos)`);
     });
   } catch (error) {
     console.error('❌ Error starting server:', error);

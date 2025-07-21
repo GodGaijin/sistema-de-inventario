@@ -82,13 +82,11 @@ export class CategoriesComponent {
       } else {
         this.apiService.createCategory(categoryData).subscribe({
           next: (response: any) => {
-            console.log('Category created successfully:', response);
             this.showMessage('Categoría creada exitosamente', 'success');
             this.resetForm();
             this.loadData();
           },
           error: (error: any) => {
-            console.error('Error creating category:', error);
             const errorMessage = error.error?.message || error.message || 'Error al crear categoría';
             this.showMessage(errorMessage, 'error');
           }
@@ -130,8 +128,6 @@ export class CategoriesComponent {
 
   async downloadPDF(): Promise<void> {
     try {
-      console.log('Iniciando descarga de PDF...');
-      
       // Importación dinámica de jsPDF
       const jsPDF = (await import('jspdf')).default;
       const doc = new jsPDF();
@@ -143,8 +139,6 @@ export class CategoriesComponent {
         category.name,
         category.description
       ]);
-
-      console.log('Datos de la tabla:', tableData);
 
       // Importación dinámica de autoTable
       const autoTable = (await import('jspdf-autotable')).default;
@@ -163,7 +157,6 @@ export class CategoriesComponent {
       });
 
       doc.save('categorias.pdf');
-      console.log('PDF generado exitosamente');
       this.showMessage('PDF descargado exitosamente', 'success');
     } catch (error: any) {
       console.error('Error al generar PDF:', error);

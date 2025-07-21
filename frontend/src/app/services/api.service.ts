@@ -117,8 +117,6 @@ export class ApiService {
   }
 
   getActiveUsersWithRoles(): Observable<any> {
-    console.log('🌐 API Service: Calling getActiveUsersWithRoles');
-    console.log('🌐 API URL:', `${this.apiUrl}/auth/active-users-with-roles`);
     return this.http.get(`${this.apiUrl}/auth/active-users-with-roles`, { headers: this.getHeaders() });
   }
 } 

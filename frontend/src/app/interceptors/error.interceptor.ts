@@ -8,12 +8,11 @@ export const ErrorInterceptor: HttpInterceptorFn = (request, next) => {
       
       // Manejar errores específicos
       if (error.status === 401) {
-        console.log('Unauthorized - redirecting to login');
         // Aquí podrías redirigir al login si es necesario
       } else if (error.status === 403) {
-        console.log('Forbidden - insufficient permissions');
+        // Manejar permisos insuficientes
       } else if (error.status === 500) {
-        console.log('Server error - check backend logs');
+        // Error del servidor
       }
       
       // Retornar el error para que el componente lo maneje

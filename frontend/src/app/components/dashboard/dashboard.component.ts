@@ -30,6 +30,9 @@ export class DashboardComponent implements OnInit {
   loadingActiveUsers = false;
 
   ngOnInit(): void {
+    console.log('🚀 Dashboard component initialized');
+    console.log('👤 Current user:', this.currentUser());
+    console.log('🔑 User role:', this.currentUser()?.role);
     this.loadActiveUsers();
   }
 
@@ -44,19 +47,31 @@ export class DashboardComponent implements OnInit {
 
   loadActiveUsers(): void {
     // Solo cargar si es admin o senior admin
-    if (this.isAdmin() || this.isSeniorAdmin()) {
+    const isAdminUser = this.isAdmin();
+    const isSeniorAdminUser = this.isSeniorAdmin();
+    
+    console.log('🔍 Verificando roles para cargar usuarios activos:');
+    console.log('isAdmin:', isAdminUser);
+    console.log('isSeniorAdmin:', isSeniorAdminUser);
+    
+    if (isAdminUser || isSeniorAdminUser) {
+      console.log('✅ Cargando usuarios activos...');
       this.loadingActiveUsers = true;
       this.apiService.getActiveUsersWithRoles().subscribe({
         next: (data) => {
+          console.log('📊 Datos de usuarios activos recibidos:', data);
           this.activeUsers = data.activeUsers || [];
           this.activeUsersCount = data.activeUsersCount || 0;
           this.loadingActiveUsers = false;
+          console.log('✅ Usuarios activos cargados:', this.activeUsers.length);
         },
         error: (error) => {
-          console.error('Error loading active users:', error);
+          console.error('❌ Error loading active users:', error);
           this.loadingActiveUsers = false;
         }
       });
+    } else {
+      console.log('❌ Usuario no tiene permisos para ver usuarios activos');
     }
   }
 

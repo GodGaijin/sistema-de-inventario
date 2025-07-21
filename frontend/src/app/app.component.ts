@@ -32,15 +32,10 @@ export class AppComponent implements OnInit {
   ) {}
 
   isAuthenticated() {
-    const authenticated = this.stateService.isAuthenticated();
-    console.log('🔍 AppComponent - isAuthenticated:', authenticated);
-    console.log('🔍 AppComponent - currentUser:', this.stateService.currentUser());
-    return authenticated;
+    return this.stateService.isAuthenticated();
   }
 
   ngOnInit() {
-    // Log para debugging - Angular manejará las rutas directamente
-    console.log('🚀 App initialized - Angular Router will handle all routes');
     // El SessionService se inicializa automáticamente en su constructor
   }
 } 

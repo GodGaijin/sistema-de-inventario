@@ -59,7 +59,7 @@ export class AuthService {
         localStorage.setItem('accessToken', response.accessToken);
         localStorage.setItem('refreshToken', response.refreshToken);
         this.currentUserSubject.next(response.user);
-        this.stateService.setUser(response.user);
+        this.stateService.syncWithAuthService(response.user);
         this.stateService.addNotification({
           message: `Bienvenido, ${response.user.username}!`,
           type: 'success'
@@ -131,7 +131,7 @@ export class AuthService {
           localStorage.setItem('accessToken', response.accessToken);
           localStorage.setItem('refreshToken', response.refreshToken);
           this.currentUserSubject.next(response.user);
-          this.stateService.setUser(response.user);
+          this.stateService.syncWithAuthService(response.user);
         }
         return response;
       })

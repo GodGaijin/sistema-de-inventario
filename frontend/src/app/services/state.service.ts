@@ -60,15 +60,12 @@ export class StateService {
 
   // Métodos para manejar el usuario
   setUser(user: User | null): void {
-    console.log('🔍 StateService - setUser called with:', user);
     this._user.set(user);
     if (user) {
       localStorage.setItem('currentUser', JSON.stringify(user));
     } else {
       localStorage.removeItem('currentUser');
     }
-    console.log('🔍 StateService - _user signal updated:', this._user());
-    console.log('🔍 StateService - isAuthenticated computed:', this.isAuthenticated());
   }
 
   clearUser(): void {
@@ -124,27 +121,22 @@ export class StateService {
 
   private loadUserFromStorage(): void {
     const storedUser = localStorage.getItem('currentUser');
-    console.log('🔍 StateService - loadUserFromStorage, storedUser:', storedUser);
     if (storedUser) {
       try {
         const user = JSON.parse(storedUser);
-        console.log('🔍 StateService - parsed user:', user);
         this._user.set(user);
-        console.log('🔍 StateService - user loaded, isAuthenticated:', this.isAuthenticated());
       } catch (error) {
         console.error('Error loading user from storage:', error);
         localStorage.removeItem('currentUser');
       }
-    } else {
-      console.log('🔍 StateService - no stored user found');
     }
   }
 
   // Método para sincronizar con AuthService (llamado externamente)
   public syncWithAuthService(authUser: User | null): void {
     if (authUser && !this._user()) {
-      console.log('🔍 StateService - syncing with AuthService user:', authUser);
       this._user.set(authUser);
+      localStorage.setItem('currentUser', JSON.stringify(authUser));
     }
   }
 
@@ -165,12 +157,11 @@ export class StateService {
               email: payload.email || '',
               role: payload.role
             };
-            console.log('🔍 StateService - creating user from token:', user);
             this._user.set(user);
+            localStorage.setItem('currentUser', JSON.stringify(user));
           }
         } else {
           // Token expirado, limpiar
-          console.log('🔍 StateService - token expired, clearing user');
           this._user.set(null);
         }
       } catch (error) {

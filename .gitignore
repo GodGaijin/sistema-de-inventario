@@ -1,64 +1,66 @@
-# Dependencies
+# ========================================
+# DEPENDENCIAS Y MÓDULOS
+# ========================================
 node_modules/
 */node_modules/
 
-# Build outputs
+# ========================================
+# ARCHIVOS DE CONSTRUCCIÓN
+# ========================================
 frontend/dist/
 frontend/.angular/
 frontend/out-tsc/
+*.tsbuildinfo
 
-# Environment files
+# ========================================
+# ARCHIVOS DE ENTORNO
+# ========================================
+.env
+.env.local
+.env.development
+.env.test
+.env.production
 backend/config.env
 backend/.env
-.env
+backend/.env_template
 
-# Database files (PostgreSQL only - no local files needed)
-backend/db/
-
-# Logs
+# ========================================
+# ARCHIVOS DE LOGS
+# ========================================
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
+logs/
 
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage/
-
-# nyc test coverage
-.nyc_output
-
-# Dependency directories
-jspm_packages/
-
-# Optional npm cache directory
+# ========================================
+# ARCHIVOS DE CACHÉ
+# ========================================
+.cache/
+.parcel-cache/
 .npm
+.eslintcache
+.angular/cache/
+.angular/workspace-data/
+.angular/analytics/
 
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity
-
-# dotenv environment variables file
-.env
-
-# IDE files
-.vscode/
-.idea/
+# ========================================
+# ARCHIVOS TEMPORALES
+# ========================================
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*~
 *.swp
 *.swo
-*~
+.#*
 
-# OS generated files
+# ========================================
+# ARCHIVOS DE SISTEMA
+# ========================================
 .DS_Store
 .DS_Store?
 ._*
@@ -66,274 +68,89 @@ jspm_packages/
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-# Temporary files
-*.tmp
-*.temp
-
-# ========================================
-# ARCHIVOS DE PRUEBA Y DESARROLLO
-# ========================================
-
-# Backend test files
-backend/test-*.js
-backend/verify-*.js
-backend/debug-*.js
-backend/check-*.js
-backend/cleanup-*.js
-backend/fix-*.js
-backend/get-*.js
-backend/simple-test.js
-backend/CONFIGURACION.md
-backend/.env_template
-
-# Frontend test files
-frontend/test-*.js
-frontend/verify-*.js
-frontend/debug-*.js
-frontend/check-*.js
-frontend/final-*.js
-frontend/spa-configuration.js
-frontend/explain-*.js
-frontend/summary-*.js
-frontend/summary-changes.md
-frontend/new-*.md
-frontend/reset-password-*.md
-frontend/render-*.md
-frontend/render-*.js
-frontend/final-spa-summary.md
-
-# Root level test and development files
-setup-render.js
-NUEVO_SISTEMA_TOKENS.md
-RESUMEN_IMPLEMENTACION_TOKENS.md
-VALIDACION_EMAIL_PROBLEMA.md
-SOLUCION_REGISTRO_USUARIOS.md
-CORRECCIONES_CRUD_AUDITORIAS.md
-SOLUCION_COMPLETA.md
-CHANGES_SUMMARY.md
-TROUBLESHOOTING.md
-POSTGRESQL_SETUP.md
-NUEVO_DISEÑO_DASHBOARD.md
+desktop.ini
+$RECYCLE.BIN/
+.AppleDouble
+.LSOverride
+Icon?
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
 
 # ========================================
-# ARCHIVOS DE CONFIGURACIÓN TEMPORAL
+# ARCHIVOS DE IDE
 # ========================================
-
-# Render configuration files (keep only the main one)
-render.yaml
-!render.yaml
-
-# ========================================
-# ARCHIVOS DE DESARROLLO ESPECÍFICOS
-# ========================================
-
-# Package lock files (optional - some teams prefer to commit them)
-# package-lock.json
-# */package-lock.json
-
-# Angular specific
-frontend/.angular/
-frontend/dist/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
 # ========================================
-# ARCHIVOS ESPECÍFICOS ADICIONALES
+# ARCHIVOS DE BASE DE DATOS
 # ========================================
-
-# Test and development scripts
-**/test-*
-**/verify-*
-**/debug-*
-**/check-*
-**/setup-*
-**/final-*
-**/summary-*
-**/new-*
-**/reset-password-*
-**/render-*
-**/spa-*
-**/explain-*
-**/cleanup-*
-**/fix-*
-**/get-*
-**/simple-*
+backend/db/
+*.sqlite
+*.db
 
 # ========================================
-# ARCHIVOS ADICIONALES NUEVOS
+# ARCHIVOS DE LOCK
 # ========================================
-
-# Angular build artifacts
-frontend/.angular/cache/
-frontend/.angular/workspace-data/
-frontend/.angular/analytics/
-
-# TypeScript compilation
-*.tsbuildinfo
-
-# Angular CLI
-.angular-cli.json
-angular-cli.json
-
-# IDE specific files
-.vscode/settings.json
-.vscode/launch.json
-.vscode/tasks.json
-.idea/workspace.xml
-.idea/tasks.xml
-
-# OS specific
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# Backup files
-*.bak
-*.backup
-*.old
-
-# Lock files (optional)
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
-# Environment files
-.env.local
-.env.development
-.env.test
-.env.production
-
-# Log files
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-
-# Runtime data
-pids/
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
+# ========================================
+# ARCHIVOS DE COBERTURA Y TESTING
+# ========================================
 coverage/
 *.lcov
-
-# nyc test coverage
 .nyc_output
 
-# Dependency directories
-node_modules/
-jspm_packages/
-
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity
-
-# parcel-bundler cache (https://parceljs.org/)
-.cache
-.parcel-cache
-
-# next.js build output
-.next
-
-# nuxt.js build output
-.nuxt
-
-# vuepress build output
-.vuepress/dist
-
-# Serverless directories
-.serverless/
-
-# FuseBox cache
-.fusebox/
-
-# DynamoDB Local files
-.dynamodb/
-
-# TernJS port file
-.tern-port 
-
 # ========================================
-# ARCHIVOS CREADOS EN ESTA SESIÓN
+# ARCHIVOS DE DESARROLLO ESPECÍFICOS
 # ========================================
+# Scripts de prueba (todos los archivos test-*.js)
+**/test-*.js
+**/debug-*.js
+**/verify-*.js
+**/check-*.js
+**/setup-*.js
+**/final-*.js
+**/summary-*.js
+**/new-*.js
+**/reset-password-*.js
+**/render-*.js
+**/spa-*.js
+**/explain-*.js
+**/cleanup-*.js
+**/fix-*.js
+**/get-*.js
+**/simple-*.js
 
-# Scripts de prueba del sistema de usuarios activos
-test-active-users-system.js
-test-new-dashboard-features.js
-test-fixes-verification.js
-test-post-deployment-fixes.js
-test-sidebar-visibility.js
-test-sidebar-authentication.js
-test-token-refresh-system.js
-debug-token-comparison.js
-test-frontend-refresh-system.js
-run-post-deployment-tests.bat
-
-# Documentación de implementación
-SISTEMA_USUARIOS_ACTIVOS_IMPLEMENTADO.md
-RESUMEN_FINAL_IMPLEMENTACION.md
-CORRECCIONES_IMPLEMENTADAS.md
-GUIA_PRUEBAS_POST_DEPLOYMENT.md
-DEPLOYMENT.md
-
-# Scripts de prueba adicionales
-run-post-deployment-tests.bat
+# Archivos de documentación de desarrollo
+**/*.md
+!README.md
+!POSTGRESQL_SETUP.md
 
 # Archivos de configuración temporal
-GITIGNORE_UPDATE.md
+**/render.yaml
+!render.yaml
+
+# Archivos batch
+*.bat
 
 # ========================================
-# ARCHIVOS DE DESARROLLO ADICIONALES
+# ARCHIVOS ESPECÍFICOS DE ANGULAR
 # ========================================
+.angular-cli.json
+angular-cli.json
 
-# Archivos de configuración de desarrollo
-*.local
-*.dev
-*.test
-
-# Archivos de respaldo temporales
-*~
-*.swp
-*.swo
-.#*
-
-# Archivos de caché de desarrollo
-.cache/
-.temp/
-.tmp/
-
-# Archivos de configuración de IDE específicos
-.vscode/extensions.json
-.vscode/snippets/
-.idea/libraries/
-.idea/modules/
-
-# Archivos de sistema Windows
-desktop.ini
-$RECYCLE.BIN/
-
-# Archivos de macOS
-.AppleDouble
-.LSOverride
-Icon?
-
-# Archivos de Linux
-*~
-.fuse_hidden*
-.directory
-.Trash-*
-.nfs* 
+# ========================================
+# ARCHIVOS DE SERVIDOR
+# ========================================
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port 

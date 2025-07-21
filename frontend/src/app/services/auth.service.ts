@@ -93,14 +93,31 @@ export class AuthService {
   logout(): void {
     // Marcar que es un logout manual para evitar mensajes de sesión inválida
     localStorage.setItem('manualLogout', 'true');
+    
+    // Llamar al backend para invalidar la sesión
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (refreshToken) {
+      this.http.post(`${this.apiUrl}/api/auth/logout`, { refreshToken }).subscribe({
+        next: () => {
+          console.log('✅ Sesión invalidada en el servidor');
+        },
+        error: (error) => {
+          console.error('❌ Error al invalidar sesión:', error);
+        }
+      });
+    }
+    
+    // Limpiar datos locales
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
     this.stateService.clearUser();
     this.stateService.addNotification({
       message: 'Sesión cerrada exitosamente',
       type: 'info'
     });
+    
     // Limpiar la bandera después de un breve delay
     setTimeout(() => {
       localStorage.removeItem('manualLogout');

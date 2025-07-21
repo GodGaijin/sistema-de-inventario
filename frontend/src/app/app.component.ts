@@ -13,10 +13,6 @@ import { SidebarService } from './services/sidebar.service';
   imports: [RouterOutlet, CommonModule, NotificationsComponent, SidebarComponent],
   template: `
     <div class="app-container" [class.authenticated]="isAuthenticated()" [class.sidebar-collapsed]="sidebarService.isCollapsed()">
-      <!-- Debug info -->
-      <div style="position: fixed; top: 10px; right: 10px; background: red; color: white; padding: 10px; z-index: 10000;">
-        Auth: {{ isAuthenticated() }} | User: {{ stateService.currentUser()?.username }}
-      </div>
       <app-sidebar *ngIf="isAuthenticated()"></app-sidebar>
       <main class="main-content" [class.with-sidebar]="isAuthenticated()">
         <router-outlet></router-outlet>
@@ -37,10 +33,7 @@ export class AppComponent implements OnInit {
   ) {}
 
   isAuthenticated() {
-    const authenticated = this.stateService.isAuthenticated();
-    console.log('🔍 AppComponent - isAuthenticated:', authenticated);
-    console.log('🔍 AppComponent - currentUser:', this.stateService.currentUser());
-    return authenticated;
+    return this.stateService.isAuthenticated();
   }
 
   ngOnInit() {

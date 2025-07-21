@@ -30,6 +30,10 @@ export class DashboardComponent implements OnInit {
   loadingActiveUsers = false;
 
   ngOnInit(): void {
+    console.log('Dashboard initialized');
+    console.log('Current user:', this.currentUser());
+    console.log('Is admin:', this.isAdmin());
+    console.log('Is senior admin:', this.isSeniorAdmin());
     this.loadActiveUsers();
   }
 
@@ -43,24 +47,21 @@ export class DashboardComponent implements OnInit {
   }
 
   loadActiveUsers(): void {
-    // Solo cargar si es admin o senior admin
-    const isAdminUser = this.isAdmin();
-    const isSeniorAdminUser = this.isSeniorAdmin();
-    
-    if (isAdminUser || isSeniorAdminUser) {
-      this.loadingActiveUsers = true;
-      this.apiService.getActiveUsersWithRoles().subscribe({
-        next: (data) => {
-          this.activeUsers = data.activeUsers || [];
-          this.activeUsersCount = data.activeUsersCount || 0;
-          this.loadingActiveUsers = false;
-        },
-        error: (error) => {
-          console.error('Error loading active users:', error);
-          this.loadingActiveUsers = false;
-        }
-      });
-    }
+    console.log('Loading active users...');
+    this.loadingActiveUsers = true;
+    this.apiService.getActiveUsersWithRoles().subscribe({
+      next: (data) => {
+        console.log('Active users data:', data);
+        this.activeUsers = data.activeUsers || [];
+        this.activeUsersCount = data.activeUsersCount || 0;
+        this.loadingActiveUsers = false;
+        console.log('Active users loaded:', this.activeUsers.length);
+      },
+      error: (error) => {
+        console.error('Error loading active users:', error);
+        this.loadingActiveUsers = false;
+      }
+    });
   }
 
   getRoleDisplayName(role: string): string {

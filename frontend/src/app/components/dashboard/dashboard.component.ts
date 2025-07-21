@@ -51,11 +51,24 @@ export class DashboardComponent implements OnInit {
     this.loadingActiveUsers = true;
     this.apiService.getActiveUsersWithRoles().subscribe({
       next: (data) => {
-        console.log('Active users data:', data);
+        console.log('Active users data received:', data);
+        console.log('Data type:', typeof data);
+        console.log('Data keys:', Object.keys(data));
+        
         this.activeUsers = data.activeUsers || [];
         this.activeUsersCount = data.activeUsersCount || 0;
         this.loadingActiveUsers = false;
-        console.log('Active users loaded:', this.activeUsers.length);
+        
+        console.log('Active users array:', this.activeUsers);
+        console.log('Active users length:', this.activeUsers.length);
+        console.log('Active users count:', this.activeUsersCount);
+        console.log('Loading state:', this.loadingActiveUsers);
+        
+        // Verificar estructura de cada usuario
+        if (this.activeUsers.length > 0) {
+          console.log('First user structure:', this.activeUsers[0]);
+          console.log('First user keys:', Object.keys(this.activeUsers[0]));
+        }
       },
       error: (error) => {
         console.error('Error loading active users:', error);

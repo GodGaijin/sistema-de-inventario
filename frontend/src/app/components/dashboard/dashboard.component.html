@@ -22,6 +22,7 @@
       
       <!-- Tabla de Usuarios Conectados -->
       <div class="active-users-table" *ngIf="!loadingActiveUsers && activeUsers.length > 0">
+        <p>DEBUG: Mostrando tabla con {{ activeUsers.length }} usuarios</p>
         <table>
           <thead>
             <tr>
@@ -30,7 +31,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let user of activeUsers">
+            <tr *ngFor="let user of activeUsers; let i = index">
               <td>{{ user.username }}</td>
               <td>
                 <span class="role-badge" [ngClass]="user.role">
@@ -40,6 +41,15 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      
+      <!-- Debug info -->
+      <div class="debug-info" style="margin-top: 10px; padding: 10px; background: #f0f0f0; border-radius: 5px;">
+        <p><strong>DEBUG INFO:</strong></p>
+        <p>loadingActiveUsers: {{ loadingActiveUsers }}</p>
+        <p>activeUsers.length: {{ activeUsers.length }}</p>
+        <p>activeUsersCount: {{ activeUsersCount }}</p>
+        <p>activeUsers data: {{ activeUsers | json }}</p>
       </div>
       
       <div class="no-active-users" *ngIf="!loadingActiveUsers && activeUsers.length === 0">

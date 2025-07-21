@@ -115,18 +115,18 @@ const getActiveUsers = async () => {
 const getActiveUsersWithRoles = async () => {
   try {
     const result = await db.query(`
-      SELECT DISTINCT ON (as.user_id) 
-        as.user_id, 
-        as.username, 
-        as.last_activity, 
-        as.ip_address, 
-        as.user_agent,
-        as.created_at,
-        u.role,
-        u.email
-      FROM active_sessions as
-      LEFT JOIN users u ON as.user_id = u.id
-      ORDER BY as.user_id, as.last_activity DESC
+      SELECT DISTINCT ON (s.user_id) 
+        s.user_id, 
+        s.username, 
+        s.last_activity, 
+        s.ip_address, 
+        s.user_agent,
+        s.created_at,
+        COALESCE(u.role, 'user') as role,
+        COALESCE(u.email, '') as email
+      FROM active_sessions s
+      LEFT JOIN users u ON s.user_id = u.id
+      ORDER BY s.user_id, s.last_activity DESC
     `);
     return result.rows || result;
   } catch (error) {

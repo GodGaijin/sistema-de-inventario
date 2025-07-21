@@ -11,14 +11,17 @@ import { SessionConfirmationService } from '../../services/session-confirmation.
       <div class="session-confirmation-modal">
         <div class="modal-header">
           <h3>🕐 Sesión por Expirar</h3>
+          <div class="timer">
+            <span class="timer-text">Tiempo restante:</span>
+            <span class="timer-countdown" [class.warning]="confirmation.timeLeft <= 10">
+              {{ confirmation.timeLeft }}s
+            </span>
+          </div>
         </div>
         <div class="modal-body">
           <p>{{ confirmation.message }}</p>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-secondary" (click)="confirmation.onCancel()">
-            Cerrar Sesión
-          </button>
           <button class="btn btn-primary" (click)="confirmation.onConfirm()">
             Continuar
           </button>
@@ -67,9 +70,41 @@ import { SessionConfirmationService } from '../../services/session-confirmation.
     }
 
     .modal-header h3 {
-      margin: 0;
+      margin: 0 0 12px 0;
       color: #333;
       font-size: 1.2rem;
+    }
+
+    .timer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .timer-text {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .timer-countdown {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #007bff;
+      min-width: 30px;
+      text-align: center;
+    }
+
+    .timer-countdown.warning {
+      color: #dc3545;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
     }
 
     .modal-body {

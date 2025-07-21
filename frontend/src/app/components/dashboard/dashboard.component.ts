@@ -30,11 +30,17 @@ export class DashboardComponent implements OnInit {
   loadingActiveUsers = false;
 
   ngOnInit(): void {
-    console.log('Dashboard initialized');
-    console.log('Current user:', this.currentUser());
-    console.log('Is admin:', this.isAdmin());
-    console.log('Is senior admin:', this.isSeniorAdmin());
-    this.loadActiveUsers();
+    console.log('🚀 Dashboard ngOnInit called');
+    console.log('👤 Current user:', this.currentUser());
+    console.log('🔑 User role:', this.currentUser()?.role);
+    console.log('👑 Is admin:', this.isAdmin());
+    console.log('👑 Is senior admin:', this.isSeniorAdmin());
+    
+    // Verificar si el componente se está inicializando
+    setTimeout(() => {
+      console.log('⏰ Timeout executed - calling loadActiveUsers');
+      this.loadActiveUsers();
+    }, 1000);
   }
 
   logout(): void {
@@ -47,7 +53,8 @@ export class DashboardComponent implements OnInit {
   }
 
   loadActiveUsers(): void {
-    console.log('Loading active users...');
+    console.log('📞 loadActiveUsers method called');
+    console.log('🔍 About to call API service...');
     this.loadingActiveUsers = true;
     this.apiService.getActiveUsersWithRoles().subscribe({
       next: (data) => {

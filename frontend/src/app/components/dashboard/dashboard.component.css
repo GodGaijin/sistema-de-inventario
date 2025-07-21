@@ -140,4 +140,129 @@
     flex-direction: column;
     gap: 0.5rem;
   }
+}
+
+/* Información del Sistema */
+.system-info {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border-left: 4px solid #667eea;
+}
+
+.system-info h2 {
+  color: #333;
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.active-users-section h3 {
+  color: #555;
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+  font-style: italic;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.active-users-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.user-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-left: 3px solid #667eea;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+}
+
+.user-role {
+  font-size: 0.85rem;
+  color: #666;
+  background: #e9ecef;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.user-activity {
+  text-align: right;
+}
+
+.activity-time {
+  font-size: 0.8rem;
+  color: #888;
+  font-style: italic;
+}
+
+.no-active-users {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
+  background: white;
+  border-radius: 8px;
+  border: 2px dashed #ddd;
+}
+
+.no-active-users p {
+  margin: 0;
+}
+
+/* Responsive para información del sistema */
+@media (max-width: 768px) {
+  .system-info {
+    margin: 1rem 0;
+    padding: 1rem;
+  }
+  
+  .user-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .user-activity {
+    text-align: left;
+  }
 } 

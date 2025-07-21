@@ -484,4 +484,77 @@ exports.updateUserRole = async (req, res) => {
     console.error('Error updating user role:', error);
     res.status(500).json({ message: 'Error interno del servidor.' });
   }
+};
+
+// Función para eliminar usuario (solo admin senior)
+exports.deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    // Verificar que el usuario sea admin senior
+    if (req.user.role !== 'senior_admin') {
+      return res.status(403).json({ message: 'Acceso denegado. Solo administradores senior pueden eliminar usuarios.' });
+    }
+    
+    if (!userId) {
+      return res.status(400).json({ message: 'ID de usuario requerido.' });
+    }
+    
+    // Verificar que no se esté eliminando a sí mismo
+    if (parseInt(userId) === req.user.id) {
+      return res.status(400).json({ message: 'No puedes eliminar tu propia cuenta.' });
+    }
+    
+    // Verificar que el usuario a eliminar existe y obtener su información
+    const userToDelete = await userModel.getUserById(userId);
+    if (!userToDelete) {
+      return res.status(404).json({ message: 'Usuario no encontrado.' });
+    }
+    
+    // Verificar que no se esté eliminando a otro admin senior
+    if (userToDelete.role === 'senior_admin') {
+      return res.status(400).json({ message: 'No se pueden eliminar cuentas de administradores senior.' });
+    }
+    
+    // Eliminar sesiones activas del usuario
+    await sessionModel.removeSession(parseInt(userId));
+    
+    // Eliminar el usuario
+    const deleted = await userModel.deleteUser(userId);
+    
+    if (!deleted) {
+      return res.status(404).json({ message: 'Usuario no encontrado.' });
+    }
+    
+    res.json({ message: 'Usuario eliminado exitosamente.' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// Función mejorada para obtener usuarios activos con roles
+exports.getActiveUsersWithRoles = async (req, res) => {
+  try {
+    // Verificar que el usuario esté autenticado
+    if (!req.user) {
+      return res.status(401).json({ message: 'No autorizado.' });
+    }
+    
+    // Solo admin y senior admin pueden ver usuarios activos
+    if (req.user.role !== 'admin' && req.user.role !== 'senior_admin') {
+      return res.status(403).json({ message: 'Acceso denegado. Solo administradores pueden ver esta información.' });
+    }
+    
+    // Obtener usuarios activos con información de roles
+    const activeUsers = await sessionModel.getActiveUsersWithRoles();
+    
+    res.json({
+      activeUsersCount: activeUsers.length,
+      activeUsers
+    });
+  } catch (error) {
+    console.error('Error getting active users with roles:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
 }; 

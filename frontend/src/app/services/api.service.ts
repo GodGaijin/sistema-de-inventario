@@ -42,6 +42,10 @@ export class ApiService {
     );
   }
 
+  deleteUser(userId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/auth/users/${userId}`, { headers: this.getHeaders() });
+  }
+
   // Products
   getProducts(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/products`, { headers: this.getHeaders() });
@@ -110,5 +114,9 @@ export class ApiService {
   // Active Users Statistics
   getActiveUsersStats(): Observable<any> {
     return this.http.get(`${this.apiUrl}/auth/active-users-stats`, { headers: this.getHeaders() });
+  }
+
+  getActiveUsersWithRoles(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/auth/active-users-with-roles`, { headers: this.getHeaders() });
   }
 } 

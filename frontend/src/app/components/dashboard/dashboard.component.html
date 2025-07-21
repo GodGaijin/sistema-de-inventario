@@ -7,6 +7,37 @@
     </div>
   </div>
 
+  <!-- Información del Sistema -->
+  <div class="system-info" *ngIf="isAdmin() || isSeniorAdmin()">
+    <h2>Información del Sistema</h2>
+    
+    <!-- Usuarios Conectados -->
+    <div class="active-users-section">
+      <h3>Usuarios Conectados ({{ activeUsersCount }})</h3>
+      
+      <div class="loading-spinner" *ngIf="loadingActiveUsers">
+        <div class="spinner"></div>
+        <span>Cargando usuarios activos...</span>
+      </div>
+      
+      <div class="active-users-list" *ngIf="!loadingActiveUsers && activeUsers.length > 0">
+        <div class="user-card" *ngFor="let user of activeUsers">
+          <div class="user-info">
+            <div class="user-name">{{ user.username }}</div>
+            <div class="user-role">{{ getRoleDisplayName(user.role) }}</div>
+          </div>
+          <div class="user-activity">
+            <span class="activity-time">{{ formatLastActivity(user.last_activity) }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="no-active-users" *ngIf="!loadingActiveUsers && activeUsers.length === 0">
+        <p>No hay usuarios conectados actualmente.</p>
+      </div>
+    </div>
+  </div>
+
 
 
   <div class="menu-grid">

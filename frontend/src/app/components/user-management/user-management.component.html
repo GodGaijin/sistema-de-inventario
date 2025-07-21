@@ -43,6 +43,7 @@
           <th>Email</th>
           <th>Rol Actual</th>
           <th>Acciones</th>
+          <th>Eliminar</th>
         </tr>
       </thead>
       <tbody>
@@ -67,6 +68,18 @@
             </div>
             <span class="no-actions" *ngIf="!canChangeRole(user)">
               No editable
+            </span>
+          </td>
+          <td>
+            <button 
+              *ngIf="canDeleteUser(user)"
+              (click)="deleteUser(user.id, user.username)"
+              class="btn-delete"
+              title="Eliminar usuario">
+              🗑️
+            </button>
+            <span class="no-delete" *ngIf="!canDeleteUser(user)">
+              -
             </span>
           </td>
         </tr>
@@ -114,11 +127,11 @@
     <ul>
       <li><strong>Usuario:</strong> Acceso básico al sistema</li>
       <li><strong>Administrador:</strong> Puede crear, editar y eliminar datos</li>
-      <li><strong>Admin Senior:</strong> Puede gestionar roles de usuarios</li>
+      <li><strong>Admin Senior:</strong> Puede gestionar roles y eliminar usuarios</li>
     </ul>
     <p class="note">
-      <strong>Nota:</strong> Solo los administradores senior pueden cambiar roles. 
-      Los roles de admin senior no se pueden modificar.
+      <strong>Nota:</strong> Solo los administradores senior pueden cambiar roles y eliminar usuarios. 
+      Los roles de admin senior no se pueden modificar ni eliminar.
     </p>
   </div>
 </div> 

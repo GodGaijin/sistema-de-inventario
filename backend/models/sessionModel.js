@@ -111,6 +111,30 @@ const getActiveUsers = async () => {
   }
 };
 
+// Obtener usuarios activos con información de roles
+const getActiveUsersWithRoles = async () => {
+  try {
+    const result = await db.query(`
+      SELECT DISTINCT ON (as.user_id) 
+        as.user_id, 
+        as.username, 
+        as.last_activity, 
+        as.ip_address, 
+        as.user_agent,
+        as.created_at,
+        u.role,
+        u.email
+      FROM active_sessions as
+      LEFT JOIN users u ON as.user_id = u.id
+      ORDER BY as.user_id, as.last_activity DESC
+    `);
+    return result.rows || result;
+  } catch (error) {
+    console.error('❌ Error obteniendo usuarios activos con roles:', error);
+    throw error;
+  }
+};
+
 // Contar usuarios activos
 const getActiveUsersCount = async () => {
   try {
@@ -160,6 +184,7 @@ module.exports = {
   getSessionByToken,
   getActiveSessions,
   getActiveUsers,
+  getActiveUsersWithRoles,
   getActiveUsersCount,
   cleanupInactiveSessions,
   isUserActive

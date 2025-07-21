@@ -14,8 +14,10 @@ router.post('/reset-password', authController.resetPassword);
 // Rutas protegidas para admin senior
 router.get('/users', authenticateToken, authController.getAllUsers);
 router.put('/users/:userId/role', authenticateToken, authController.updateUserRole);
+router.delete('/users/:userId', authenticateToken, authController.deleteUser);
 
-// Ruta para obtener estadísticas de usuarios activos
+// Rutas para usuarios activos
 router.get('/active-users-stats', authenticateToken, authController.getActiveUsersStats);
+router.get('/active-users-with-roles', authenticateToken, authController.getActiveUsersWithRoles);
 
 module.exports = router; 

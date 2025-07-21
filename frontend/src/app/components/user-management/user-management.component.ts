@@ -155,9 +155,29 @@ export class UserManagementComponent {
     return user.role !== 'senior_admin';
   }
 
+  canDeleteUser(user: User): boolean {
+    // Solo se puede eliminar usuarios que no sean senior_admin y que no sea el usuario actual
+    return user.role !== 'senior_admin' && !this.isCurrentUser(user);
+  }
+
   isCurrentUser(user: User): boolean {
     const currentUser = this.authService.currentUserValue;
     return currentUser?.id === user.id;
+  }
+
+  deleteUser(userId: number, username: string): void {
+    if (confirm(`¿Estás seguro de que quieres eliminar al usuario "${username}"? Esta acción no se puede deshacer.`)) {
+      this.apiService.deleteUser(userId).subscribe({
+        next: () => {
+          this.showMessage(`Usuario "${username}" eliminado exitosamente`, 'success');
+          this.loadUsers(); // Recargar la lista
+        },
+        error: (error: any) => {
+          console.error('Error deleting user:', error);
+          this.showMessage(error.error?.message || 'Error al eliminar usuario', 'error');
+        }
+      });
+    }
   }
 
   navigateToDashboard(): void {

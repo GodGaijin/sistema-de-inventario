@@ -200,6 +200,24 @@ const getAllUsers = async () => {
   }
 };
 
+const getUserById = async (userId) => {
+  try {
+    const result = await db.query('SELECT id, username, email, role FROM users WHERE id = $1', [userId]);
+    return result.rows ? result.rows[0] : result[0];
+  } catch (error) {
+    throw error;
+  }
+};
+
+const deleteUser = async (userId) => {
+  try {
+    const result = await db.run('DELETE FROM users WHERE id = $1 AND role != $2', [userId, 'senior_admin']);
+    return result.changes > 0;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   findUserByUsername,
   findUserByEmail,
@@ -213,4 +231,6 @@ module.exports = {
   generateSeniorAdminPassword,
   updateUserRole,
   getAllUsers,
+  getUserById,
+  deleteUser,
 }; 

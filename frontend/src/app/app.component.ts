@@ -30,7 +30,10 @@ export class AppComponent implements OnInit {
   ) {}
 
   isAuthenticated() {
-    return this.stateService.isAuthenticated();
+    const authenticated = this.stateService.isAuthenticated();
+    console.log('🔍 AppComponent - isAuthenticated:', authenticated);
+    console.log('🔍 AppComponent - currentUser:', this.stateService.currentUser());
+    return authenticated;
   }
 
   ngOnInit() {

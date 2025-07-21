@@ -34,11 +34,11 @@ export class ResetPasswordComponent implements OnInit {
     // Leer el código desde query params si existe
     this.route.queryParams.subscribe(params => {
       const code = params['code'];
-      console.log('🔍 Reset Password - Query Params:', params);
+      // Reset Password - Query Params
       console.log('📝 Code from params:', code);
       
       if (code) {
-        console.log('✅ Setting verification code:', code);
+        // Setting verification code
         this.resetPasswordForm.patchValue({
           verificationCode: code
         });
@@ -51,7 +51,7 @@ export class ResetPasswordComponent implements OnInit {
     const urlParams = new URLSearchParams(window.location.search);
     const urlCode = urlParams.get('code');
     if (urlCode && !this.resetPasswordForm.get('verificationCode')?.value) {
-      console.log('🔍 Found code in URL params:', urlCode);
+      // Found code in URL params
       this.resetPasswordForm.patchValue({
         verificationCode: urlCode
       });
@@ -90,7 +90,7 @@ export class ResetPasswordComponent implements OnInit {
           }, 2000);
         },
         error: (error) => {
-          console.log('🔍 Reset Password Error:', error);
+          // Reset Password Error
           
           let errorMessage = 'Error al restablecer la contraseña';
           

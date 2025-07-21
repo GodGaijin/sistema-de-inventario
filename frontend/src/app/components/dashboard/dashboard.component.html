@@ -20,16 +20,26 @@
         <span>Cargando usuarios activos...</span>
       </div>
       
-      <div class="active-users-list" *ngIf="!loadingActiveUsers && activeUsers.length > 0">
-        <div class="user-card" *ngFor="let user of activeUsers">
-          <div class="user-info">
-            <div class="user-name">{{ user.username }}</div>
-            <div class="user-role">{{ getRoleDisplayName(user.role) }}</div>
-          </div>
-          <div class="user-activity">
-            <span class="activity-time">{{ formatLastActivity(user.last_activity) }}</span>
-          </div>
-        </div>
+      <!-- Tabla de Usuarios Conectados -->
+      <div class="active-users-table" *ngIf="!loadingActiveUsers && activeUsers.length > 0">
+        <table>
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Rol</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of activeUsers">
+              <td>{{ user.username }}</td>
+              <td>
+                <span class="role-badge" [ngClass]="user.role">
+                  {{ getRoleDisplayName(user.role) }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
       
       <div class="no-active-users" *ngIf="!loadingActiveUsers && activeUsers.length === 0">

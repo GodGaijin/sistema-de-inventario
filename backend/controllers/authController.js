@@ -38,53 +38,46 @@ exports.register = async (req, res) => {
     }
     
     // Validar formato de email con regex más estricto
-    console.log('🔍 Validando email:', email);
+    // Validando email
     
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const regexTest = emailRegex.test(email);
     console.log('📧 Regex test result:', regexTest);
     
     if (!regexTest) {
-      console.log('❌ Email inválido (regex):', email);
+      // Email inválido (regex)
       return res.status(400).json({ message: 'Formato de email inválido.' });
     }
     
     // Validaciones adicionales
-    console.log('🔍 Validaciones adicionales...');
+    // Validaciones adicionales
     
     if (email.includes('..')) {
-      console.log('❌ Email con puntos consecutivos:', email);
       return res.status(400).json({ message: 'Formato de email inválido.' });
     }
     
     if (email.includes('@@')) {
-      console.log('❌ Email con doble @:', email);
       return res.status(400).json({ message: 'Formato de email inválido.' });
     }
     
     if (email.includes(' ')) {
-      console.log('❌ Email con espacios:', email);
       return res.status(400).json({ message: 'Formato de email inválido.' });
     }
     
     // Validar que no empiece o termine con punto o @
     if (email.startsWith('.')) {
-      console.log('❌ Email empezando con punto:', email);
       return res.status(400).json({ message: 'Formato de email inválido.' });
     }
     
     if (email.endsWith('.')) {
-      console.log('❌ Email terminando con punto:', email);
       return res.status(400).json({ message: 'Formato de email inválido.' });
     }
     
     if (email.startsWith('@')) {
-      console.log('❌ Email empezando con @:', email);
       return res.status(400).json({ message: 'Formato de email inválido.' });
     }
     
     if (email.endsWith('@')) {
-      console.log('❌ Email terminando con @:', email);
       return res.status(400).json({ message: 'Formato de email inválido.' });
     }
     
@@ -94,11 +87,8 @@ exports.register = async (req, res) => {
     console.log('🌐 Domain part:', domainPart);
     
     if (!domainPart.includes('.')) {
-      console.log('❌ Email sin TLD válido:', email);
       return res.status(400).json({ message: 'Formato de email inválido.' });
     }
-    
-    console.log('✅ Email válido:', email);
     
     // Validar longitud de username
     if (username.length < 3 || username.length > 50) {
@@ -129,7 +119,7 @@ exports.register = async (req, res) => {
       throw new Error('No se pudo crear el usuario');
     }
     
-    console.log('✅ Usuario registrado exitosamente con ID:', userId);
+    // Usuario registrado exitosamente
     res.status(201).json({ message: 'Usuario registrado exitosamente.' });
     
   } catch (error) {

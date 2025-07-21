@@ -99,7 +99,7 @@ export class AuthService {
     if (refreshToken) {
       this.http.post(`${this.apiUrl}/auth/logout`, { refreshToken }).subscribe({
         next: () => {
-          console.log('✅ Sesión invalidada en el servidor');
+          // Sesión invalidada en el servidor
         },
         error: (error) => {
           console.error('❌ Error al invalidar sesión:', error);

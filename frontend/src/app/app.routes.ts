@@ -26,7 +26,7 @@ export const routes: Routes = [
   { path: 'reset-password', component: ResetPasswordComponent, canActivate: [ResetPasswordGuard] },
   
   // Rutas protegidas
-  { path: 'dashboard', component: HomeComponent, canActivate: [AuthGuard] },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'products', component: ProductsComponent, canActivate: [AuthGuard] },
   { path: 'categories', component: CategoriesComponent, canActivate: [AuthGuard] },
   { path: 'distributors', component: DistributorsComponent, canActivate: [AuthGuard] },

@@ -31,7 +31,7 @@ class InventoryRequestModel {
         const query = `
             SELECT ir.*, 
                    u.username as user_name,
-                   p.nombre as product_name,
+                   p.name as product_name,
                    p.codigo_seniat as product_code,
                    p.stock as current_stock
             FROM inventory_requests ir
@@ -54,7 +54,7 @@ class InventoryRequestModel {
         const query = `
             SELECT ir.*, 
                    u.username as user_name,
-                   p.nombre as product_name,
+                   p.name as product_name,
                    p.codigo_seniat as product_code,
                    p.stock as current_stock,
                    admin.username as admin_name
@@ -77,7 +77,7 @@ class InventoryRequestModel {
     static async getRequestsByUser(userId) {
         const query = `
             SELECT ir.*, 
-                   p.nombre as product_name,
+                   p.name as product_name,
                    p.codigo_seniat as product_code,
                    p.stock as current_stock,
                    u.username as admin_name
@@ -140,7 +140,7 @@ class InventoryRequestModel {
         const query = `
             SELECT ir.*, 
                    u.username as user_name,
-                   p.nombre as product_name,
+                   p.name as product_name,
                    p.codigo_seniat as product_code,
                    admin.username as admin_name
             FROM inventory_requests ir

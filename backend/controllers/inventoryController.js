@@ -438,6 +438,19 @@ const exportTransactions = async (req, res) => {
     }
 };
 
+console.log({
+  createRequest,
+  getPendingRequests,
+  getUserRequests,
+  approveRequest,
+  rejectRequest,
+  getRequestHistory,
+  getAllTransactions,
+  getUserTransactions,
+  getInventoryStats,
+  exportTransactions
+});
+
 module.exports = {
     createRequest,
     getPendingRequests,

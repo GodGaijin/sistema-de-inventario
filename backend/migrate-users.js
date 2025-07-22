@@ -5,11 +5,6 @@ async function migrateUsers() {
   try {
     console.log('🔄 Iniciando migración de usuarios...');
     
-    // Primero inicializar las tablas para crear las nuevas columnas
-    console.log('📊 Inicializando tablas de base de datos...');
-    await db.initTables();
-    console.log('✅ Tablas inicializadas correctamente');
-    
     // Verificar si las nuevas columnas existen
     const checkColumns = await db.query(`
       SELECT column_name 
@@ -18,8 +13,52 @@ async function migrateUsers() {
       AND column_name IN ('is_email_verified', 'email_verification_token', 'last_verification_email_sent')
     `);
     
+    console.log(`📊 Columnas encontradas: ${checkColumns.rows.length}`);
+    
+    // Si no existen las columnas, agregarlas con ALTER TABLE
     if (checkColumns.rows.length < 3) {
-      console.log('❌ Las nuevas columnas no existen después de la inicialización.');
+      console.log('📊 Agregando nuevas columnas a la tabla users...');
+      
+      try {
+        // Agregar columna is_email_verified
+        await db.run(`
+          ALTER TABLE users 
+          ADD COLUMN IF NOT EXISTS is_email_verified BOOLEAN DEFAULT FALSE
+        `);
+        console.log('✅ Columna is_email_verified agregada');
+        
+        // Agregar columna email_verification_token
+        await db.run(`
+          ALTER TABLE users 
+          ADD COLUMN IF NOT EXISTS email_verification_token VARCHAR(255)
+        `);
+        console.log('✅ Columna email_verification_token agregada');
+        
+        // Agregar columna last_verification_email_sent
+        await db.run(`
+          ALTER TABLE users 
+          ADD COLUMN IF NOT EXISTS last_verification_email_sent TIMESTAMP
+        `);
+        console.log('✅ Columna last_verification_email_sent agregada');
+        
+      } catch (alterError) {
+        console.error('❌ Error al agregar columnas:', alterError.message);
+        return;
+      }
+    } else {
+      console.log('✅ Las columnas ya existen');
+    }
+    
+    // Verificar nuevamente que las columnas existen
+    const finalCheck = await db.query(`
+      SELECT column_name 
+      FROM information_schema.columns 
+      WHERE table_name = 'users' 
+      AND column_name IN ('is_email_verified', 'email_verification_token', 'last_verification_email_sent')
+    `);
+    
+    if (finalCheck.rows.length < 3) {
+      console.log('❌ Las nuevas columnas no existen después de ALTER TABLE.');
       return;
     }
     
@@ -46,7 +85,7 @@ async function migrateUsers() {
     console.log('✅ Migración completada exitosamente');
     console.log('');
     console.log('📋 Resumen:');
-    console.log('- Tablas inicializadas con nuevas columnas');
+    console.log('- Nuevas columnas agregadas a la tabla users');
     console.log('- Admin senior marcado como verificado');
     console.log('- Usuarios existentes mantendrán su estado actual');
     console.log('- Nuevos usuarios requerirán verificación de email');

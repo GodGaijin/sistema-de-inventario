@@ -135,13 +135,12 @@ class InventoryTransactionModel {
         const query = `
             SELECT 
                 COUNT(*) as total_transactions,
-                COUNT(CASE WHEN ir.status = 'approved' THEN 1 END) as approved_transactions,
-                COUNT(CASE WHEN ir.status = 'rejected' THEN 1 END) as rejected_transactions,
+                COUNT(CASE WHEN it.request_status = 'approved' THEN 1 END) as approved_transactions,
+                COUNT(CASE WHEN it.request_status = 'rejected' THEN 1 END) as rejected_transactions,
                 SUM(CASE WHEN it.entradas > 0 THEN it.entradas ELSE 0 END) as total_entradas,
                 SUM(CASE WHEN it.salidas > 0 THEN it.salidas ELSE 0 END) as total_salidas,
                 SUM(CASE WHEN it.auto_consumo > 0 THEN it.auto_consumo ELSE 0 END) as total_auto_consumo
             FROM inventory_transactions it
-            LEFT JOIN inventory_requests ir ON it.request_id = ir.id
         `;
 
         try {

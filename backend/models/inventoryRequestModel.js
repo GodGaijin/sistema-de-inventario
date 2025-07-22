@@ -1,4 +1,4 @@
-const { pool } = require('./database');
+const db = require('./database');
 
 class InventoryRequestModel {
     // Crear una nueva solicitud
@@ -19,7 +19,7 @@ class InventoryRequestModel {
         ];
 
         try {
-            const result = await pool.query(query, values);
+            const result = await db.query(query, values);
             return result.rows[0];
         } catch (error) {
             throw new Error(`Error creating inventory request: ${error.message}`);
@@ -42,7 +42,7 @@ class InventoryRequestModel {
         `;
 
         try {
-            const result = await pool.query(query);
+            const result = await db.query(query);
             return result.rows;
         } catch (error) {
             throw new Error(`Error getting pending requests: ${error.message}`);
@@ -66,7 +66,7 @@ class InventoryRequestModel {
         `;
 
         try {
-            const result = await pool.query(query, [requestId]);
+            const result = await db.query(query, [requestId]);
             return result.rows[0];
         } catch (error) {
             throw new Error(`Error getting request by ID: ${error.message}`);
@@ -89,7 +89,7 @@ class InventoryRequestModel {
         `;
 
         try {
-            const result = await pool.query(query, [userId]);
+            const result = await db.query(query, [userId]);
             return result.rows;
         } catch (error) {
             throw new Error(`Error getting user requests: ${error.message}`);
@@ -108,7 +108,7 @@ class InventoryRequestModel {
         `;
 
         try {
-            const result = await pool.query(query, [adminId, requestId]);
+            const result = await db.query(query, [adminId, requestId]);
             return result.rows[0];
         } catch (error) {
             throw new Error(`Error approving request: ${error.message}`);
@@ -128,7 +128,7 @@ class InventoryRequestModel {
         `;
 
         try {
-            const result = await pool.query(query, [adminId, rejectionReason, requestId]);
+            const result = await db.query(query, [adminId, rejectionReason, requestId]);
             return result.rows[0];
         } catch (error) {
             throw new Error(`Error rejecting request: ${error.message}`);
@@ -152,7 +152,7 @@ class InventoryRequestModel {
         `;
 
         try {
-            const result = await pool.query(query);
+            const result = await db.query(query);
             return result.rows;
         } catch (error) {
             throw new Error(`Error getting request history: ${error.message}`);

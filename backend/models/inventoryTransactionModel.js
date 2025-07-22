@@ -1,4 +1,4 @@
-const { pool } = require('./database');
+const db = require('./database');
 
 class InventoryTransactionModel {
     // Crear una nueva transacción de inventario
@@ -26,7 +26,7 @@ class InventoryTransactionModel {
         ];
 
         try {
-            const result = await pool.query(query, values);
+            const result = await db.query(query, values);
             return result.rows[0];
         } catch (error) {
             throw new Error(`Error creating inventory transaction: ${error.message}`);
@@ -47,7 +47,7 @@ class InventoryTransactionModel {
         `;
 
         try {
-            const result = await pool.query(query);
+            const result = await db.query(query);
             return result.rows;
         } catch (error) {
             throw new Error(`Error getting all transactions: ${error.message}`);
@@ -67,7 +67,7 @@ class InventoryTransactionModel {
         `;
 
         try {
-            const result = await pool.query(query, [userId]);
+            const result = await db.query(query, [userId]);
             return result.rows;
         } catch (error) {
             throw new Error(`Error getting user transactions: ${error.message}`);
@@ -89,7 +89,7 @@ class InventoryTransactionModel {
         `;
 
         try {
-            const result = await pool.query(query, [productId]);
+            const result = await db.query(query, [productId]);
             return result.rows;
         } catch (error) {
             throw new Error(`Error getting product transactions: ${error.message}`);
@@ -111,7 +111,7 @@ class InventoryTransactionModel {
         `;
 
         try {
-            const result = await pool.query(query, [startDate, endDate]);
+            const result = await db.query(query, [startDate, endDate]);
             return result.rows;
         } catch (error) {
             throw new Error(`Error getting transactions by date range: ${error.message}`);
@@ -127,7 +127,7 @@ class InventoryTransactionModel {
         `;
 
         try {
-            const result = await pool.query(query);
+            const result = await db.query(query);
             const count = parseInt(result.rows[0].count) + 1;
             const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
             return `TXN-${today}-${count.toString().padStart(4, '0')}`;
@@ -151,7 +151,7 @@ class InventoryTransactionModel {
         `;
 
         try {
-            const result = await pool.query(query);
+            const result = await db.query(query);
             return result.rows[0];
         } catch (error) {
             throw new Error(`Error getting inventory stats: ${error.message}`);

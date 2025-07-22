@@ -65,7 +65,7 @@ export class InventoryComponent implements OnInit {
     { code: '061', description: 'Arrendamiento de bienes muebles' },
     { code: '071', description: 'Fletes nacionales' },
     { code: '083', description: 'Publicidad y propaganda' },
-    { code: 'otro', description: 'Otro (especificar)' }
+    { code: 'Otro', description: 'Especificar código' }
   ];
   
   requestForm: FormGroup;

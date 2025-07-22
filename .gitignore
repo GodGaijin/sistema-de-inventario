@@ -158,4 +158,4 @@ angular-cli.json
 # ========================================
 # SCRIPTS DE MIGRACIÓN Y UTILIDAD
 # ========================================
-backend/migrate-*.js 
+# backend/migrate-*.js 

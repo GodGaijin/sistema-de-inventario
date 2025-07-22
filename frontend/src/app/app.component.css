@@ -1,21 +1,39 @@
+/* ===== MOBILE-FIRST APP LAYOUT ===== */
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
 .app-container {
   display: flex;
   min-height: 100vh;
   background: #f8f9fa;
+  position: relative;
 }
 
-/* Cuando el usuario está autenticado */
-.app-container.authenticated .main-content {
-  margin-left: 280px;
+/* Main Content - Mobile First */
+.main-content {
+  flex: 1;
+  background: #f8f9fa;
+  min-height: 100vh;
+  padding: 16px;
+  box-sizing: border-box;
   transition: margin-left 0.3s ease;
+  width: 100%;
 }
 
-/* Cuando el sidebar está colapsado */
+/* When user is authenticated - Desktop */
+.app-container.authenticated .main-content {
+  margin-left: 0; /* Mobile first - no margin */
+}
+
+/* When sidebar is collapsed - Desktop */
 .app-container.authenticated.sidebar-collapsed .main-content {
-  margin-left: 70px;
+  margin-left: 0; /* Mobile first - no margin */
 }
 
-/* Cuando no hay sidebar (login, etc.) */
+/* When no sidebar (login, etc.) */
 .main-content:not(.with-sidebar) {
   margin-left: 0;
   display: flex;
@@ -24,27 +42,57 @@
   padding: 20px;
 }
 
-.main-content {
-  flex: 1;
-  background: #f8f9fa;
-  min-height: 100vh;
-  padding: 20px;
-  box-sizing: border-box;
-  transition: margin-left 0.3s ease;
+/* ===== TABLET BREAKPOINT ===== */
+@media (min-width: 768px) {
+  .main-content {
+    padding: 24px;
+  }
+  
+  /* When user is authenticated - Desktop */
+  .app-container.authenticated .main-content {
+    margin-left: 280px;
+  }
+  
+  /* When sidebar is collapsed - Desktop */
+  .app-container.authenticated.sidebar-collapsed .main-content {
+    margin-left: 70px;
+  }
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .app-container {
-    flex-direction: column;
-  }
-  
+/* ===== DESKTOP BREAKPOINT ===== */
+@media (min-width: 1024px) {
   .main-content {
-    margin-left: 0;
-    margin-top: 0;
+    padding: 32px;
   }
   
-  .sidebar.collapsed + .main-content {
-    margin-left: 0;
+  /* When user is authenticated - Desktop */
+  .app-container.authenticated .main-content {
+    margin-left: 300px;
+  }
+  
+  /* When sidebar is collapsed - Desktop */
+  .app-container.authenticated.sidebar-collapsed .main-content {
+    margin-left: 80px;
+  }
+}
+
+/* ===== LARGE DESKTOP BREAKPOINT ===== */
+@media (min-width: 1200px) {
+  .main-content {
+    padding: 40px;
+  }
+}
+
+/* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+@media (prefers-reduced-motion: reduce) {
+  .main-content {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .app-container {
+    border: 1px solid #000;
   }
 } 

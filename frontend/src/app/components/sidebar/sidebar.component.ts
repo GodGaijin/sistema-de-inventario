@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
@@ -10,10 +10,46 @@ import { SidebarService } from '../../services/sidebar.service';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="sidebar" [class.collapsed]="isCollapsed()">
+    <!-- Mobile Menu Toggle Button -->
+    <button 
+      class="mobile-menu-toggle" 
+      (click)="openMobileMenu()"
+      *ngIf="!isDesktop()"
+      [attr.aria-label]="'Abrir menú de navegación'"
+    >
+      ☰
+    </button>
+
+    <!-- Mobile Overlay -->
+    <div 
+      class="sidebar-overlay" 
+      [class.open]="isMobileMenuOpen()"
+      (click)="closeMobileMenu()"
+      *ngIf="!isDesktop()"
+    ></div>
+
+    <!-- Sidebar -->
+    <div 
+      class="sidebar" 
+      [class.collapsed]="isCollapsed() && isDesktop()"
+      [class.open]="isMobileMenuOpen()"
+    >
       <div class="sidebar-header">
         <h2>Sistema de Inventario</h2>
-        <button class="toggle-btn" (click)="toggleSidebar()">
+        <button 
+          class="close-btn" 
+          (click)="closeMobileMenu()"
+          *ngIf="!isDesktop()"
+          [attr.aria-label]="'Cerrar menú'"
+        >
+          ✕
+        </button>
+        <button 
+          class="toggle-btn" 
+          (click)="toggleSidebar()"
+          *ngIf="isDesktop()"
+          [attr.aria-label]="isCollapsed() ? 'Expandir menú' : 'Contraer menú'"
+        >
           {{ isCollapsed() ? '☰' : '✕' }}
         </button>
       </div>
@@ -98,13 +134,42 @@ export class SidebarComponent {
   
   // Estado de la barra lateral
   isCollapsed = this.sidebarService.isCollapsed;
+  isMobileMenuOpen = this.sidebarService.isMobileMenuOpen;
+
+  // Detectar si es desktop
+  private isDesktopView = window.innerWidth >= 768;
+
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.isDesktopView = window.innerWidth >= 768;
+    // Cerrar menú móvil si cambia a desktop
+    if (this.isDesktopView && this.isMobileMenuOpen()) {
+      this.closeMobileMenu();
+    }
+  }
+
+  isDesktop(): boolean {
+    return this.isDesktopView;
+  }
 
   toggleSidebar(): void {
     this.sidebarService.toggleSidebar();
   }
 
+  openMobileMenu(): void {
+    this.sidebarService.openMobileMenu();
+  }
+
+  closeMobileMenu(): void {
+    this.sidebarService.closeMobileMenu();
+  }
+
   navigateTo(route: string): void {
     this.router.navigate([route]);
+    // Cerrar menú móvil después de navegar
+    if (!this.isDesktop()) {
+      this.closeMobileMenu();
+    }
   }
 
   isActive(route: string): boolean {
@@ -114,6 +179,10 @@ export class SidebarComponent {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+    // Cerrar menú móvil al cerrar sesión
+    if (!this.isDesktop()) {
+      this.closeMobileMenu();
+    }
   }
 
   getRoleText(): string {

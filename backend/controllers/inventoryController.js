@@ -183,7 +183,9 @@ const approveRequest = async (req, res) => {
             auto_consumo: request.transaction_type === 'auto_consumo' ? request.quantity : 0,
             inventario_final: newStock,
             request_id: requestId,
-            user_id: request.user_id
+            user_id: request.user_id,
+            request_status: 'approved',
+            rejection_reason: null
         };
 
         const transaction = await InventoryTransactionModel.create(transactionData);
@@ -280,7 +282,9 @@ const rejectRequest = async (req, res) => {
             auto_consumo: 0,
             inventario_final: product.stock, // No cambia el stock
             request_id: requestId,
-            user_id: request.user_id
+            user_id: request.user_id,
+            request_status: 'rejected',
+            rejection_reason: rejection_reason
         };
 
         const transaction = await InventoryTransactionModel.create(transactionData);

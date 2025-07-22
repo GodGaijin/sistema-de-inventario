@@ -6,8 +6,9 @@ class InventoryTransactionModel {
         const query = `
             INSERT INTO inventory_transactions 
             (codigo_de_transaccion, fecha, codigo_prod, nombre, inventario_inicial, 
-             entradas, salidas, auto_consumo, inventario_final, request_id, user_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+             entradas, salidas, auto_consumo, inventario_final, request_id, user_id,
+             request_status, rejection_reason)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
             RETURNING *
         `;
         
@@ -22,7 +23,9 @@ class InventoryTransactionModel {
             transactionData.auto_consumo || 0,
             transactionData.inventario_final,
             transactionData.request_id,
-            transactionData.user_id
+            transactionData.user_id,
+            transactionData.request_status || 'approved',
+            transactionData.rejection_reason || null
         ];
 
         try {
@@ -37,12 +40,9 @@ class InventoryTransactionModel {
     static async getAllTransactions() {
         const query = `
             SELECT it.*, 
-                   u.username as user_name,
-                   ir.status as request_status,
-                   ir.rejection_reason
+                   u.username as user_name
             FROM inventory_transactions it
             JOIN users u ON it.user_id = u.id
-            LEFT JOIN inventory_requests ir ON it.request_id = ir.id
             ORDER BY it.fecha DESC
         `;
 
@@ -57,11 +57,8 @@ class InventoryTransactionModel {
     // Obtener transacciones por usuario
     static async getTransactionsByUser(userId) {
         const query = `
-            SELECT it.*, 
-                   ir.status as request_status,
-                   ir.rejection_reason
+            SELECT it.*
             FROM inventory_transactions it
-            LEFT JOIN inventory_requests ir ON it.request_id = ir.id
             WHERE it.user_id = $1
             ORDER BY it.fecha DESC
         `;
@@ -78,12 +75,9 @@ class InventoryTransactionModel {
     static async getTransactionsByProduct(productId) {
         const query = `
             SELECT it.*, 
-                   u.username as user_name,
-                   ir.status as request_status,
-                   ir.rejection_reason
+                   u.username as user_name
             FROM inventory_transactions it
             JOIN users u ON it.user_id = u.id
-            LEFT JOIN inventory_requests ir ON it.request_id = ir.id
             WHERE it.codigo_prod = $1
             ORDER BY it.fecha DESC
         `;

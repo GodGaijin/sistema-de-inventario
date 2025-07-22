@@ -211,6 +211,8 @@ class Database {
           inventario_final INTEGER NOT NULL,
           request_id INTEGER REFERENCES inventory_requests(id) ON DELETE SET NULL,
           user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          request_status VARCHAR(50) NOT NULL DEFAULT 'approved' CHECK (request_status IN ('approved', 'rejected')),
+          rejection_reason TEXT,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
       `);

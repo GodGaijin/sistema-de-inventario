@@ -114,16 +114,29 @@ const approveRequest = async (req, res) => {
         const { requestId } = req.params;
         const adminId = req.user.id;
 
+        console.log('🔍 [APPROVE] Iniciando aprobación de solicitud:', { requestId, adminId });
+
         // Obtener la solicitud
+        console.log('🔍 [APPROVE] Obteniendo solicitud con ID:', requestId);
         const request = await InventoryRequestModel.getById(requestId);
         if (!request) {
+            console.log('❌ [APPROVE] Solicitud no encontrada');
             return res.status(404).json({
                 success: false,
                 message: 'Solicitud no encontrada'
             });
         }
 
+        console.log('✅ [APPROVE] Solicitud encontrada:', {
+            id: request.id,
+            status: request.status,
+            product_id: request.product_id,
+            codigo_prod: request.codigo_prod,
+            user_id: request.user_id
+        });
+
         if (request.status !== 'pending') {
+            console.log('❌ [APPROVE] Solicitud ya procesada, status:', request.status);
             return res.status(400).json({
                 success: false,
                 message: 'La solicitud ya ha sido procesada'
@@ -230,8 +243,11 @@ const rejectRequest = async (req, res) => {
         const { rejection_reason } = req.body;
         const adminId = req.user.id;
 
+        console.log('🔍 [REJECT] Iniciando rechazo de solicitud:', { requestId, rejection_reason, adminId });
+
         // Validar motivo de rechazo
         if (!rejection_reason || rejection_reason.trim() === '') {
+            console.log('❌ [REJECT] Motivo de rechazo faltante');
             return res.status(400).json({
                 success: false,
                 message: 'El motivo de rechazo es obligatorio'
@@ -239,15 +255,26 @@ const rejectRequest = async (req, res) => {
         }
 
         // Obtener la solicitud
+        console.log('🔍 [REJECT] Obteniendo solicitud con ID:', requestId);
         const request = await InventoryRequestModel.getById(requestId);
         if (!request) {
+            console.log('❌ [REJECT] Solicitud no encontrada');
             return res.status(404).json({
                 success: false,
                 message: 'Solicitud no encontrada'
             });
         }
 
+        console.log('✅ [REJECT] Solicitud encontrada:', {
+            id: request.id,
+            status: request.status,
+            product_id: request.product_id,
+            codigo_prod: request.codigo_prod,
+            user_id: request.user_id
+        });
+
         if (request.status !== 'pending') {
+            console.log('❌ [REJECT] Solicitud ya procesada, status:', request.status);
             return res.status(400).json({
                 success: false,
                 message: 'La solicitud ya ha sido procesada'
@@ -255,20 +282,34 @@ const rejectRequest = async (req, res) => {
         }
 
         // Obtener el producto
+        console.log('🔍 [REJECT] Obteniendo producto con ID:', request.product_id);
         const product = await ProductModel.getById(request.product_id);
         if (!product) {
+            console.log('❌ [REJECT] Producto no encontrado');
             return res.status(404).json({
                 success: false,
                 message: 'Producto no encontrado'
             });
         }
 
+        console.log('✅ [REJECT] Producto encontrado:', {
+            id: product.id,
+            name: product.name,
+            stock: product.stock
+        });
+
         // Rechazar la solicitud
+        console.log('🔄 [REJECT] Rechazando solicitud en la base de datos...');
         await InventoryRequestModel.rejectRequest(requestId, adminId, rejection_reason);
+        console.log('✅ [REJECT] Solicitud rechazada exitosamente');
 
         // Crear transacción rechazada (sin cambiar el stock)
+        console.log('🔄 [REJECT] Generando código de transacción...');
+        const transactionCode = await InventoryTransactionModel.generateTransactionCode();
+        console.log('✅ [REJECT] Código generado:', transactionCode);
+
         const transactionData = {
-            codigo_de_transaccion: await InventoryTransactionModel.generateTransactionCode(),
+            codigo_de_transaccion: transactionCode,
             fecha: new Date(),
             codigo_prod: request.codigo_prod,
             nombre: product.name,
@@ -281,9 +322,15 @@ const rejectRequest = async (req, res) => {
             user_id: request.user_id
         };
 
+        console.log('🔄 [REJECT] Creando transacción con datos:', transactionData);
         const transaction = await InventoryTransactionModel.create(transactionData);
+        console.log('✅ [REJECT] Transacción creada exitosamente:', {
+            id: transaction.id,
+            codigo: transaction.codigo_de_transaccion
+        });
 
         // Registrar auditorías
+        console.log('🔄 [REJECT] Registrando auditorías...');
         await logAudit(
             adminId,
             req.user.username,
@@ -299,7 +346,9 @@ const rejectRequest = async (req, res) => {
             'inventory_transaction',
             transaction.id
         );
+        console.log('✅ [REJECT] Auditorías registradas');
 
+        console.log('🎉 [REJECT] Proceso completado exitosamente');
         res.json({
             success: true,
             message: 'Solicitud rechazada exitosamente',
@@ -310,7 +359,8 @@ const rejectRequest = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error rejecting request:', error);
+        console.error('💥 [REJECT] Error durante el rechazo:', error);
+        console.error('💥 [REJECT] Stack trace:', error.stack);
         res.status(500).json({
             success: false,
             message: 'Error interno del servidor'

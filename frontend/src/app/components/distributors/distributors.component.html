@@ -69,34 +69,38 @@
     </div>
 
     <!-- Distributors Table -->
-    <input type="text" placeholder="Buscar distribuidores..." [(ngModel)]="searchTerm" (input)="filterDistributors()" class="search-bar" />
-    <table>
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Contacto</th>
-          <th>Teléfono</th>
-          <th>Email</th>
-          <th>RIF</th>
-          <th>Ubicación</th>
-          <th *ngIf="isAdmin">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let distributor of filteredDistributors">
-          <td>{{ distributor.name }}</td>
-          <td>{{ distributor.contact }}</td>
-          <td>{{ distributor.phone }}</td>
-          <td>{{ distributor.email }}</td>
-          <td>{{ distributor.rif }}</td>
-          <td>{{ distributor.location }}</td>
-          <td *ngIf="isAdmin" class="action-buttons">
-            <button (click)="editDistributor(distributor)" class="btn btn-warning">✏️ Editar</button>
-            <button (click)="deleteDistributor(distributor.id)" class="btn btn-danger">🗑️ Eliminar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-scroll-hint">
+      <span>Desliza para ver más &rarr;</span>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Contacto</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>RIF</th>
+            <th>Ubicación</th>
+            <th *ngIf="isAdmin">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let distributor of filteredDistributors">
+            <td>{{ distributor.name }}</td>
+            <td>{{ distributor.contact }}</td>
+            <td>{{ distributor.phone }}</td>
+            <td>{{ distributor.email }}</td>
+            <td>{{ distributor.rif }}</td>
+            <td>{{ distributor.location }}</td>
+            <td *ngIf="isAdmin" class="action-buttons">
+              <button (click)="editDistributor(distributor)" class="btn btn-warning">✏️ Editar</button>
+              <button (click)="deleteDistributor(distributor.id)" class="btn btn-danger">🗑️ Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <div *ngIf="filteredDistributors.length === 0" class="no-data">
       <p>No hay distribuidores registrados.</p>

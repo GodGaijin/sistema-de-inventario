@@ -50,25 +50,30 @@
     <input type="text" placeholder="Buscar categorías..." [(ngModel)]="searchTerm" (input)="filterCategories()" class="search-bar" />
 
     <!-- Categories Table -->
-    <table>
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Descripción</th>
-          <th *ngIf="isAdmin">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let category of filteredCategories">
-          <td>{{ category.name }}</td>
-          <td>{{ category.description }}</td>
-          <td *ngIf="isAdmin" class="action-buttons">
-            <button (click)="editCategory(category)" class="btn btn-warning">✏️ Editar</button>
-            <button (click)="deleteCategory(category.id)" class="btn btn-danger">🗑️ Eliminar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-scroll-hint">
+      <span>Desliza para ver más &rarr;</span>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th *ngIf="isAdmin">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let category of filteredCategories">
+            <td>{{ category.name }}</td>
+            <td>{{ category.description }}</td>
+            <td *ngIf="isAdmin" class="action-buttons">
+              <button (click)="editCategory(category)" class="btn btn-warning">✏️ Editar</button>
+              <button (click)="deleteCategory(category.id)" class="btn btn-danger">🗑️ Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <div *ngIf="filteredCategories.length === 0" class="no-data">
       <p>No hay categorías registradas.</p>

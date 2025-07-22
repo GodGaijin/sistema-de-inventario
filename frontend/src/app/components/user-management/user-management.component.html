@@ -34,7 +34,11 @@
     </p>
   </div>
 
-  <div class="users-table" *ngIf="!loading && getCurrentPageUsers().length > 0">
+  <!-- Users Table -->
+  <div class="table-scroll-hint">
+    <span>Desliza para ver más &rarr;</span>
+  </div>
+  <div class="users-table">
     <table>
       <thead>
         <tr>

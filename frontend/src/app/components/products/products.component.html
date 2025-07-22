@@ -82,33 +82,38 @@
     <input type="text" placeholder="Buscar productos..." [(ngModel)]="searchTerm" (input)="filterProducts()" class="search-bar" />
 
     <!-- Products Table -->
-    <table>
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Descripción</th>
-          <th>Precio</th>
-          <th>Stock</th>
-          <th>Categoría</th>
-          <th>Distribuidor</th>
-          <th *ngIf="isAdmin">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let product of filteredProducts">
-          <td>{{ product.name }}</td>
-          <td>{{ product.description }}</td>
-          <td>{{ formatPrice(product.price) }}</td>
-          <td>{{ product.stock }}</td>
-          <td>{{ getCategoryName(product.category_id) }}</td>
-          <td>{{ getDistributorName(product.distributor_id) }}</td>
-          <td *ngIf="isAdmin" class="action-buttons">
-            <button (click)="editProduct(product)" class="btn btn-warning">✏️ Editar</button>
-            <button (click)="deleteProduct(product.id)" class="btn btn-danger">🗑️ Eliminar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-scroll-hint">
+      <span>Desliza para ver más &rarr;</span>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Categoría</th>
+            <th>Distribuidor</th>
+            <th *ngIf="isAdmin">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of filteredProducts">
+            <td>{{ product.name }}</td>
+            <td>{{ product.description }}</td>
+            <td>{{ formatPrice(product.price) }}</td>
+            <td>{{ product.stock }}</td>
+            <td>{{ getCategoryName(product.category_id) }}</td>
+            <td>{{ getDistributorName(product.distributor_id) }}</td>
+            <td *ngIf="isAdmin" class="action-buttons">
+              <button (click)="editProduct(product)" class="btn btn-warning">✏️ Editar</button>
+              <button (click)="deleteProduct(product.id)" class="btn btn-danger">🗑️ Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <div *ngIf="filteredProducts.length === 0" class="no-data">
       <p>No hay productos registrados.</p>

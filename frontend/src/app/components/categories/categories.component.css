@@ -333,3 +333,32 @@
     grid-template-columns: repeat(4, 1fr);
   }
 } 
+
+/* Aviso de scroll horizontal */
+.table-scroll-hint {
+  display: block;
+  font-size: 0.95rem;
+  color: #6c757d;
+  text-align: right;
+  margin-bottom: 4px;
+  padding-right: 8px;
+  font-style: italic;
+  user-select: none;
+}
+
+@media (min-width: 768px) {
+  .table-scroll-hint {
+    display: none;
+  }
+}
+
+/* Mejorar tabla en mobile */
+@media (max-width: 767px) {
+  .table-container table {
+    min-width: 400px;
+    font-size: 0.78rem;
+  }
+  .table-container th, .table-container td {
+    padding: 10px 6px;
+  }
+} 

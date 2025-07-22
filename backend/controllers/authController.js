@@ -681,19 +681,19 @@ exports.checkResendVerificationStatus = async (req, res) => {
 };
 
 module.exports = {
-  register,
-  login,
-  refreshToken,
-  checkSession,
-  forgotPassword,
-  resetPassword,
-  getAllUsers,
-  getActiveUsersStats,
-  logout,
-  updateUserRole,
-  deleteUser,
-  getActiveUsersWithRoles,
-  verifyEmail,
-  resendVerificationEmail,
-  checkResendVerificationStatus
+  register: exports.register,
+  login: exports.login,
+  refreshToken: exports.refreshToken,
+  checkSession: exports.checkSession,
+  forgotPassword: exports.forgotPassword,
+  resetPassword: exports.resetPassword,
+  getAllUsers: exports.getAllUsers,
+  getActiveUsersStats: exports.getActiveUsersStats,
+  logout: exports.logout,
+  updateUserRole: exports.updateUserRole,
+  deleteUser: exports.deleteUser,
+  getActiveUsersWithRoles: exports.getActiveUsersWithRoles,
+  verifyEmail: exports.verifyEmail,
+  resendVerificationEmail: exports.resendVerificationEmail,
+  checkResendVerificationStatus: exports.checkResendVerificationStatus
 }; 

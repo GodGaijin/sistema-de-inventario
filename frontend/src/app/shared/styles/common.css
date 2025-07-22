@@ -393,3 +393,36 @@
     padding: 40px;
   }
 } 
+
+/* --- FIX: Tablas en mobile no se cortan por la izquierda --- */
+@media (max-width: 767px) {
+  .page-container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .table-container,
+  .users-table,
+  .transactions-table {
+    width: 100vw !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    transform: translateX(-50%);
+  }
+  .table-container table,
+  .users-table table,
+  .transactions-table table {
+    min-width: 400px;
+    width: max-content;
+    max-width: none;
+  }
+} 

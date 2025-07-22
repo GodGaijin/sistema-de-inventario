@@ -75,7 +75,7 @@ export class InventoryComponent implements OnInit {
       product_id: ['', Validators.required],
       transaction_type: ['', Validators.required],
       quantity: ['', [Validators.required, Validators.min(1)]],
-      description: ['', Validators.required]
+      description: [''] // Ahora opcional
     });
 
     this.rejectionForm = this.fb.group({

@@ -5,6 +5,11 @@ async function migrateUsers() {
   try {
     console.log('🔄 Iniciando migración de usuarios...');
     
+    // Primero inicializar las tablas para crear las nuevas columnas
+    console.log('📊 Inicializando tablas de base de datos...');
+    await db.initTables();
+    console.log('✅ Tablas inicializadas correctamente');
+    
     // Verificar si las nuevas columnas existen
     const checkColumns = await db.query(`
       SELECT column_name 
@@ -14,9 +19,11 @@ async function migrateUsers() {
     `);
     
     if (checkColumns.rows.length < 3) {
-      console.log('❌ Las nuevas columnas no existen. Ejecuta primero la inicialización de la base de datos.');
+      console.log('❌ Las nuevas columnas no existen después de la inicialización.');
       return;
     }
+    
+    console.log('✅ Nuevas columnas verificadas correctamente');
     
     // Marcar admin_senior como verificado
     const seniorAdminEmail = process.env.SENIOR_ADMIN_EMAIL;
@@ -33,12 +40,13 @@ async function migrateUsers() {
     }
     
     // Obtener conteo de usuarios existentes
-    const userCount = await db.query('SELECT COUNT(*) as count FROM users WHERE role != "senior_admin"');
+    const userCount = await db.query('SELECT COUNT(*) as count FROM users WHERE role != \'senior_admin\'');
     console.log(`📊 Total de usuarios existentes: ${userCount.rows[0].count}`);
     
     console.log('✅ Migración completada exitosamente');
     console.log('');
     console.log('📋 Resumen:');
+    console.log('- Tablas inicializadas con nuevas columnas');
     console.log('- Admin senior marcado como verificado');
     console.log('- Usuarios existentes mantendrán su estado actual');
     console.log('- Nuevos usuarios requerirán verificación de email');

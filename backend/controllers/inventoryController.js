@@ -448,32 +448,50 @@ const getInventoryStats = async (req, res) => {
 // Exportar transacciones a Excel
 const exportTransactions = async (req, res) => {
     try {
+        console.log('🔍 [EXPORT] Iniciando exportación de transacciones');
         const { startDate, endDate } = req.query;
         let transactions;
 
         if (startDate && endDate) {
+            console.log('🔍 [EXPORT] Obteniendo transacciones por rango de fechas:', { startDate, endDate });
             transactions = await InventoryTransactionModel.getTransactionsByDateRange(startDate, endDate);
         } else {
+            console.log('🔍 [EXPORT] Obteniendo todas las transacciones');
             transactions = await InventoryTransactionModel.getAllTransactions();
         }
 
+        console.log('✅ [EXPORT] Transacciones obtenidas:', transactions.length);
+
         // Preparar datos para Excel
-        const excelData = transactions.map(transaction => ({
-            'Código de Transacción': transaction.codigo_de_transaccion,
-            'Fecha': new Date(transaction.fecha).toLocaleDateString('es-ES'),
-            'Código SENIAT': transaction.codigo_prod,
-            'Nombre del Producto': transaction.nombre,
-            'Inventario Inicial': transaction.inventario_inicial,
-            'Entradas': transaction.entradas,
-            'Salidas': transaction.salidas,
-            'Auto-consumo': transaction.auto_consumo,
-            'Inventario Final': transaction.inventario_final,
-            'Usuario': transaction.user_name,
-            'Estado': transaction.request_status || 'Aprobada',
-            'Motivo de Rechazo': transaction.rejection_reason || 'N/A'
-        }));
+        console.log('🔄 [EXPORT] Preparando datos para Excel...');
+        const excelData = transactions.map(transaction => {
+            console.log('📋 [EXPORT] Procesando transacción:', {
+                id: transaction.id,
+                codigo: transaction.codigo_de_transaccion,
+                status: transaction.request_status,
+                rejection_reason: transaction.rejection_reason
+            });
+            
+            return {
+                'Código de Transacción': transaction.codigo_de_transaccion,
+                'Fecha': new Date(transaction.fecha).toLocaleDateString('es-ES'),
+                'Código SENIAT': transaction.codigo_prod,
+                'Nombre del Producto': transaction.nombre,
+                'Inventario Inicial': transaction.inventario_inicial,
+                'Entradas': transaction.entradas,
+                'Salidas': transaction.salidas,
+                'Auto-consumo': transaction.auto_consumo,
+                'Inventario Final': transaction.inventario_final,
+                'Usuario': transaction.user_name,
+                'Estado': transaction.request_status || 'Aprobada',
+                'Motivo de Rechazo': transaction.rejection_reason || 'N/A'
+            };
+        });
+
+        console.log('✅ [EXPORT] Datos preparados para Excel:', excelData.length, 'filas');
 
         // Crear workbook y worksheet
+        console.log('🔄 [EXPORT] Creando workbook y worksheet...');
         const workbook = XLSX.utils.book_new();
         const worksheet = XLSX.utils.json_to_sheet(excelData);
 
@@ -498,16 +516,20 @@ const exportTransactions = async (req, res) => {
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Transacciones de Inventario');
 
         // Generar buffer del archivo
+        console.log('🔄 [EXPORT] Generando buffer del archivo Excel...');
         const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+        console.log('✅ [EXPORT] Buffer generado, tamaño:', excelBuffer.length, 'bytes');
 
         // Configurar headers para descarga
         const fileName = `inventario_transacciones_${new Date().toISOString().split('T')[0]}.xlsx`;
+        console.log('📁 [EXPORT] Nombre del archivo:', fileName);
         
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
         res.setHeader('Content-Length', excelBuffer.length);
 
         // Registrar auditoría de exportación
+        console.log('🔄 [EXPORT] Registrando auditoría...');
         await logAudit(
             req.user.id,
             req.user.username,
@@ -516,10 +538,12 @@ const exportTransactions = async (req, res) => {
             null
         );
 
+        console.log('🎉 [EXPORT] Enviando archivo Excel al cliente...');
         res.send(excelBuffer);
 
     } catch (error) {
-        console.error('Error exporting transactions:', error);
+        console.error('💥 [EXPORT] Error durante la exportación:', error);
+        console.error('💥 [EXPORT] Stack trace:', error.stack);
         res.status(500).json({
             success: false,
             message: 'Error interno del servidor'

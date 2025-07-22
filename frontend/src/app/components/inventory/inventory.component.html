@@ -77,6 +77,18 @@
           </div>
           
           <div class="form-group">
+            <label for="codigo_prod">Código SENIAT *</label>
+            <input 
+              type="text" 
+              id="codigo_prod" 
+              formControlName="codigo_prod" 
+              class="form-control"
+              placeholder="Ingrese el código SENIAT">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
             <label for="transaction_type">Tipo de Transacción *</label>
             <select id="transaction_type" formControlName="transaction_type" class="form-control">
               <option value="">Seleccionar tipo</option>
@@ -84,6 +96,17 @@
               <option value="salida">Salida</option>
               <option value="auto_consumo">Auto-consumo</option>
             </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="quantity">Cantidad *</label>
+            <input 
+              type="number" 
+              id="quantity" 
+              formControlName="quantity" 
+              class="form-control"
+              min="1"
+              placeholder="Ingrese la cantidad">
           </div>
         </div>
 

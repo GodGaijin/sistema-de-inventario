@@ -184,6 +184,7 @@ class Database {
           id SERIAL PRIMARY KEY,
           user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
           product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+          codigo_prod VARCHAR(100) NOT NULL,
           transaction_type VARCHAR(50) NOT NULL CHECK (transaction_type IN ('entrada', 'salida', 'auto_consumo')),
           quantity INTEGER NOT NULL CHECK (quantity > 0),
           description TEXT,

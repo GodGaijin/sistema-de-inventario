@@ -5,14 +5,15 @@ class InventoryRequestModel {
     static async create(userId, requestData) {
         const query = `
             INSERT INTO inventory_requests 
-            (user_id, product_id, transaction_type, quantity, description, status, created_at)
-            VALUES ($1, $2, $3, $4, $5, 'pending', NOW())
+            (user_id, product_id, codigo_prod, transaction_type, quantity, description, status, created_at)
+            VALUES ($1, $2, $3, $4, $5, $6, 'pending', NOW())
             RETURNING *
         `;
         
         const values = [
             userId,
             requestData.product_id,
+            requestData.codigo_prod,
             requestData.transaction_type, // 'entrada', 'salida', 'auto_consumo'
             requestData.quantity,
             requestData.description
@@ -32,7 +33,7 @@ class InventoryRequestModel {
             SELECT ir.*, 
                    u.username as user_name,
                    p.name as product_name,
-                   p.codigo_seniat as product_code,
+                   ir.codigo_prod as product_code,
                    p.stock as current_stock
             FROM inventory_requests ir
             JOIN users u ON ir.user_id = u.id
@@ -55,7 +56,7 @@ class InventoryRequestModel {
             SELECT ir.*, 
                    u.username as user_name,
                    p.name as product_name,
-                   p.codigo_seniat as product_code,
+                   ir.codigo_prod as product_code,
                    p.stock as current_stock,
                    admin.username as admin_name
             FROM inventory_requests ir
@@ -78,7 +79,7 @@ class InventoryRequestModel {
         const query = `
             SELECT ir.*, 
                    p.name as product_name,
-                   p.codigo_seniat as product_code,
+                   ir.codigo_prod as product_code,
                    p.stock as current_stock,
                    u.username as admin_name
             FROM inventory_requests ir
@@ -141,7 +142,7 @@ class InventoryRequestModel {
             SELECT ir.*, 
                    u.username as user_name,
                    p.name as product_name,
-                   p.codigo_seniat as product_code,
+                   ir.codigo_prod as product_code,
                    admin.username as admin_name
             FROM inventory_requests ir
             JOIN users u ON ir.user_id = u.id

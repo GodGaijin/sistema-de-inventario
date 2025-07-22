@@ -174,8 +174,8 @@ const approveRequest = async (req, res) => {
         const transactionData = {
             codigo_de_transaccion: await InventoryTransactionModel.generateTransactionCode(),
             fecha: new Date(),
-            codigo_prod: product.codigo_seniat || product.codigo,
-            nombre: product.nombre,
+            codigo_prod: request.codigo_prod,
+            nombre: product.name,
             inventario_inicial: product.stock,
             entradas: request.transaction_type === 'entrada' ? request.quantity : 0,
             salidas: request.transaction_type === 'salida' ? request.quantity : 0,

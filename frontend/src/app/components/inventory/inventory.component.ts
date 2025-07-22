@@ -73,6 +73,7 @@ export class InventoryComponent implements OnInit {
   ) {
     this.requestForm = this.fb.group({
       product_id: ['', Validators.required],
+      codigo_prod: ['', Validators.required],
       transaction_type: ['', Validators.required],
       quantity: ['', [Validators.required, Validators.min(1)]],
       description: [''] // Ahora opcional

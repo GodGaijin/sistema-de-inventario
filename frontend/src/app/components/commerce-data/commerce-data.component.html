@@ -1,8 +1,14 @@
-<div class="table-container">
+<div class="commerce-data-container">
+  <!-- Header -->
+  <div class="commerce-data-header">
+    <h1>Datos del Comercio</h1>
+    <p>Información y configuración del establecimiento</p>
+  </div>
+
   <div class="header-actions">
-    <h2>Datos del Comercio</h2>
+    <h2>Acciones</h2>
     <div class="actions">
-      <button (click)="navigateToDashboard()" class="btn-secondary">Volver al Menú</button>
+      <button (click)="navigateToDashboard()" class="btn btn-secondary">🏠 Volver al Menú</button>
     </div>
   </div>
 
@@ -33,7 +39,7 @@
       </div>
       
       <div *ngIf="isAdmin" class="form-actions">
-        <button (click)="startEdit()" class="btn-warning">Editar</button>
+        <button (click)="startEdit()" class="btn btn-warning">✏️ Editar</button>
       </div>
     </div>
 
@@ -64,8 +70,8 @@
         </div>
 
         <div class="form-actions">
-          <button type="button" (click)="cancelEdit()" class="btn-secondary">Cancelar</button>
-          <button type="submit" [disabled]="!commerceForm.valid" class="btn-success">Guardar</button>
+          <button type="button" (click)="cancelEdit()" class="btn btn-secondary">❌ Cancelar</button>
+          <button type="submit" [disabled]="!commerceForm.valid" class="btn btn-success">✅ Guardar</button>
         </div>
       </form>
     </div>

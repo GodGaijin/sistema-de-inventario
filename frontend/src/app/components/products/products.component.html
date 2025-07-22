@@ -1,9 +1,15 @@
-<div class="table-container">
+<div class="products-container">
+  <!-- Header -->
+  <div class="products-header">
+    <h1>Gestión de Productos</h1>
+    <p>Administración y control de productos del inventario</p>
+  </div>
+
   <div class="header-actions">
-    <h2>Gestión de Productos</h2>
+    <h2>Acciones</h2>
     <div class="actions">
-      <button *ngIf="isUser" (click)="downloadPDF()" class="pdf-download">Descargar PDF</button>
-      <button (click)="navigateToDashboard()" class="btn-secondary">Volver al Menú</button>
+      <button *ngIf="isUser" (click)="downloadPDF()" class="btn btn-success">📄 Descargar PDF</button>
+      <button (click)="navigateToDashboard()" class="btn btn-secondary">🏠 Volver al Menú</button>
     </div>
   </div>
 
@@ -62,11 +68,11 @@
         </div>
 
         <div class="form-actions">
-          <button type="button" (click)="cancelEdit()" class="btn-secondary">
-            {{ editingProduct ? 'Cancelar' : 'Limpiar' }}
+          <button type="button" (click)="cancelEdit()" class="btn btn-secondary">
+            {{ editingProduct ? '❌ Cancelar' : '🧹 Limpiar' }}
           </button>
-          <button type="submit" [disabled]="!productForm.valid" class="btn-success">
-            {{ editingProduct ? 'Actualizar' : 'Crear' }}
+          <button type="submit" [disabled]="!productForm.valid" class="btn btn-success">
+            {{ editingProduct ? '✅ Actualizar' : '➕ Crear' }}
           </button>
         </div>
       </form>
@@ -97,8 +103,8 @@
           <td>{{ getCategoryName(product.category_id) }}</td>
           <td>{{ getDistributorName(product.distributor_id) }}</td>
           <td *ngIf="isAdmin" class="action-buttons">
-            <button (click)="editProduct(product)" class="btn-warning">Editar</button>
-            <button (click)="deleteProduct(product.id)" class="btn-danger">Eliminar</button>
+            <button (click)="editProduct(product)" class="btn btn-warning">✏️ Editar</button>
+            <button (click)="deleteProduct(product.id)" class="btn btn-danger">🗑️ Eliminar</button>
           </td>
         </tr>
       </tbody>

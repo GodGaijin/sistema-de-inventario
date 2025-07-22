@@ -1,9 +1,15 @@
-<div class="table-container">
+<div class="distributors-container">
+  <!-- Header -->
+  <div class="distributors-header">
+    <h1>Gestión de Distribuidores</h1>
+    <p>Administración y control de distribuidores de productos</p>
+  </div>
+
   <div class="header-actions">
-    <h2>Gestión de Distribuidores</h2>
+    <h2>Acciones</h2>
     <div class="actions">
-      <button *ngIf="isUser" (click)="downloadPDF()" class="pdf-download">Descargar PDF</button>
-      <button (click)="navigateToDashboard()" class="btn-secondary">Volver al Menú</button>
+      <button *ngIf="isUser" (click)="downloadPDF()" class="btn btn-success">📄 Descargar PDF</button>
+      <button (click)="navigateToDashboard()" class="btn btn-secondary">🏠 Volver al Menú</button>
     </div>
   </div>
 
@@ -52,11 +58,11 @@
         </div>
 
         <div class="form-actions">
-          <button type="button" (click)="cancelEdit()" class="btn-secondary">
-            {{ editingDistributor ? 'Cancelar' : 'Limpiar' }}
+          <button type="button" (click)="cancelEdit()" class="btn btn-secondary">
+            {{ editingDistributor ? '❌ Cancelar' : '🧹 Limpiar' }}
           </button>
-          <button type="submit" [disabled]="!distributorForm.valid" class="btn-success">
-            {{ editingDistributor ? 'Actualizar' : 'Crear' }}
+          <button type="submit" [disabled]="!distributorForm.valid" class="btn btn-success">
+            {{ editingDistributor ? '✅ Actualizar' : '➕ Crear' }}
           </button>
         </div>
       </form>
@@ -85,8 +91,8 @@
           <td>{{ distributor.rif }}</td>
           <td>{{ distributor.location }}</td>
           <td *ngIf="isAdmin" class="action-buttons">
-            <button (click)="editDistributor(distributor)" class="btn-warning">Editar</button>
-            <button (click)="deleteDistributor(distributor.id)" class="btn-danger">Eliminar</button>
+            <button (click)="editDistributor(distributor)" class="btn btn-warning">✏️ Editar</button>
+            <button (click)="deleteDistributor(distributor.id)" class="btn btn-danger">🗑️ Eliminar</button>
           </td>
         </tr>
       </tbody>

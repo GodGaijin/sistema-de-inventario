@@ -1,9 +1,15 @@
-<div class="table-container">
+<div class="categories-container">
+  <!-- Header -->
+  <div class="categories-header">
+    <h1>Gestión de Categorías</h1>
+    <p>Administración y control de categorías de productos</p>
+  </div>
+
   <div class="header-actions">
-    <h2>Gestión de Categorías</h2>
+    <h2>Acciones</h2>
     <div class="actions">
-      <button *ngIf="isUser" (click)="downloadPDF()" class="pdf-download">Descargar PDF</button>
-      <button (click)="navigateToDashboard()" class="btn-secondary">Volver al Menú</button>
+      <button *ngIf="isUser" (click)="downloadPDF()" class="btn btn-success">📄 Descargar PDF</button>
+      <button (click)="navigateToDashboard()" class="btn btn-secondary">🏠 Volver al Menú</button>
     </div>
   </div>
 
@@ -30,11 +36,11 @@
         </div>
 
         <div class="form-actions">
-          <button type="button" (click)="cancelEdit()" class="btn-secondary">
-            {{ editingCategory ? 'Cancelar' : 'Limpiar' }}
+          <button type="button" (click)="cancelEdit()" class="btn btn-secondary">
+            {{ editingCategory ? '❌ Cancelar' : '🧹 Limpiar' }}
           </button>
-          <button type="submit" [disabled]="!categoryForm.valid" class="btn-success">
-            {{ editingCategory ? 'Actualizar' : 'Crear' }}
+          <button type="submit" [disabled]="!categoryForm.valid" class="btn btn-success">
+            {{ editingCategory ? '✅ Actualizar' : '➕ Crear' }}
           </button>
         </div>
       </form>
@@ -57,8 +63,8 @@
           <td>{{ category.name }}</td>
           <td>{{ category.description }}</td>
           <td *ngIf="isAdmin" class="action-buttons">
-            <button (click)="editCategory(category)" class="btn-warning">Editar</button>
-            <button (click)="deleteCategory(category.id)" class="btn-danger">Eliminar</button>
+            <button (click)="editCategory(category)" class="btn btn-warning">✏️ Editar</button>
+            <button (click)="deleteCategory(category.id)" class="btn btn-danger">🗑️ Eliminar</button>
           </td>
         </tr>
       </tbody>

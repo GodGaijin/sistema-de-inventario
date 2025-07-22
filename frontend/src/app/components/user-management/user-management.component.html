@@ -1,8 +1,8 @@
 <div class="user-management-container">
-  <div class="header">
-    <h2>Gestión de Usuarios</h2>
-    <p class="subtitle">Solo administradores senior pueden gestionar roles de usuarios</p>
-    <button (click)="navigateToDashboard()" class="btn-secondary">Volver al Dashboard</button>
+  <div class="user-management-header">
+    <h1>Gestión de Usuarios</h1>
+    <p>Solo administradores senior pueden gestionar roles de usuarios</p>
+    <button (click)="navigateToDashboard()" class="back-button">🏠 Volver al Dashboard</button>
   </div>
 
   <div class="message" *ngIf="message" [ngClass]="messageType">

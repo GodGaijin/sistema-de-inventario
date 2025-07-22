@@ -232,7 +232,7 @@ export class InventoryComponent implements OnInit {
       this.loading = true;
       
       // Crear URL con parámetros de fecha si están disponibles
-      let url = '/inventory/export';
+      let url = 'https://sistema-de-inventario-tavd.onrender.com/api/inventory/export';
       const params = new URLSearchParams();
       
       // Aquí podrías agregar filtros de fecha si los implementas

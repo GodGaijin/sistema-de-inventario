@@ -21,7 +21,7 @@ export class VerifyEmailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
+    this.route.queryParams.subscribe(params => {
       this.token = params['token'];
       if (this.token) {
         this.verifyEmail();

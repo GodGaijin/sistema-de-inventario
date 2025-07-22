@@ -26,7 +26,7 @@ export const routes: Routes = [
   // Rutas públicas con verificación de token
   { path: 'login', component: LoginComponent, canActivate: [RedirectGuard] },
   { path: 'reset-password', component: ResetPasswordComponent, canActivate: [ResetPasswordGuard] },
-  { path: 'verify-email/:token', component: VerifyEmailComponent },
+  { path: 'verify-email', component: VerifyEmailComponent },
   
   // Rutas protegidas
   { path: 'dashboard', component: HomeComponent, canActivate: [AuthGuard] },

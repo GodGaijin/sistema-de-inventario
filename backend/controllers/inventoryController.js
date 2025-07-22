@@ -171,7 +171,7 @@ const approveRequest = async (req, res) => {
         // Aprobar la solicitud
         await InventoryRequestModel.approveRequest(requestId, adminId);
 
-        // Crear transacción
+        // Crear transacción aprobada
         const transactionData = {
             codigo_de_transaccion: await InventoryTransactionModel.generateTransactionCode(),
             fecha: new Date(),
@@ -254,10 +254,36 @@ const rejectRequest = async (req, res) => {
             });
         }
 
+        // Obtener el producto
+        const product = await ProductModel.getById(request.product_id);
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Producto no encontrado'
+            });
+        }
+
         // Rechazar la solicitud
         await InventoryRequestModel.rejectRequest(requestId, adminId, rejection_reason);
 
-        // Registrar auditoría
+        // Crear transacción rechazada (sin cambiar el stock)
+        const transactionData = {
+            codigo_de_transaccion: await InventoryTransactionModel.generateTransactionCode(),
+            fecha: new Date(),
+            codigo_prod: request.codigo_prod,
+            nombre: product.name,
+            inventario_inicial: product.stock,
+            entradas: 0,
+            salidas: 0,
+            auto_consumo: 0,
+            inventario_final: product.stock, // No cambia el stock
+            request_id: requestId,
+            user_id: request.user_id
+        };
+
+        const transaction = await InventoryTransactionModel.create(transactionData);
+
+        // Registrar auditorías
         await logAudit(
             adminId,
             req.user.username,
@@ -266,9 +292,21 @@ const rejectRequest = async (req, res) => {
             requestId
         );
 
+        await logAudit(
+            request.user_id,
+            request.user_name,
+            'CREATE',
+            'inventory_transaction',
+            transaction.id
+        );
+
         res.json({
             success: true,
-            message: 'Solicitud rechazada exitosamente'
+            message: 'Solicitud rechazada exitosamente',
+            data: {
+                request,
+                transaction
+            }
         });
 
     } catch (error) {

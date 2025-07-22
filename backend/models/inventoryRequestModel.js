@@ -49,6 +49,30 @@ class InventoryRequestModel {
         }
     }
 
+    // Obtener una solicitud por ID
+    static async getById(requestId) {
+        const query = `
+            SELECT ir.*, 
+                   u.username as user_name,
+                   p.nombre as product_name,
+                   p.codigo_seniat as product_code,
+                   p.stock as current_stock,
+                   admin.username as admin_name
+            FROM inventory_requests ir
+            JOIN users u ON ir.user_id = u.id
+            JOIN products p ON ir.product_id = p.id
+            LEFT JOIN users admin ON ir.admin_id = admin.id
+            WHERE ir.id = $1
+        `;
+
+        try {
+            const result = await pool.query(query, [requestId]);
+            return result.rows[0];
+        } catch (error) {
+            throw new Error(`Error getting request by ID: ${error.message}`);
+        }
+    }
+
     // Obtener solicitudes por usuario
     static async getRequestsByUser(userId) {
         const query = `
@@ -99,7 +123,7 @@ class InventoryRequestModel {
                 admin_id = $1, 
                 rejection_reason = $2,
                 processed_at = NOW()
-            WHERE id = $2 AND status = 'pending'
+            WHERE id = $3 AND status = 'pending'
             RETURNING *
         `;
 

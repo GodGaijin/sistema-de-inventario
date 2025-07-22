@@ -92,9 +92,9 @@ export class InventoryComponent implements OnInit {
 
   async loadProducts() {
     try {
-      const response = await this.apiService.get('/products').toPromise();
-      if (response?.success) {
-        this.products = response.data;
+      const response = await this.apiService.getProducts().toPromise();
+      if (response) {
+        this.products = response;
       }
     } catch (error) {
       console.error('Error loading products:', error);

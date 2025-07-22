@@ -44,6 +44,16 @@ import { SidebarService } from '../../services/sidebar.service';
           <span class="nav-text">Datos del Comercio</span>
         </div>
         
+        <div class="nav-item" (click)="navigateTo('/inventory')" [class.active]="isActive('/inventory')">
+          <span class="nav-icon">📋</span>
+          <span class="nav-text">Inventario</span>
+        </div>
+        
+        <div *ngIf="isAdmin()" class="nav-item" (click)="navigateTo('/requests')" [class.active]="isActive('/requests')">
+          <span class="nav-icon">✅</span>
+          <span class="nav-text">Solicitudes</span>
+        </div>
+        
         <div *ngIf="isAdmin()" class="nav-item" (click)="navigateTo('/audits')" [class.active]="isActive('/audits')">
           <span class="nav-icon">📊</span>
           <span class="nav-text">Auditoría</span>

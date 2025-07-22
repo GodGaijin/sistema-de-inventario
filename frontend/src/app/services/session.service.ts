@@ -35,36 +35,19 @@ export class SessionService {
               // Refresh token también expirado
               this.authService.logout();
               this.router.navigate(['/login']);
-              this.stateService.addNotification({
-                message: 'Sesión expirada. Por favor, inicie sesión nuevamente.',
-                type: 'warning'
-              });
-            } else {
-              // Sesión renovada automáticamente
-              this.stateService.addNotification({
-                message: '¿Sigues ahí? Tu sesión se ha extendido automáticamente.',
-                type: 'info'
-              });
             }
+            // Eliminamos las notificaciones automáticas para evitar spam
           },
           error: (error) => {
             console.error('Error checking session:', error);
             this.authService.logout();
             this.router.navigate(['/login']);
-            this.stateService.addNotification({
-              message: 'Error de sesión. Por favor, inicie sesión nuevamente.',
-              type: 'error'
-            });
           }
         });
       } else {
         // No hay refresh token, cerrar sesión
         this.authService.logout();
         this.router.navigate(['/login']);
-        this.stateService.addNotification({
-          message: 'Sesión no válida. Por favor, inicie sesión nuevamente.',
-          type: 'warning'
-        });
       }
     }
   }

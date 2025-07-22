@@ -1,0 +1,297 @@
+<div class="inventory-container">
+  <!-- Header -->
+  <div class="inventory-header">
+    <h1>Sistema de Inventario</h1>
+    <p>Gestión de solicitudes y transacciones de inventario</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-content">
+        <h3>{{ stats.total_transactions || 0 }}</h3>
+        <p>Total Transacciones</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <h3>{{ stats.approved_transactions || 0 }}</h3>
+        <p>Transacciones Aprobadas</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">❌</div>
+      <div class="stat-content">
+        <h3>{{ stats.rejected_transactions || 0 }}</h3>
+        <p>Transacciones Rechazadas</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📦</div>
+      <div class="stat-content">
+        <h3>{{ stats.total_entradas || 0 }}</h3>
+        <p>Total Entradas</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="tabs-container">
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'requests'"
+      (click)="activeTab = 'requests'">
+      Mis Solicitudes
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'transactions'"
+      (click)="activeTab = 'transactions'">
+      Transacciones
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'history'"
+      (click)="activeTab = 'history'">
+      Historial
+    </button>
+  </div>
+
+  <!-- Requests Tab -->
+  <div *ngIf="activeTab === 'requests'" class="tab-content">
+    <!-- Create Request Form -->
+    <div class="form-section">
+      <h2>Crear Nueva Solicitud</h2>
+      <form [formGroup]="requestForm" (ngSubmit)="createRequest()" class="request-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="product_id">Producto *</label>
+            <select id="product_id" formControlName="product_id" class="form-control">
+              <option value="">Seleccionar producto</option>
+              <option *ngFor="let product of products" [value]="product.id">
+                {{ product.name }} (Stock: {{ product.stock }})
+              </option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="transaction_type">Tipo de Transacción *</label>
+            <select id="transaction_type" formControlName="transaction_type" class="form-control">
+              <option value="">Seleccionar tipo</option>
+              <option value="entrada">Entrada</option>
+              <option value="salida">Salida</option>
+              <option value="auto_consumo">Auto-consumo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="quantity">Cantidad *</label>
+            <input 
+              type="number" 
+              id="quantity" 
+              formControlName="quantity" 
+              class="form-control"
+              min="1"
+              placeholder="Ingrese la cantidad">
+          </div>
+          
+          <div class="form-group">
+            <label for="description">Descripción *</label>
+            <textarea 
+              id="description" 
+              formControlName="description" 
+              class="form-control"
+              placeholder="Descripción de la transacción"></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="!requestForm.valid || loading">
+            <span *ngIf="loading">Creando...</span>
+            <span *ngIf="!loading">Crear Solicitud</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- User Requests List -->
+    <div class="requests-section">
+      <h2>Mis Solicitudes</h2>
+      <div class="requests-grid">
+        <div *ngFor="let request of userRequests" class="request-card">
+          <div class="request-header">
+            <span class="badge" [class]="getStatusBadgeClass(request.status)">
+              {{ getStatusText(request.status) }}
+            </span>
+            <span class="request-date">{{ formatDate(request.created_at) }}</span>
+          </div>
+          
+          <div class="request-content">
+            <h4>{{ request.product_name }}</h4>
+            <p><strong>Código SENIAT:</strong> {{ request.product_code }}</p>
+            <p><strong>Tipo:</strong> {{ getTransactionTypeText(request.transaction_type) }}</p>
+            <p><strong>Cantidad:</strong> {{ request.quantity }}</p>
+            <p><strong>Stock Actual:</strong> {{ request.current_stock }}</p>
+            <p><strong>Descripción:</strong> {{ request.description }}</p>
+          </div>
+
+          <div *ngIf="request.rejection_reason" class="rejection-reason">
+            <strong>Motivo de rechazo:</strong> {{ request.rejection_reason }}
+          </div>
+
+          <div *ngIf="isAdmin() && request.status === 'pending'" class="request-actions">
+            <button 
+              class="btn btn-success btn-sm"
+              (click)="approveRequest(request.id)">
+              Aprobar
+            </button>
+            <button 
+              class="btn btn-danger btn-sm"
+              (click)="openRejectionModal(request)">
+              Rechazar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transactions Tab -->
+  <div *ngIf="activeTab === 'transactions'" class="tab-content">
+    <div class="transactions-section">
+      <div class="section-header">
+        <h2>Transacciones</h2>
+        <button class="btn btn-secondary" (click)="exportTransactions()">
+          📊 Exportar a Excel
+        </button>
+      </div>
+      
+      <div class="transactions-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Fecha</th>
+              <th>Producto</th>
+              <th>Stock Inicial</th>
+              <th>Entradas</th>
+              <th>Salidas</th>
+              <th>Auto-consumo</th>
+              <th>Stock Final</th>
+              <th>Usuario</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let transaction of allTransactions">
+              <td>{{ transaction.codigo_de_transaccion }}</td>
+              <td>{{ formatDate(transaction.fecha) }}</td>
+              <td>{{ transaction.nombre }}</td>
+              <td>{{ transaction.inventario_inicial }}</td>
+              <td>{{ transaction.entradas }}</td>
+              <td>{{ transaction.salidas }}</td>
+              <td>{{ transaction.auto_consumo }}</td>
+              <td>{{ transaction.inventario_final }}</td>
+              <td>{{ transaction.user_name }}</td>
+              <td>
+                <span class="badge" [class]="getStatusBadgeClass(transaction.request_status || 'approved')">
+                  {{ getStatusText(transaction.request_status || 'approved') }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Tab -->
+  <div *ngIf="activeTab === 'history'" class="tab-content">
+    <div class="history-section">
+      <h2>Historial de Transacciones</h2>
+      
+      <div class="transactions-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Fecha</th>
+              <th>Producto</th>
+              <th>Stock Inicial</th>
+              <th>Entradas</th>
+              <th>Salidas</th>
+              <th>Auto-consumo</th>
+              <th>Stock Final</th>
+              <th>Usuario</th>
+              <th>Estado</th>
+              <th>Motivo Rechazo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let transaction of userTransactions">
+              <td>{{ transaction.codigo_de_transaccion }}</td>
+              <td>{{ formatDate(transaction.fecha) }}</td>
+              <td>{{ transaction.nombre }}</td>
+              <td>{{ transaction.inventario_inicial }}</td>
+              <td>{{ transaction.entradas }}</td>
+              <td>{{ transaction.salidas }}</td>
+              <td>{{ transaction.auto_consumo }}</td>
+              <td>{{ transaction.inventario_final }}</td>
+              <td>{{ transaction.user_name }}</td>
+              <td>
+                <span class="badge" [class]="getStatusBadgeClass(transaction.request_status || 'approved')">
+                  {{ getStatusText(transaction.request_status || 'approved') }}
+                </span>
+              </td>
+              <td>{{ transaction.rejection_reason || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Rejection Modal -->
+<div *ngIf="showRejectionModal" class="modal-overlay" (click)="closeRejectionModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Rechazar Solicitud</h3>
+      <button class="modal-close" (click)="closeRejectionModal()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <p><strong>Producto:</strong> {{ selectedRequest?.product_name }}</p>
+      <p><strong>Tipo:</strong> {{ getTransactionTypeText(selectedRequest?.transaction_type || '') }}</p>
+      <p><strong>Cantidad:</strong> {{ selectedRequest?.quantity }}</p>
+      
+      <form [formGroup]="rejectionForm" (ngSubmit)="rejectRequest()">
+        <div class="form-group">
+          <label for="rejection_reason">Motivo de rechazo *</label>
+          <textarea 
+            id="rejection_reason" 
+            formControlName="rejection_reason" 
+            class="form-control"
+            placeholder="Explique el motivo del rechazo"
+            rows="4"></textarea>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeRejectionModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-danger" [disabled]="!rejectionForm.valid">
+            Rechazar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 

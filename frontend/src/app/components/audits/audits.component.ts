@@ -86,6 +86,31 @@ export class AuditsComponent {
     }
   }
 
+  getActionText(action: string): string {
+    switch (action) {
+      case 'CREATE': return 'Crear';
+      case 'UPDATE': return 'Actualizar';
+      case 'DELETE': return 'Eliminar';
+      case 'APPROVE': return 'Aprobar';
+      case 'REJECT': return 'Rechazar';
+      case 'EXPORT': return 'Exportar';
+      default: return action;
+    }
+  }
+
+  getEntityText(entity: string): string {
+    switch (entity) {
+      case 'products': return 'Productos';
+      case 'categories': return 'Categorías';
+      case 'distributors': return 'Distribuidores';
+      case 'users': return 'Usuarios';
+      case 'inventory_request': return 'Solicitud de Inventario';
+      case 'inventory_transaction': return 'Transacción de Inventario';
+      case 'inventory_transactions': return 'Transacciones de Inventario';
+      default: return entity;
+    }
+  }
+
   navigateToDashboard(): void {
     this.router.navigate(['/dashboard']);
   }

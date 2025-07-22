@@ -178,6 +178,52 @@ class Database {
         )
       `);
 
+      // Tabla para solicitudes de inventario
+      await this.run(`
+        CREATE TABLE IF NOT EXISTS inventory_requests (
+          id SERIAL PRIMARY KEY,
+          user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+          transaction_type VARCHAR(50) NOT NULL CHECK (transaction_type IN ('entrada', 'salida', 'auto_consumo')),
+          quantity INTEGER NOT NULL CHECK (quantity > 0),
+          description TEXT,
+          status VARCHAR(50) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+          admin_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+          rejection_reason TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          processed_at TIMESTAMP
+        )
+      `);
+
+      // Tabla para transacciones de inventario
+      await this.run(`
+        CREATE TABLE IF NOT EXISTS inventory_transactions (
+          id SERIAL PRIMARY KEY,
+          codigo_de_transaccion VARCHAR(100) UNIQUE NOT NULL,
+          fecha TIMESTAMP NOT NULL,
+          codigo_prod VARCHAR(100) NOT NULL,
+          nombre VARCHAR(255) NOT NULL,
+          inventario_inicial INTEGER NOT NULL,
+          entradas INTEGER DEFAULT 0,
+          salidas INTEGER DEFAULT 0,
+          auto_consumo INTEGER DEFAULT 0,
+          inventario_final INTEGER NOT NULL,
+          request_id INTEGER REFERENCES inventory_requests(id) ON DELETE SET NULL,
+          user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
+      // Índices para mejorar el rendimiento
+      await this.run(`
+        CREATE INDEX IF NOT EXISTS idx_inventory_requests_status ON inventory_requests(status);
+        CREATE INDEX IF NOT EXISTS idx_inventory_requests_user_id ON inventory_requests(user_id);
+        CREATE INDEX IF NOT EXISTS idx_inventory_requests_product_id ON inventory_requests(product_id);
+        CREATE INDEX IF NOT EXISTS idx_inventory_transactions_fecha ON inventory_transactions(fecha);
+        CREATE INDEX IF NOT EXISTS idx_inventory_transactions_user_id ON inventory_transactions(user_id);
+        CREATE INDEX IF NOT EXISTS idx_inventory_transactions_codigo_prod ON inventory_transactions(codigo_prod);
+      `);
+
   
     } catch (error) {
       console.error('❌ Error inicializando tablas:', error);

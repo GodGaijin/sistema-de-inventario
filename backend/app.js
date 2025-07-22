@@ -42,12 +42,15 @@ const distributorRoutes = require('./routes/distributorRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const auditRoutes = require('./routes/auditRoutes');
 const ownCommerceRoutes = require('./routes/ownCommerceRoutes');
+const inventoryRoutes = require('./routes/inventoryRoutes');
+
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/distributors', distributorRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/audits', auditRoutes);
 app.use('/api/own-commerce', ownCommerceRoutes);
+app.use('/api/inventory', inventoryRoutes);
 
 
 app.get('/', (req, res) => {

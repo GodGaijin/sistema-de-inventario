@@ -9,6 +9,8 @@ import { CommerceDataComponent } from './components/commerce-data/commerce-data.
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { SettingsComponent } from './components/settings/settings.component';
+import { InventoryComponent } from './components/inventory/inventory.component';
+import { RequestsComponent } from './components/requests/requests.component';
 
 import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
@@ -33,6 +35,8 @@ export const routes: Routes = [
   { path: 'commerce-data', component: CommerceDataComponent, canActivate: [AuthGuard] },
   { path: 'user-management', component: UserManagementComponent, canActivate: [AuthGuard, SeniorAdminGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
+  { path: 'inventory', component: InventoryComponent, canActivate: [AuthGuard] },
+  { path: 'requests', component: RequestsComponent, canActivate: [AuthGuard, AdminGuard] },
   
   // Catch-all route - redirige inteligentemente (SIN pathMatch: 'full')
   { path: '**', redirectTo: '/dashboard' }

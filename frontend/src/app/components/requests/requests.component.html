@@ -1,0 +1,148 @@
+<div class="requests-container">
+  <!-- Header -->
+  <div class="requests-header">
+    <h1>Solicitudes de Inventario</h1>
+    <p>Gestión de solicitudes pendientes y historial de aprobaciones</p>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="tabs-container">
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'pending'"
+      (click)="activeTab = 'pending'">
+      Solicitudes Pendientes
+      <span class="badge-count" *ngIf="getPendingCount() > 0">{{ getPendingCount() }}</span>
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'history'"
+      (click)="activeTab = 'history'">
+      Historial de Solicitudes
+      <span class="badge-count" *ngIf="getHistoryCount() > 0">{{ getHistoryCount() }}</span>
+    </button>
+  </div>
+
+  <!-- Pending Requests Tab -->
+  <div *ngIf="activeTab === 'pending'" class="tab-content">
+    <div class="pending-section">
+      <div class="section-header">
+        <h2>Solicitudes Pendientes de Aprobación</h2>
+        <p *ngIf="pendingRequests.length === 0" class="no-data">
+          No hay solicitudes pendientes
+        </p>
+      </div>
+      
+      <div class="requests-grid">
+        <div *ngFor="let request of pendingRequests" class="request-card pending">
+          <div class="request-header">
+            <span class="badge badge-warning">Pendiente</span>
+            <span class="request-date">{{ formatDate(request.created_at) }}</span>
+          </div>
+          
+          <div class="request-content">
+            <h4>{{ request.product_name }}</h4>
+            <p><strong>Solicitante:</strong> {{ request.user_name }}</p>
+            <p><strong>Código SENIAT:</strong> {{ request.product_code }}</p>
+            <p><strong>Tipo de Transacción:</strong> {{ getTransactionTypeText(request.transaction_type) }}</p>
+            <p><strong>Cantidad:</strong> {{ request.quantity }}</p>
+            <p><strong>Stock Actual:</strong> {{ request.current_stock }}</p>
+            <p><strong>Descripción:</strong> {{ request.description }}</p>
+          </div>
+
+          <div class="request-actions">
+            <button 
+              class="btn btn-success"
+              (click)="approveRequest(request.id)">
+              ✅ Aprobar
+            </button>
+            <button 
+              class="btn btn-danger"
+              (click)="openRejectionModal(request)">
+              ❌ Rechazar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Tab -->
+  <div *ngIf="activeTab === 'history'" class="tab-content">
+    <div class="history-section">
+      <div class="section-header">
+        <h2>Historial de Solicitudes</h2>
+        <p *ngIf="requestHistory.length === 0" class="no-data">
+          No hay solicitudes en el historial
+        </p>
+      </div>
+      
+      <div class="requests-grid">
+        <div *ngFor="let request of requestHistory" class="request-card" [class]="request.status">
+          <div class="request-header">
+            <span class="badge" [class]="getStatusBadgeClass(request.status)">
+              {{ getStatusText(request.status) }}
+            </span>
+            <span class="request-date">{{ formatDate(request.processed_at || request.created_at) }}</span>
+          </div>
+          
+          <div class="request-content">
+            <h4>{{ request.product_name }}</h4>
+            <p><strong>Solicitante:</strong> {{ request.user_name }}</p>
+            <p><strong>Código SENIAT:</strong> {{ request.product_code }}</p>
+            <p><strong>Tipo de Transacción:</strong> {{ getTransactionTypeText(request.transaction_type) }}</p>
+            <p><strong>Cantidad:</strong> {{ request.quantity }}</p>
+            <p><strong>Stock Actual:</strong> {{ request.current_stock }}</p>
+            <p><strong>Descripción:</strong> {{ request.description }}</p>
+            <p *ngIf="request.admin_name"><strong>Procesado por:</strong> {{ request.admin_name }}</p>
+          </div>
+
+          <div *ngIf="request.rejection_reason" class="rejection-reason">
+            <strong>Motivo de rechazo:</strong> {{ request.rejection_reason }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Rejection Modal -->
+<div *ngIf="showRejectionModal" class="modal-overlay" (click)="closeRejectionModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Rechazar Solicitud</h3>
+      <button class="modal-close" (click)="closeRejectionModal()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="request-summary">
+        <p><strong>Producto:</strong> {{ selectedRequest?.product_name }}</p>
+        <p><strong>Solicitante:</strong> {{ selectedRequest?.user_name }}</p>
+        <p><strong>Tipo:</strong> {{ getTransactionTypeText(selectedRequest?.transaction_type || '') }}</p>
+        <p><strong>Cantidad:</strong> {{ selectedRequest?.quantity }}</p>
+        <p><strong>Descripción:</strong> {{ selectedRequest?.description }}</p>
+      </div>
+      
+      <form [formGroup]="rejectionForm" (ngSubmit)="rejectRequest()">
+        <div class="form-group">
+          <label for="rejection_reason">Motivo de rechazo *</label>
+          <textarea 
+            id="rejection_reason" 
+            formControlName="rejection_reason" 
+            class="form-control"
+            placeholder="Explique el motivo del rechazo (requerido)"
+            rows="4"></textarea>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeRejectionModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-danger" [disabled]="!rejectionForm.valid">
+            Rechazar Solicitud
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 

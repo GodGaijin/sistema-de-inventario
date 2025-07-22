@@ -54,11 +54,7 @@ export const TokenInterceptor: HttpInterceptorFn = (request, next) => {
                         router.navigate(['/login']);
                         return throwError(() => new Error('Session expired'));
                       } else {
-                        // Refresh token válido, extender sesión
-                        stateService.addNotification({
-                          message: 'Sesión extendida exitosamente.',
-                          type: 'success'
-                        });
+                        // Refresh token válido, extender sesión silenciosamente
                         
                         // Reintentar la petición original con el nuevo token
                         const newToken = localStorage.getItem('accessToken');

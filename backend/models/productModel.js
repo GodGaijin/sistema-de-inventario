@@ -65,10 +65,39 @@ const deleteProduct = async (id) => {
   }
 };
 
+const updateStock = async (id, newStock) => {
+  try {
+    const result = await db.run(
+      'UPDATE products SET stock = $1 WHERE id = $2',
+      [newStock, id]
+    );
+    return result.changes;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getById = async (id) => {
+  try {
+    const result = await db.query(`
+      SELECT p.*, c.name as category_name, d.name as distributor_name 
+      FROM products p 
+      LEFT JOIN categories c ON p.category_id = c.id 
+      LEFT JOIN distributors d ON p.distributor_id = d.id 
+      WHERE p.id = $1
+    `, [id]);
+    return result.rows ? result.rows[0] : result[0];
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
   createProduct,
   updateProduct,
   deleteProduct,
+  updateStock,
+  getById,
 }; 

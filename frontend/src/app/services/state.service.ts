@@ -180,4 +180,21 @@ export class StateService {
       notifications: this._notifications()
     };
   }
+
+  // Convenience methods for notifications
+  showSuccess(message: string): void {
+    this.addNotification({ message, type: 'success' });
+  }
+
+  showError(message: string): void {
+    this.addNotification({ message, type: 'error' });
+  }
+
+  showWarning(message: string): void {
+    this.addNotification({ message, type: 'warning' });
+  }
+
+  showInfo(message: string): void {
+    this.addNotification({ message, type: 'info' });
+  }
 } 

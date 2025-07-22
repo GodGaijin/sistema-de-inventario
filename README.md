@@ -23,6 +23,7 @@ Este es un sistema completo de inventario desarrollado con **Node.js/Express/Pos
 - **Notificaciones instantáneas** con sistema global
 - **Componentes standalone** para mejor modularidad
 - **Zone.js** para detección de cambios automática
+- **Diseño responsivo optimizado** para móviles (iPhone X, etc.)
 
 ### 📦 Gestión de Productos
 - **Ver lista** de todos los productos
@@ -62,6 +63,25 @@ Este es un sistema completo de inventario desarrollado con **Node.js/Express/Pos
 - **Filtros por fecha** y tipo de acción
 - **Solo visible para administradores**
 - **Registro automático** de todas las operaciones CRUD
+- **Auditoría de inventario** incluyendo solicitudes, aprobaciones y exportaciones
+- **Traducción automática** de acciones y entidades al español
+
+### 📊 Sistema de Inventario (NUEVO)
+- **Gestión completa** de transacciones de inventario según ISLR Venezuela
+- **Solicitudes de inventario** con sistema de aprobación/rechazo
+- **Tipos de transacción:** Entrada, Salida, Auto-consumo
+- **Códigos SENIAT** para identificación fiscal
+- **Historial completo** de transacciones aprobadas y rechazadas
+- **Exportación a Excel** de transacciones con formato profesional
+- **Estadísticas en tiempo real** del inventario
+- **Auditoría completa** de todas las operaciones de inventario
+
+### ✅ Solicitudes de Inventario (NUEVO - Solo Administradores)
+- **Panel de solicitudes pendientes** para administradores
+- **Aprobación/rechazo** de solicitudes con motivo obligatorio
+- **Historial de solicitudes** procesadas
+- **Actualización automática** del stock al aprobar
+- **Seguimiento completo** de todas las solicitudes
 
 ## 🚀 Despliegue en Producción
 

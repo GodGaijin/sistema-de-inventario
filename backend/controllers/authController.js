@@ -119,8 +119,17 @@ exports.register = async (req, res) => {
       throw new Error('No se pudo crear el usuario');
     }
     
+    // Generar token de verificación y enviar email
+    try {
+      const verificationToken = await userModel.generateEmailVerificationToken(email);
+      await emailService.sendEmailVerification(email, verificationToken, username);
+    } catch (emailError) {
+      console.error('Error sending verification email:', emailError);
+      // No fallar el registro si el email falla, pero loguear el error
+    }
+    
     // Usuario registrado exitosamente
-    res.status(201).json({ message: 'Usuario registrado exitosamente.' });
+    res.status(201).json({ message: 'Usuario registrado exitosamente. Por favor, verifica tu email para completar el registro.' });
     
   } catch (error) {
     console.error('❌ Error in register:', error);
@@ -197,6 +206,19 @@ exports.login = async (req, res) => {
     // Validación normal para otros usuarios
     if (!userModel.validatePassword(user, password)) {
       return res.status(401).json({ message: 'Credenciales inválidas.' });
+    }
+    
+    // Verificar si el email está verificado (excepto para admin_senior)
+    if (!userModel.isSeniorAdmin(user.email)) {
+      const emailVerified = await userModel.isEmailVerified(user.email);
+      
+      if (!emailVerified) {
+        return res.status(403).json({ 
+          message: 'Debes verificar tu email antes de acceder al sistema.',
+          emailNotVerified: true,
+          email: user.email
+        });
+      }
     }
     
     const tokens = generateTokens(user);
@@ -547,4 +569,131 @@ exports.getActiveUsersWithRoles = async (req, res) => {
     console.error('Error getting active users with roles:', error);
     res.status(500).json({ message: 'Error interno del servidor.' });
   }
+}; 
+
+// Función para verificar email
+exports.verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.params;
+    
+    if (!token) {
+      return res.status(400).json({ message: 'Token de verificación requerido.' });
+    }
+    
+    const user = await userModel.verifyEmailToken(token);
+    
+    if (!user) {
+      return res.status(400).json({ message: 'Token de verificación inválido o expirado.' });
+    }
+    
+    res.json({ 
+      message: 'Email verificado exitosamente. Ya puedes iniciar sesión en el sistema.',
+      verified: true
+    });
+  } catch (error) {
+    console.error('Error in verifyEmail:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// Función para reenviar email de verificación
+exports.resendVerificationEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ message: 'Email requerido.' });
+    }
+    
+    const user = await userModel.findUserByEmail(email);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado.' });
+    }
+    
+    // Verificar si ya está verificado
+    if (user.is_email_verified) {
+      return res.status(400).json({ message: 'Este email ya está verificado.' });
+    }
+    
+    // Verificar si puede reenviar (timer de 90 segundos)
+    const canResend = await userModel.canResendVerificationEmail(email);
+    
+    if (!canResend) {
+      const timeRemaining = await userModel.getTimeUntilCanResend(email);
+      return res.status(429).json({ 
+        message: `Debes esperar ${Math.ceil(timeRemaining)} segundos antes de solicitar otro email de verificación.`,
+        timeRemaining: Math.ceil(timeRemaining)
+      });
+    }
+    
+    // Generar nuevo token y enviar email
+    const verificationToken = await userModel.generateEmailVerificationToken(email);
+    await emailService.sendEmailVerification(email, verificationToken, user.username);
+    
+    res.json({ 
+      message: 'Email de verificación enviado exitosamente. Revisa tu bandeja de entrada.',
+      sent: true
+    });
+  } catch (error) {
+    console.error('Error in resendVerificationEmail:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// Función para verificar si un usuario puede reenviar email
+exports.checkResendVerificationStatus = async (req, res) => {
+  try {
+    const { email } = req.params;
+    
+    if (!email) {
+      return res.status(400).json({ message: 'Email requerido.' });
+    }
+    
+    const user = await userModel.findUserByEmail(email);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado.' });
+    }
+    
+    // Verificar si ya está verificado
+    if (user.is_email_verified) {
+      return res.json({ 
+        canResend: false, 
+        message: 'Email ya verificado',
+        timeRemaining: 0 
+      });
+    }
+    
+    // Verificar si puede reenviar
+    const canResend = await userModel.canResendVerificationEmail(email);
+    const timeRemaining = await userModel.getTimeUntilCanResend(email);
+    
+    res.json({
+      canResend,
+      timeRemaining: Math.ceil(timeRemaining),
+      message: canResend ? 'Puede reenviar email' : `Debe esperar ${Math.ceil(timeRemaining)} segundos`
+    });
+  } catch (error) {
+    console.error('Error in checkResendVerificationStatus:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+module.exports = {
+  register,
+  login,
+  refreshToken,
+  checkSession,
+  forgotPassword,
+  resetPassword,
+  getAllUsers,
+  getActiveUsersStats,
+  logout,
+  updateUserRole,
+  deleteUser,
+  getActiveUsersWithRoles,
+  verifyEmail,
+  resendVerificationEmail,
+  checkResendVerificationStatus
 }; 

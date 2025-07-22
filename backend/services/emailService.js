@@ -94,7 +94,49 @@ const sendSeniorAdminPassword = (email, tempPassword) => {
   return transporter.sendMail(mailOptions);
 };
 
+const sendEmailVerification = (email, token, username) => {
+  // Usar URL de producción si está disponible, sino frontend de Render
+  const baseUrl = process.env.FRONTEND_URL || 'https://inventory-frontend-2syh.onrender.com';
+  const verificationUrl = `${baseUrl}/verify-email?token=${token}`;
+  
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: 'Verifica tu Email - Sistema de Inventario',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333;">Verifica tu Email</h2>
+        <p>Hola <strong>${username}</strong>,</p>
+        <p>Gracias por registrarte en el Sistema de Inventario. Para completar tu registro, necesitamos verificar que este email te pertenece.</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${verificationUrl}" 
+             style="background-color: #28a745; color: white; padding: 15px 30px; 
+                    text-decoration: none; border-radius: 8px; display: inline-block; font-size: 16px; font-weight: bold;">
+            ✅ Verificar mi Email
+          </a>
+        </div>
+        <p><strong>¿No funciona el botón?</strong></p>
+        <p>Copia y pega este enlace en tu navegador:</p>
+        <p style="word-break: break-all; color: #007bff; font-size: 14px;">${verificationUrl}</p>
+        <p><strong>⚠️ Importante:</strong></p>
+        <ul>
+          <li>Este enlace es válido por tiempo indefinido</li>
+          <li>No compartas este enlace con nadie</li>
+          <li>Si no te registraste en nuestro sistema, puedes ignorar este correo</li>
+        </ul>
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+        <p style="color: #666; font-size: 12px;">
+          Este es un correo automático del Sistema de Inventario. Por favor no respondas a este mensaje.
+        </p>
+      </div>
+    `
+  };
+
+  return transporter.sendMail(mailOptions);
+};
+
 module.exports = {
   sendPasswordResetEmail,
-  sendSeniorAdminPassword
+  sendSeniorAdminPassword,
+  sendEmailVerification
 }; 

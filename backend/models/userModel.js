@@ -218,6 +218,112 @@ const deleteUser = async (userId) => {
   }
 };
 
+// Funciones para verificación de email
+const generateEmailVerificationToken = async (email) => {
+  try {
+    const token = crypto.randomBytes(32).toString('hex');
+    const now = new Date();
+    
+    await db.run(
+      'UPDATE users SET email_verification_token = $1, last_verification_email_sent = $2 WHERE email = $3',
+      [token, now.toISOString(), email]
+    );
+    
+    return token;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const verifyEmailToken = async (token) => {
+  try {
+    const result = await db.query(
+      'SELECT * FROM users WHERE email_verification_token = $1',
+      [token]
+    );
+    
+    const user = result.rows ? result.rows[0] : result[0];
+    
+    if (!user) {
+      return null;
+    }
+    
+    // Marcar email como verificado y eliminar token
+    await db.run(
+      'UPDATE users SET is_email_verified = TRUE, email_verification_token = NULL WHERE id = $1',
+      [user.id]
+    );
+    
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const canResendVerificationEmail = async (email) => {
+  try {
+    const result = await db.query(
+      'SELECT last_verification_email_sent FROM users WHERE email = $1',
+      [email]
+    );
+    
+    const user = result.rows ? result.rows[0] : result[0];
+    
+    if (!user || !user.last_verification_email_sent) {
+      return true; // Puede enviar si nunca se ha enviado
+    }
+    
+    const lastSent = new Date(user.last_verification_email_sent);
+    const now = new Date();
+    const timeDiff = (now - lastSent) / 1000; // Diferencia en segundos
+    
+    return timeDiff >= 90; // Debe haber pasado al menos 90 segundos
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getTimeUntilCanResend = async (email) => {
+  try {
+    const result = await db.query(
+      'SELECT last_verification_email_sent FROM users WHERE email = $1',
+      [email]
+    );
+    
+    const user = result.rows ? result.rows[0] : result[0];
+    
+    if (!user || !user.last_verification_email_sent) {
+      return 0; // Puede enviar inmediatamente
+    }
+    
+    const lastSent = new Date(user.last_verification_email_sent);
+    const now = new Date();
+    const timeDiff = (now - lastSent) / 1000; // Diferencia en segundos
+    
+    return Math.max(0, 90 - timeDiff); // Tiempo restante en segundos
+  } catch (error) {
+    throw error;
+  }
+};
+
+const isEmailVerified = async (email) => {
+  try {
+    const result = await db.query(
+      'SELECT is_email_verified FROM users WHERE email = $1',
+      [email]
+    );
+    
+    const user = result.rows ? result.rows[0] : result[0];
+    return user ? user.is_email_verified : false;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const isSeniorAdmin = (email) => {
+  return email === process.env.SENIOR_ADMIN_EMAIL;
+};
+
 module.exports = {
   findUserByUsername,
   findUserByEmail,
@@ -233,4 +339,10 @@ module.exports = {
   getAllUsers,
   getUserById,
   deleteUser,
+  generateEmailVerificationToken,
+  verifyEmailToken,
+  canResendVerificationEmail,
+  getTimeUntilCanResend,
+  isEmailVerified,
+  isSeniorAdmin,
 }; 

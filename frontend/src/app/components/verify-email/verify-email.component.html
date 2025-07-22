@@ -1,0 +1,36 @@
+<div class="verify-email-container">
+  <div class="verify-email-card">
+    <div class="verify-email-header">
+      <h2>Verificación de Email</h2>
+    </div>
+
+    <div class="verify-email-content">
+      <!-- Estado de carga -->
+      <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Verificando tu email...</p>
+      </div>
+
+      <!-- Estado de éxito -->
+      <div *ngIf="!loading && verified" class="success-state">
+        <div class="success-icon">✅</div>
+        <h3>¡Email Verificado!</h3>
+        <p>{{ message }}</p>
+        <p class="redirect-message">Serás redirigido al login en unos segundos...</p>
+        <button class="btn btn-primary" (click)="goToLogin()">
+          Ir al Login
+        </button>
+      </div>
+
+      <!-- Estado de error -->
+      <div *ngIf="!loading && !verified && error" class="error-state">
+        <div class="error-icon">❌</div>
+        <h3>Error de Verificación</h3>
+        <p>{{ error }}</p>
+        <button class="btn btn-primary" (click)="goToLogin()">
+          Ir al Login
+        </button>
+      </div>
+    </div>
+  </div>
+</div> 

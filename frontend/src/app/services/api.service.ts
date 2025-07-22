@@ -136,4 +136,17 @@ export class ApiService {
   delete(endpoint: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}${endpoint}`, { headers: this.getHeaders() });
   }
+
+  // Email Verification
+  verifyEmail(token: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/auth/verify-email/${token}`);
+  }
+
+  resendVerificationEmail(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/resend-verification`, { email });
+  }
+
+  checkResendVerificationStatus(email: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/auth/check-resend-status/${email}`);
+  }
 } 

@@ -1,6 +1,6 @@
 <div class="login-container">
   <div class="login-card">
-    <div *ngIf="!showRegister && !showForgotPassword">
+    <div *ngIf="!showRegister && !showForgotPassword && !showEmailVerification">
       <div class="login-header">
         <h1>Iniciar Sesión</h1>
         <p>Accede a tu cuenta del sistema</p>
@@ -88,6 +88,31 @@
         <button type="submit" class="login-btn" [disabled]="!forgotPasswordForm.valid">📧 Enviar enlace de recuperación</button>
       </form>
       <button (click)="toggleForgotPassword()" class="btn btn-secondary">🔙 Volver a Iniciar Sesión</button>
+    </div>
+
+    <div *ngIf="showEmailVerification">
+      <div class="login-header">
+        <h1>Verificación de Email</h1>
+        <p>Debes verificar tu email antes de continuar</p>
+      </div>
+      <div class="verification-content">
+        <div class="verification-info">
+          <p>Se ha enviado un email de verificación a:</p>
+          <p class="email-display">{{ pendingEmail }}</p>
+          <p>Por favor, revisa tu bandeja de entrada y haz clic en el enlace de verificación.</p>
+        </div>
+        <div class="verification-actions">
+          <button 
+            type="button" 
+            class="login-btn" 
+            [disabled]="!canResend"
+            (click)="onResendVerification()">
+            <span *ngIf="canResend">📧 Reenviar Email de Verificación</span>
+            <span *ngIf="!canResend">⏳ Esperar {{ resendTimer }}s</span>
+          </button>
+          <button (click)="closeEmailVerification()" class="btn btn-secondary">🔙 Volver a Iniciar Sesión</button>
+        </div>
+      </div>
     </div>
 
     <div *ngIf="message" class="message" [ngClass]="messageType">

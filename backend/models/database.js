@@ -107,7 +107,10 @@ class Database {
           email VARCHAR(255) UNIQUE,
           role VARCHAR(50) NOT NULL DEFAULT 'user',
           reset_token VARCHAR(255),
-          reset_token_expires TIMESTAMP
+          reset_token_expires TIMESTAMP,
+          is_email_verified BOOLEAN DEFAULT FALSE,
+          email_verification_token VARCHAR(255),
+          last_verification_email_sent TIMESTAMP
         )
       `);
 

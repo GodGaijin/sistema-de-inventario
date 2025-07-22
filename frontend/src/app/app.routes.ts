@@ -11,6 +11,7 @@ import { UserManagementComponent } from './components/user-management/user-manag
 import { SettingsComponent } from './components/settings/settings.component';
 import { InventoryComponent } from './components/inventory/inventory.component';
 import { RequestsComponent } from './components/requests/requests.component';
+import { VerifyEmailComponent } from './components/verify-email/verify-email.component';
 
 import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
@@ -25,6 +26,7 @@ export const routes: Routes = [
   // Rutas públicas con verificación de token
   { path: 'login', component: LoginComponent, canActivate: [RedirectGuard] },
   { path: 'reset-password', component: ResetPasswordComponent, canActivate: [ResetPasswordGuard] },
+  { path: 'verify-email/:token', component: VerifyEmailComponent },
   
   // Rutas protegidas
   { path: 'dashboard', component: HomeComponent, canActivate: [AuthGuard] },

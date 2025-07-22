@@ -154,3 +154,8 @@ angular-cli.json
 .fusebox/
 .dynamodb/
 .tern-port 
+
+# ========================================
+# SCRIPTS DE MIGRACIÓN Y UTILIDAD
+# ========================================
+backend/migrate-*.js 

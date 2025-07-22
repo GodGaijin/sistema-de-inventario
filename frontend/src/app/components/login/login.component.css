@@ -235,4 +235,67 @@
   .login-container {
     padding: 40px;
   }
+}
+
+/* ===== EMAIL VERIFICATION STYLES ===== */
+.verification-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.verification-info {
+  text-align: center;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.verification-info p {
+  margin: 8px 0;
+  color: #495057;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.email-display {
+  font-weight: 600;
+  color: #007bff !important;
+  font-size: 1rem !important;
+  background: #e3f2fd;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin: 12px 0 !important;
+  word-break: break-all;
+}
+
+.verification-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.verification-actions .login-btn {
+  min-height: 48px;
+  font-size: 0.95rem;
+}
+
+.verification-actions .login-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.verification-actions .login-btn:disabled span {
+  opacity: 0.7;
+}
+
+/* Timer animation */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.verification-actions .login-btn:disabled span {
+  animation: pulse 1s ease-in-out infinite;
 } 

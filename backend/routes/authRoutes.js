@@ -11,6 +11,11 @@ router.post('/logout', authController.logout);
 router.post('/forgot-password', authController.forgotPassword);
 router.post('/reset-password', authController.resetPassword);
 
+// Rutas para verificación de email
+router.get('/verify-email/:token', authController.verifyEmail);
+router.post('/resend-verification', authController.resendVerificationEmail);
+router.get('/check-resend-status/:email', authController.checkResendVerificationStatus);
+
 // Rutas protegidas para admin senior
 router.get('/users', authenticateToken, authController.getAllUsers);
 router.put('/users/:userId/role', authenticateToken, authController.updateUserRole);

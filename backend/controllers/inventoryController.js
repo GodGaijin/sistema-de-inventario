@@ -130,12 +130,12 @@ const approveRequest = async (req, res) => {
             });
         }
 
-        // Obtener el producto
-        const product = await ProductModel.getById(request.product_id);
+        // Obtener el producto (puede ser null si fue eliminado)
+        const product = request.product_id ? await ProductModel.getById(request.product_id) : null;
         if (!product) {
-            return res.status(404).json({
+            return res.status(400).json({
                 success: false,
-                message: 'Producto no encontrado'
+                message: 'No se puede aprobar una solicitud para un producto que ha sido eliminado'
             });
         }
 
@@ -254,12 +254,12 @@ const rejectRequest = async (req, res) => {
             });
         }
 
-        // Obtener el producto
-        const product = await ProductModel.getById(request.product_id);
+        // Obtener el producto (puede ser null si fue eliminado)
+        const product = request.product_id ? await ProductModel.getById(request.product_id) : null;
         if (!product) {
-            return res.status(404).json({
+            return res.status(400).json({
                 success: false,
-                message: 'Producto no encontrado'
+                message: 'No se puede procesar una solicitud para un producto que ha sido eliminado'
             });
         }
 

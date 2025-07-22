@@ -32,12 +32,12 @@ class InventoryRequestModel {
         const query = `
             SELECT ir.*, 
                    u.username as user_name,
-                   p.name as product_name,
+                   COALESCE(p.name, 'Producto Eliminado') as product_name,
                    ir.codigo_prod as product_code,
-                   p.stock as current_stock
+                   COALESCE(p.stock, 0) as current_stock
             FROM inventory_requests ir
             JOIN users u ON ir.user_id = u.id
-            JOIN products p ON ir.product_id = p.id
+            LEFT JOIN products p ON ir.product_id = p.id
             WHERE ir.status = 'pending'
             ORDER BY ir.created_at DESC
         `;
@@ -55,13 +55,13 @@ class InventoryRequestModel {
         const query = `
             SELECT ir.*, 
                    u.username as user_name,
-                   p.name as product_name,
+                   COALESCE(p.name, 'Producto Eliminado') as product_name,
                    ir.codigo_prod as product_code,
-                   p.stock as current_stock,
+                   COALESCE(p.stock, 0) as current_stock,
                    admin.username as admin_name
             FROM inventory_requests ir
             JOIN users u ON ir.user_id = u.id
-            JOIN products p ON ir.product_id = p.id
+            LEFT JOIN products p ON ir.product_id = p.id
             LEFT JOIN users admin ON ir.admin_id = admin.id
             WHERE ir.id = $1
         `;
@@ -78,12 +78,12 @@ class InventoryRequestModel {
     static async getRequestsByUser(userId) {
         const query = `
             SELECT ir.*, 
-                   p.name as product_name,
+                   COALESCE(p.name, 'Producto Eliminado') as product_name,
                    ir.codigo_prod as product_code,
-                   p.stock as current_stock,
+                   COALESCE(p.stock, 0) as current_stock,
                    u.username as admin_name
             FROM inventory_requests ir
-            JOIN products p ON ir.product_id = p.id
+            LEFT JOIN products p ON ir.product_id = p.id
             LEFT JOIN users u ON ir.admin_id = u.id
             WHERE ir.user_id = $1
             ORDER BY ir.created_at DESC
@@ -141,12 +141,12 @@ class InventoryRequestModel {
         const query = `
             SELECT ir.*, 
                    u.username as user_name,
-                   p.name as product_name,
+                   COALESCE(p.name, 'Producto Eliminado') as product_name,
                    ir.codigo_prod as product_code,
                    admin.username as admin_name
             FROM inventory_requests ir
             JOIN users u ON ir.user_id = u.id
-            JOIN products p ON ir.product_id = p.id
+            LEFT JOIN products p ON ir.product_id = p.id
             LEFT JOIN users admin ON ir.admin_id = admin.id
             WHERE ir.status IN ('approved', 'rejected')
             ORDER BY ir.processed_at DESC

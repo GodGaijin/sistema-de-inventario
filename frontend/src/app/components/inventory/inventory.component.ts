@@ -274,7 +274,6 @@ export class InventoryComponent implements OnInit {
       
       this.stateService.showSuccess('Archivo Excel descargado exitosamente');
     } catch (error: any) {
-      console.error('Error exporting transactions:', error);
       this.stateService.showError('Error al exportar transacciones');
     } finally {
       this.loading = false;

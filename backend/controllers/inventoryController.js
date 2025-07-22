@@ -7,11 +7,11 @@ const { logAudit } = require('../models/auditModel');
 // Crear una nueva solicitud de inventario
 const createRequest = async (req, res) => {
     try {
-        const { product_id, transaction_type, quantity, description } = req.body;
+        const { product_id, codigo_prod, transaction_type, quantity, description } = req.body;
         const userId = req.user.id;
 
         // Validar datos requeridos
-        if (!product_id || !transaction_type || !quantity) {
+        if (!product_id || !codigo_prod || !transaction_type || !quantity) {
             return res.status(400).json({
                 success: false,
                 message: 'Todos los campos son requeridos'
@@ -39,6 +39,7 @@ const createRequest = async (req, res) => {
         // Crear la solicitud
         const request = await InventoryRequestModel.create(userId, {
             product_id,
+            codigo_prod,
             transaction_type,
             quantity,
             description

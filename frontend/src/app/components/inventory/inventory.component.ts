@@ -58,6 +58,16 @@ export class InventoryComponent implements OnInit {
   userTransactions: InventoryTransaction[] = [];
   stats: any = {};
   
+  // Códigos SENIAT para inventario
+  seniatCodes = [
+    { code: '053', description: 'Servicios generales' },
+    { code: '057', description: 'Arrendamiento de inmuebles' },
+    { code: '061', description: 'Arrendamiento de bienes muebles' },
+    { code: '071', description: 'Fletes nacionales' },
+    { code: '083', description: 'Publicidad y propaganda' },
+    { code: 'otro', description: 'Otro (especificar)' }
+  ];
+  
   requestForm: FormGroup;
   rejectionForm: FormGroup;
   selectedRequest: InventoryRequest | null = null;
@@ -74,6 +84,7 @@ export class InventoryComponent implements OnInit {
     this.requestForm = this.fb.group({
       product_id: ['', Validators.required],
       codigo_prod: ['', Validators.required],
+      codigo_prod_otro: [''],
       transaction_type: ['', Validators.required],
       quantity: ['', [Validators.required, Validators.min(1)]],
       description: [''] // Ahora opcional
@@ -146,7 +157,17 @@ export class InventoryComponent implements OnInit {
     if (this.requestForm.valid) {
       this.loading = true;
       try {
-        const response = await this.apiService.post('/inventory/requests', this.requestForm.value).toPromise();
+        const formData = { ...this.requestForm.value };
+        
+        // Si se seleccionó "otro", usar el valor del campo codigo_prod_otro
+        if (formData.codigo_prod === 'otro') {
+          formData.codigo_prod = formData.codigo_prod_otro;
+        }
+        
+        // Eliminar el campo temporal
+        delete formData.codigo_prod_otro;
+        
+        const response = await this.apiService.post('/inventory/requests', formData).toPromise();
         if (response?.success) {
           this.requestForm.reset();
           this.loadUserRequests();
@@ -286,5 +307,24 @@ export class InventoryComponent implements OnInit {
       hour: '2-digit',
       minute: '2-digit'
     });
+  }
+
+  // Verificar si se debe mostrar el campo "otro"
+  showOtherCodeField(): boolean {
+    return this.requestForm.get('codigo_prod')?.value === 'otro';
+  }
+
+  // Validar el formulario considerando el campo "otro"
+  isFormValid(): boolean {
+    const form = this.requestForm;
+    const codigoProd = form.get('codigo_prod')?.value;
+    const codigoProdOtro = form.get('codigo_prod_otro')?.value;
+    
+    // Si se seleccionó "otro", el campo otro debe estar lleno
+    if (codigoProd === 'otro' && !codigoProdOtro) {
+      return false;
+    }
+    
+    return form.valid;
   }
 } 

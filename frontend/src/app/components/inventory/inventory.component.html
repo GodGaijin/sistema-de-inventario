@@ -78,12 +78,22 @@
           
           <div class="form-group">
             <label for="codigo_prod">Código SENIAT *</label>
+            <select id="codigo_prod" formControlName="codigo_prod" class="form-control">
+              <option value="">Seleccionar código</option>
+              <option *ngFor="let code of seniatCodes" [value]="code.code">
+                {{ code.code }} - {{ code.description }}
+              </option>
+            </select>
+          </div>
+          
+          <div class="form-group" *ngIf="showOtherCodeField()">
+            <label for="codigo_prod_otro">Especificar código *</label>
             <input 
               type="text" 
-              id="codigo_prod" 
-              formControlName="codigo_prod" 
+              id="codigo_prod_otro" 
+              formControlName="codigo_prod_otro" 
               class="form-control"
-              placeholder="Ingrese el código SENIAT">
+              placeholder="Ingrese el código específico">
           </div>
         </div>
 
@@ -112,17 +122,6 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label for="quantity">Cantidad *</label>
-            <input 
-              type="number" 
-              id="quantity" 
-              formControlName="quantity" 
-              class="form-control"
-              min="1"
-              placeholder="Ingrese la cantidad">
-          </div>
-          
-          <div class="form-group">
             <label for="description">Descripción</label>
             <textarea 
               id="description" 
@@ -136,7 +135,7 @@
           <button 
             type="submit" 
             class="btn btn-primary"
-            [disabled]="!requestForm.valid || loading">
+            [disabled]="!isFormValid() || loading">
             <span *ngIf="loading">Creando...</span>
             <span *ngIf="!loading">Crear Solicitud</span>
           </button>

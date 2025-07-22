@@ -243,14 +243,26 @@ export class InventoryComponent implements OnInit {
         url += '?' + params.toString();
       }
 
-      // Hacer la petición para obtener el archivo Excel
-      const response = await this.apiService.get(url).toPromise();
+      // Obtener el token de autenticación
+      const token = this.authService.getToken();
       
-      // Crear blob y descargar el archivo
-      const blob = new Blob([response], { 
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      // Hacer la petición usando fetch para manejar archivos binarios
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Obtener el blob del archivo
+      const blob = await response.blob();
       
+      // Crear URL del blob y descargar el archivo
       const urlBlob = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = urlBlob;
@@ -262,6 +274,7 @@ export class InventoryComponent implements OnInit {
       
       this.stateService.showSuccess('Archivo Excel descargado exitosamente');
     } catch (error: any) {
+      console.error('Error exporting transactions:', error);
       this.stateService.showError('Error al exportar transacciones');
     } finally {
       this.loading = false;

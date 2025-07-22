@@ -23,4 +23,6 @@ const authorizeRole = (roles) => (req, res, next) => {
   next();
 };
 
-module.exports = { authenticateToken, authorizeRole }; 
+const isAdmin = authorizeRole(['admin']);
+
+module.exports = { authenticateToken, authorizeRole, isAdmin }; 

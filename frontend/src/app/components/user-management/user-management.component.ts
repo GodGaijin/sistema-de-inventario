@@ -60,16 +60,15 @@ export class UserManagementComponent {
 
   loadUsers(): void {
     this.loading = true;
-    this.apiService.getUsersWithSecurityInfo().subscribe({
+    this.securityService.getUsersWithSecurityInfo().subscribe({
       next: (users: User[]) => {
         this.users = users.sort((a, b) => a.id - b.id); // Ordenar por ID ascendente
-        this.applyFilters();
+        this.filteredUsers = this.users;
         this.loading = false;
       },
-      error: (error: any) => {
-        console.error('Error loading users:', error);
-        this.showMessage('Error al cargar usuarios', 'error');
+      error: (error) => {
         this.loading = false;
+        this.showMessage('Error al cargar usuarios', 'error');
       }
     });
   }

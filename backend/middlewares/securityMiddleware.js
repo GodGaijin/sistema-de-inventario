@@ -306,7 +306,7 @@ const securityLogging = async (req, res, next) => {
         const details = {
           method: req.method,
           statusCode: res.statusCode,
-          username: req.body.username || req.body.email,
+          username: (req.body && (req.body.username || req.body.email)) || null,
           turnstileData: req.turnstileData,
           securityAnalysis: req.securityAnalysis
         };

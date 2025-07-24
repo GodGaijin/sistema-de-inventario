@@ -1,5 +1,52 @@
-<form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-  <div class="cf-turnstile" data-sitekey="0x4AAAAAABmYB-iNDrW2Yw0I" data-callback="onTurnstileSuccess"></div>
-  <button type="submit">Registrarse</button>
-</form>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script> 
+<div class="register-container">
+  <div class="register-card">
+    <div class="register-header">
+      <h1>Registro</h1>
+      <p>Crea tu cuenta en el sistema</p>
+    </div>
+    
+    <form class="register-form" [formGroup]="registerForm" (ngSubmit)="onRegister()">
+      <div class="form-group">
+        <label for="username">Usuario</label>
+        <input 
+          type="text" 
+          id="username"
+          formControlName="username" 
+          placeholder="Ingresa tu usuario" 
+          required>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email"
+          formControlName="email" 
+          placeholder="Ingresa tu email" 
+          required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input 
+          type="password" 
+          id="password"
+          formControlName="password" 
+          placeholder="Ingresa tu contraseña" 
+          required>
+      </div>
+      
+      <div id="turnstile-register" class="cf-turnstile"></div>
+      
+      <button type="submit" class="register-btn" [disabled]="!registerForm.valid">📝 Registrarse</button>
+    </form>
+    
+    <div class="register-links">
+      <p>¿Ya tienes una cuenta? <a href="#" (click)="goToLogin(); $event.preventDefault()">Inicia sesión aquí</a></p>
+    </div>
+    
+    <div *ngIf="message" class="message" [ngClass]="messageType">
+      {{ message }}
+    </div>
+  </div>
+</div> 

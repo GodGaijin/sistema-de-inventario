@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
+import { RegisterComponent } from './components/register/register.component';
 import { HomeComponent } from './components/home/home.component';
 import { ProductsComponent } from './components/products/products.component';
 import { CategoriesComponent } from './components/categories/categories.component';
@@ -25,6 +26,7 @@ export const routes: Routes = [
   
   // Rutas públicas con verificación de token
   { path: 'login', component: LoginComponent, canActivate: [RedirectGuard] },
+  { path: 'register', component: RegisterComponent, canActivate: [RedirectGuard] },
   { path: 'reset-password', component: ResetPasswordComponent, canActivate: [ResetPasswordGuard] },
   { path: 'verify-email', component: VerifyEmailComponent },
   

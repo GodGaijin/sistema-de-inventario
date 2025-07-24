@@ -3,6 +3,7 @@
 
 /verify-email/*    /index.html   200
 /reset-password/*  /index.html   200
+/register/*        /index.html   200
 /security/*        /index.html   200
 /auth/*            /index.html   200
 
@@ -10,6 +11,7 @@
 
 # Ensure all Angular routes work
 /login    /index.html   200
+/register    /index.html   200
 /reset-password    /index.html   200
 /verify-email    /index.html   200
 /dashboard    /index.html   200

@@ -14,9 +14,7 @@ import { ApiService } from '../../services/api.service';
 })
 export class LoginComponent {
   loginForm: FormGroup;
-  registerForm: FormGroup;
   forgotPasswordForm: FormGroup;
-  showRegister = false;
   showForgotPassword = false;
   showEmailVerification = false;
   message = '';
@@ -37,12 +35,6 @@ export class LoginComponent {
       password: ['', Validators.required]
     });
 
-    this.registerForm = this.fb.group({
-      username: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
-    });
-
     this.forgotPasswordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]]
     });
@@ -54,45 +46,33 @@ export class LoginComponent {
       this.turnstileToken = token;
     };
 
-    // Renderizar widgets de Turnstile cuando el DOM esté listo
-    this.renderTurnstileWidgets();
+    // Renderizar widget de Turnstile cuando el DOM esté listo
+    setTimeout(() => {
+      this.renderTurnstileWidget();
+    }, 1000);
   }
 
-  private renderTurnstileWidgets(): void {
+  private renderTurnstileWidget(): void {
     // Esperar a que Turnstile esté disponible
     if (typeof (window as any).turnstile !== 'undefined') {
-      this.renderWidgets();
+      this.renderWidget();
     } else {
       // Si Turnstile no está disponible, esperar y reintentar
       setTimeout(() => {
-        this.renderTurnstileWidgets();
+        this.renderTurnstileWidget();
       }, 1000);
     }
   }
 
-  private renderWidgets(): void {
+  private renderWidget(): void {
     if (typeof (window as any).turnstile !== 'undefined') {
-      // Solo renderizar el widget que corresponde al formulario actual
-      if (!this.showRegister && !this.showForgotPassword && !this.showEmailVerification) {
-        // Estamos en el formulario de login
-        const loginContainer = document.getElementById('turnstile-login');
-        if (loginContainer) {
-          (window as any).turnstile.render('#turnstile-login', {
-            sitekey: '0x4AAAAAABmYB-iNDrW2Yw0I',
-            callback: 'onTurnstileSuccess',
-            theme: 'light'
-          });
-        }
-      } else if (this.showRegister) {
-        // Estamos en el formulario de registro
-        const registerContainer = document.getElementById('turnstile-register');
-        if (registerContainer) {
-          (window as any).turnstile.render('#turnstile-register', {
-            sitekey: '0x4AAAAAABmYB-iNDrW2Yw0I',
-            callback: 'onTurnstileSuccess',
-            theme: 'light'
-          });
-        }
+      const loginContainer = document.getElementById('turnstile-login');
+      if (loginContainer) {
+        (window as any).turnstile.render('#turnstile-login', {
+          sitekey: '0x4AAAAAABmYB-iNDrW2Yw0I',
+          callback: 'onTurnstileSuccess',
+          theme: 'light'
+        });
       }
     }
   }
@@ -120,48 +100,11 @@ export class LoginComponent {
           if (error.error?.emailNotVerified) {
             this.pendingEmail = error.error.email;
             this.showEmailVerification = true;
-            this.showRegister = false;
             this.showForgotPassword = false;
             this.checkResendStatus();
           } else {
             this.showMessage(error.error?.message || 'Error al iniciar sesión', 'error');
           }
-        }
-      });
-    }
-  }
-
-  onRegister(): void {
-    if (this.registerForm.valid) {
-      const { username, email, password } = this.registerForm.value;
-      
-      if (!this.turnstileToken) {
-        this.showMessage('Por favor completa el captcha de seguridad.', 'error');
-        return;
-      }
-
-      // Validate password
-      if (!this.authService.validatePassword(password)) {
-        this.showMessage('La contraseña debe contener al menos una letra, un número y un caracter especial.', 'error');
-        return;
-      }
-
-      const registerData = {
-        username,
-        email,
-        password,
-        turnstileToken: this.turnstileToken
-      };
-
-      this.apiService.register(registerData).subscribe({
-        next: () => {
-          this.showMessage('¡Registro exitoso! Por favor verifica tu email para completar el registro.', 'success');
-          this.showRegister = false;
-          this.registerForm.reset();
-          this.turnstileToken = null;
-        },
-        error: (error) => {
-          this.showMessage(error.error?.message || 'Error al registrarse', 'error');
         }
       });
     }
@@ -242,30 +185,15 @@ export class LoginComponent {
     this.canResend = true;
   }
 
-  toggleRegister(): void {
-    this.showRegister = !this.showRegister;
-    this.showForgotPassword = false;
-    this.showEmailVerification = false;
-    this.message = '';
-    this.turnstileToken = null; // Reset token when switching forms
-    
-    // Re-renderizar widgets después del cambio
-    setTimeout(() => {
-      this.renderWidgets();
-    }, 200);
-  }
-
   toggleForgotPassword(): void {
     this.showForgotPassword = !this.showForgotPassword;
-    this.showRegister = false;
     this.showEmailVerification = false;
     this.message = '';
     this.turnstileToken = null; // Reset token when switching forms
-    
-    // Re-renderizar widgets después del cambio
-    setTimeout(() => {
-      this.renderWidgets();
-    }, 200);
+  }
+
+  goToRegister(): void {
+    this.router.navigate(['/register']);
   }
 
   private showMessage(message: string, type: string): void {

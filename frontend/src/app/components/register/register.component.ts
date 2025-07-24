@@ -1,54 +1,115 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ApiService } from 'src/app/services/api.service';
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-register',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent {
   registerForm: FormGroup;
+  message = '';
+  messageType = '';
   turnstileToken: string | null = null;
 
   constructor(
     private fb: FormBuilder,
-    private apiService: ApiService
+    private authService: AuthService,
+    private apiService: ApiService,
+    private router: Router
   ) {
     this.registerForm = this.fb.group({
       username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
-      // Agrega aquí otros campos si tienes
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     // Registrar callback global para Turnstile
     (window as any).onTurnstileSuccess = (token: string) => {
       this.turnstileToken = token;
     };
+
+    // Renderizar widget de Turnstile cuando el DOM esté listo
+    setTimeout(() => {
+      this.renderTurnstileWidget();
+    }, 1000);
   }
 
-  onSubmit(): void {
-    if (!this.turnstileToken) {
-      alert('Por favor completa el captcha de seguridad.');
-      return;
+  private renderTurnstileWidget(): void {
+    // Esperar a que Turnstile esté disponible
+    if (typeof (window as any).turnstile !== 'undefined') {
+      this.renderWidget();
+    } else {
+      // Si Turnstile no está disponible, esperar y reintentar
+      setTimeout(() => {
+        this.renderTurnstileWidget();
+      }, 1000);
     }
-    if (this.registerForm.invalid) {
-      return;
-    }
-    const registerData = {
-      ...this.registerForm.value,
-      turnstileToken: this.turnstileToken
-    };
-    this.apiService.register(registerData).subscribe(
-      (response) => {
-        // Maneja el éxito (puedes mostrar un mensaje o redirigir)
-      },
-      (error) => {
-        // Maneja el error (puedes mostrar un mensaje de error)
+  }
+
+  private renderWidget(): void {
+    if (typeof (window as any).turnstile !== 'undefined') {
+      const registerContainer = document.getElementById('turnstile-register');
+      if (registerContainer) {
+        (window as any).turnstile.render('#turnstile-register', {
+          sitekey: '0x4AAAAAABmYB-iNDrW2Yw0I',
+          callback: 'onTurnstileSuccess',
+          theme: 'light'
+        });
       }
-    );
+    }
+  }
+
+  onRegister(): void {
+    if (this.registerForm.valid) {
+      const { username, email, password } = this.registerForm.value;
+      
+      if (!this.turnstileToken) {
+        this.showMessage('Por favor completa el captcha de seguridad.', 'error');
+        return;
+      }
+
+      // Validate password
+      if (!this.authService.validatePassword(password)) {
+        this.showMessage('La contraseña debe contener al menos una letra, un número y un caracter especial.', 'error');
+        return;
+      }
+
+      const registerData = {
+        username,
+        email,
+        password,
+        turnstileToken: this.turnstileToken
+      };
+
+      this.apiService.register(registerData).subscribe({
+        next: () => {
+          this.showMessage('¡Registro exitoso! Por favor verifica tu email para completar el registro.', 'success');
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 3000);
+        },
+        error: (error) => {
+          this.showMessage(error.error?.message || 'Error al registrarse', 'error');
+        }
+      });
+    }
+  }
+
+  goToLogin(): void {
+    this.router.navigate(['/login']);
+  }
+
+  private showMessage(message: string, type: string): void {
+    this.message = message;
+    this.messageType = type;
   }
 } 

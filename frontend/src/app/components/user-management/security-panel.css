@@ -171,4 +171,126 @@
 @media (min-width: 768px) {
   .security-section { padding: 28px; }
   .account-stats { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* User Management Actions */
+.user-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-suspend, .btn-unsuspend, .btn-delete {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.btn-suspend {
+  background: #ffc107;
+  color: #212529;
+}
+
+.btn-suspend:hover {
+  background: #e0a800;
+}
+
+.btn-unsuspend {
+  background: #28a745;
+  color: white;
+}
+
+.btn-unsuspend:hover {
+  background: #218838;
+}
+
+.btn-delete {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-delete:hover {
+  background: #c82333;
+}
+
+/* Suspended Users Section */
+.suspended-users { margin-top: 16px; }
+
+.suspended-list h4 {
+  color: #495057;
+  margin-bottom: 16px;
+  font-size: 1.1rem;
+}
+
+.suspended-user-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  margin-bottom: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #ffc107;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-info strong {
+  color: #2c3e50;
+  font-size: 1rem;
+  display: block;
+}
+
+.user-email {
+  display: block;
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin: 4px 0;
+}
+
+.suspension-reason {
+  display: block;
+  color: #856404;
+  font-size: 0.85rem;
+  margin: 4px 0;
+  font-style: italic;
+}
+
+.user-info small {
+  display: block;
+  color: #868e96;
+  font-size: 0.8rem;
+  margin: 2px 0;
+}
+
+.no-suspended {
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+/* Responsive for user actions */
+@media (max-width: 767px) {
+  .user-actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .suspended-user-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .user-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
 } 

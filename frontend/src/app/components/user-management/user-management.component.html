@@ -75,14 +75,33 @@
             </span>
           </td>
           <td>
-            <button 
-              *ngIf="canDeleteUser(user)"
-              (click)="deleteUser(user.id, user.username)"
-              class="btn-delete"
-              title="Eliminar usuario">
-              🗑️
-            </button>
-            <span class="no-delete" *ngIf="!canDeleteUser(user)">
+            <div class="user-actions" *ngIf="canManageUser(user)">
+              <!-- Botón de suspender/activar usuario -->
+              <button 
+                *ngIf="!user.account_suspended"
+                (click)="suspendUser(user.id, user.username)"
+                class="btn-suspend"
+                title="Suspender usuario">
+                ⏸️
+              </button>
+              <button 
+                *ngIf="user.account_suspended"
+                (click)="unsuspendUser(user.id, user.username)"
+                class="btn-unsuspend"
+                title="Activar usuario">
+                ▶️
+              </button>
+              
+              <!-- Botón de eliminar -->
+              <button 
+                *ngIf="canDeleteUser(user)"
+                (click)="deleteUser(user.id, user.username)"
+                class="btn-delete"
+                title="Eliminar usuario">
+                🗑️
+              </button>
+            </div>
+            <span class="no-actions" *ngIf="!canManageUser(user)">
               -
             </span>
           </td>
@@ -212,9 +231,39 @@
     </div>
   </div>
 
+  <!-- Sección de Gestión de Usuarios Suspendidos -->
+  <div class="security-section">
+    <h3>👤 Gestión de Usuarios Suspendidos</h3>
+    <div class="suspended-users">
+      <div class="suspended-list" *ngIf="getSuspendedUsersList().length > 0">
+        <h4>Usuarios Suspendidos ({{ getSuspendedUsersList().length }})</h4>
+        <div class="suspended-user-item" *ngFor="let user of getSuspendedUsersList()">
+          <div class="user-info">
+            <strong>{{ user.username }}</strong>
+            <span class="user-email">{{ user.email }}</span>
+            <span class="suspension-reason">{{ user.suspension_reason || 'Sin razón especificada' }}</span>
+            <small>Suspendido: {{ user.suspension_date | date:'short' }}</small>
+            <small *ngIf="user.suspension_expires">Expira: {{ user.suspension_expires | date:'short' }}</small>
+          </div>
+          <div class="user-actions">
+            <button (click)="unsuspendUser(user.id, user.username)" class="btn btn-success">
+              ▶️ Activar
+            </button>
+            <button (click)="viewSuspensionDetails(user)" class="btn btn-secondary">
+              📋 Detalles
+            </button>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="getSuspendedUsersList().length === 0" class="no-suspended">
+        <p>No hay usuarios suspendidos</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Sección de Gestión de Cuentas -->
   <div class="security-section">
-    <h3>👤 Gestión de Cuentas</h3>
+    <h3>📊 Estadísticas de Cuentas</h3>
     <div class="account-management">
       <div class="account-stats">
         <div class="stat-card">

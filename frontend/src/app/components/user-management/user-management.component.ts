@@ -181,6 +181,10 @@ export class UserManagementComponent {
     return user.role !== 'senior_admin';
   }
 
+  canManageUser(user: User): boolean {
+    return this.authService.isSeniorAdmin() && user.role !== 'senior_admin';
+  }
+
   canDeleteUser(user: User): boolean {
     // Solo se puede eliminar usuarios que no sean senior_admin y que no sea el usuario actual
     return user.role !== 'senior_admin' && !this.isCurrentUser(user);
@@ -189,6 +193,10 @@ export class UserManagementComponent {
   isCurrentUser(user: User): boolean {
     const currentUser = this.authService.currentUserValue;
     return currentUser?.id === user.id;
+  }
+
+  getSuspendedUsersList(): any[] {
+    return this.users.filter(user => user.account_suspended);
   }
 
   deleteUser(userId: number, username: string): void {
@@ -210,12 +218,44 @@ export class UserManagementComponent {
     this.router.navigate(['/dashboard']);
   }
 
-  suspendUser(userId: number, reason: string) {
-    this.securityService.suspendUser(userId, reason).subscribe(() => this.loadUsers());
+  suspendUser(userId: number, username: string) {
+    const reason = prompt(`Ingresa la razón para suspender al usuario "${username}":`);
+    if (reason && reason.trim()) {
+      this.securityService.suspendUser(userId, reason.trim()).subscribe({
+        next: () => {
+          this.showMessage(`Usuario "${username}" suspendido exitosamente. Se envió notificación por email.`, 'success');
+          this.loadUsers();
+        },
+        error: (error: any) => {
+          this.showMessage(error.error?.message || 'Error al suspender usuario', 'error');
+        }
+      });
+    }
   }
 
-  unsuspendUser(userId: number) {
-    this.securityService.unsuspendUser(userId).subscribe(() => this.loadUsers());
+  unsuspendUser(userId: number, username: string) {
+    if (confirm(`¿Estás seguro de que quieres activar al usuario "${username}"?`)) {
+      this.securityService.unsuspendUser(userId).subscribe({
+        next: () => {
+          this.showMessage(`Usuario "${username}" activado exitosamente. Se envió notificación por email.`, 'success');
+          this.loadUsers();
+        },
+        error: (error: any) => {
+          this.showMessage(error.error?.message || 'Error al activar usuario', 'error');
+        }
+      });
+    }
+  }
+
+  viewSuspensionDetails(user: any) {
+    const details = `
+Usuario: ${user.username}
+Email: ${user.email}
+Razón: ${user.suspension_reason || 'Sin razón especificada'}
+Fecha de suspensión: ${new Date(user.suspension_date).toLocaleString()}
+${user.suspension_expires ? `Expira: ${new Date(user.suspension_expires).toLocaleString()}` : 'Suspensión permanente'}
+    `;
+    alert(details);
   }
 
   loadBlockedIPs() {

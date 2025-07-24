@@ -40,6 +40,9 @@ export class UserManagementComponent {
 
   blockedIPs: any[] = [];
   suspiciousActivity: any[] = [];
+  newIP: string = '';
+  ipReason: string = '';
+  activityHours: number = 24;
 
   private authService = inject(AuthService);
   private apiService = inject(ApiService);
@@ -219,16 +222,63 @@ export class UserManagementComponent {
     this.securityService.getBlockedIPs().subscribe((data: any) => this.blockedIPs = data.blockedIPs || []);
   }
 
+
+
+  loadSuspiciousActivity() {
+    this.securityService.getSuspiciousActivity(this.activityHours).subscribe((data: any) => this.suspiciousActivity = data.suspiciousActivity || []);
+  }
+
+  // Métodos para estadísticas de seguridad
+  getUsersWith2FA(): number {
+    return this.users.filter(user => user.two_factor_enabled).length;
+  }
+
+  getSuspendedUsers(): number {
+    return this.users.filter(user => user.account_suspended).length;
+  }
+
+  getUsersWithFailedAttempts(): number {
+    return this.users.filter(user => user.failed_login_attempts > 0).length;
+  }
+
+  getRiskClass(riskScore: number): string {
+    if (riskScore >= 8) return 'high-risk';
+    if (riskScore >= 5) return 'medium-risk';
+    return 'low-risk';
+  }
+
+  // Métodos para gestión de IPs
   blockIP(ip: string, reason: string) {
-    this.securityService.blockIP(ip, reason).subscribe(() => this.loadBlockedIPs());
+    if (!ip || !reason) {
+      this.showMessage('Por favor ingresa una IP y razón válidas', 'error');
+      return;
+    }
+    
+    this.securityService.blockIP(ip, reason).subscribe({
+      next: () => {
+        this.showMessage(`IP ${ip} bloqueada exitosamente`, 'success');
+        this.newIP = '';
+        this.ipReason = '';
+        this.loadBlockedIPs();
+      },
+      error: (error: any) => {
+        this.showMessage(error.error?.message || 'Error al bloquear IP', 'error');
+      }
+    });
   }
 
   unblockIP(ip: string) {
-    this.securityService.unblockIP(ip).subscribe(() => this.loadBlockedIPs());
-  }
-
-  loadSuspiciousActivity() {
-    this.securityService.getSuspiciousActivity().subscribe((data: any) => this.suspiciousActivity = data.suspiciousActivity || []);
+    if (confirm(`¿Estás seguro de que quieres desbloquear la IP ${ip}?`)) {
+      this.securityService.unblockIP(ip).subscribe({
+        next: () => {
+          this.showMessage(`IP ${ip} desbloqueada exitosamente`, 'success');
+          this.loadBlockedIPs();
+        },
+        error: (error: any) => {
+          this.showMessage(error.error?.message || 'Error al desbloquear IP', 'error');
+        }
+      });
+    }
   }
 
   private showMessage(message: string, type: string): void {

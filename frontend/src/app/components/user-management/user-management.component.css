@@ -485,4 +485,303 @@ mat-tab-group {
   margin-top: 16px;
 }
 
-/* Mantener estilos de tablas y botones existentes */ 
+/* Mantener estilos de tablas y botones existentes */
+
+/* ===== SECURITY SECTIONS ===== */
+
+.security-section {
+  background: white;
+  margin: 20px 0;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.security-section h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 10px;
+}
+
+/* IP Management */
+.ip-management {
+  margin-top: 16px;
+}
+
+.ip-form {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.ip-input, .reason-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.ip-input:focus, .reason-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+}
+
+.btn-success {
+  background: #28a745;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #218838;
+}
+
+.blocked-ips-list {
+  margin-top: 20px;
+}
+
+.blocked-ips-list h4 {
+  color: #495057;
+  margin-bottom: 16px;
+  font-size: 1.1rem;
+}
+
+.ip-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #dc3545;
+}
+
+.ip-info {
+  flex: 1;
+}
+
+.ip-info strong {
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.ip-reason {
+  display: block;
+  color: #6c757d;
+  font-size: 0.85rem;
+  margin: 4px 0;
+}
+
+.ip-info small {
+  color: #868e96;
+  font-size: 0.8rem;
+}
+
+.no-ips {
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+/* Suspicious Activity */
+.suspicious-activity {
+  margin-top: 16px;
+}
+
+.activity-filters {
+  margin-bottom: 20px;
+}
+
+.filter-select {
+  padding: 8px 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  outline: none;
+  background: white;
+}
+
+.activity-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.activity-item {
+  padding: 16px;
+  margin-bottom: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #ffc107;
+}
+
+.activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.activity-type {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.activity-time {
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+.activity-details p {
+  margin: 6px 0;
+  font-size: 0.9rem;
+}
+
+.activity-details strong {
+  color: #495057;
+}
+
+.risk-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.risk-badge.high-risk {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.risk-badge.medium-risk {
+  background: #fff3cd;
+ color: #856404;
+}
+
+.risk-badge.low-risk {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.no-activity {
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+/* Account Management */
+.account-management {
+  margin-top: 16px;
+}
+
+.account-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.stat-card h4 {
+  margin: 0 0 12px 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  display: block;
+}
+
+/* Responsive Design for Security Sections */
+@media (max-width: 767px) {
+  .security-section {
+    padding: 16px;
+    margin: 16px 0;
+  }
+  
+  .ip-form {
+    flex-direction: column;
+  }
+  
+  .ip-input, .reason-input {
+    min-width: auto;
+  }
+  
+  .ip-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .activity-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .account-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stat-card {
+    padding: 16px;
+  }
+  
+  .stat-number {
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .security-section {
+    padding: 28px;
+  }
+  
+  .account-stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
+} 

@@ -138,4 +138,102 @@
       Los roles de admin senior no se pueden modificar ni eliminar.
     </p>
   </div>
+
+  <!-- Sección de Gestión de IPs -->
+  <div class="security-section">
+    <h3>🛡️ Gestión de IPs Bloqueadas</h3>
+    <div class="ip-management">
+      <div class="ip-form">
+        <input 
+          type="text" 
+          [(ngModel)]="newIP" 
+          placeholder="Dirección IP (ej: 192.168.1.1)"
+          class="ip-input"
+        >
+        <input 
+          type="text" 
+          [(ngModel)]="ipReason" 
+          placeholder="Razón del bloqueo"
+          class="reason-input"
+        >
+        <button (click)="blockIP(newIP, ipReason)" class="btn btn-danger">Bloquear IP</button>
+      </div>
+      
+      <div class="blocked-ips-list" *ngIf="blockedIPs.length > 0">
+        <h4>IPs Bloqueadas ({{ blockedIPs.length }})</h4>
+        <div class="ip-item" *ngFor="let ip of blockedIPs">
+          <div class="ip-info">
+            <strong>{{ ip.ip_address }}</strong>
+            <span class="ip-reason">{{ ip.reason }}</span>
+            <small>Bloqueada: {{ ip.created_at | date:'short' }}</small>
+          </div>
+          <button (click)="unblockIP(ip.ip_address)" class="btn btn-success">Desbloquear</button>
+        </div>
+      </div>
+      <div *ngIf="blockedIPs.length === 0" class="no-ips">
+        <p>No hay IPs bloqueadas</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección de Actividad Sospechosa -->
+  <div class="security-section">
+    <h3>🚨 Actividad Sospechosa</h3>
+    <div class="suspicious-activity">
+      <div class="activity-filters">
+        <select [(ngModel)]="activityHours" (change)="loadSuspiciousActivity()" class="filter-select">
+          <option value="1">Última hora</option>
+          <option value="24" selected>Últimas 24 horas</option>
+          <option value="168">Última semana</option>
+        </select>
+      </div>
+      
+      <div class="activity-list" *ngIf="suspiciousActivity.length > 0">
+        <div class="activity-item" *ngFor="let activity of suspiciousActivity">
+          <div class="activity-header">
+            <span class="activity-type">{{ activity.action }}</span>
+            <span class="activity-time">{{ activity.timestamp | date:'short' }}</span>
+          </div>
+          <div class="activity-details">
+            <p><strong>IP:</strong> {{ activity.ip_address }}</p>
+            <p><strong>Usuario:</strong> {{ activity.username || 'Anónimo' }}</p>
+            <p><strong>Riesgo:</strong> 
+              <span class="risk-badge" [ngClass]="getRiskClass(activity.risk_score)">
+                {{ activity.risk_score || 0 }}/10
+              </span>
+            </p>
+            <p *ngIf="activity.details"><strong>Detalles:</strong> {{ activity.details }}</p>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="suspiciousActivity.length === 0" class="no-activity">
+        <p>No se detectó actividad sospechosa en el período seleccionado</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección de Gestión de Cuentas -->
+  <div class="security-section">
+    <h3>👤 Gestión de Cuentas</h3>
+    <div class="account-management">
+      <div class="account-stats">
+        <div class="stat-card">
+          <h4>Total Usuarios</h4>
+          <span class="stat-number">{{ users.length }}</span>
+        </div>
+        <div class="stat-card">
+          <h4>2FA Activado</h4>
+          <span class="stat-number">{{ getUsersWith2FA() }}</span>
+        </div>
+        <div class="stat-card">
+          <h4>Cuentas Suspendidas</h4>
+          <span class="stat-number">{{ getSuspendedUsers() }}</span>
+        </div>
+        <div class="stat-card">
+          <h4>Intentos Fallidos</h4>
+          <span class="stat-number">{{ getUsersWithFailedAttempts() }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </div> 

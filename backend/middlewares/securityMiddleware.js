@@ -1,7 +1,50 @@
 const rateLimit = require('express-rate-limit');
 const slowDown = require('express-slow-down');
 const securityModel = require('../models/securityModel');
-const fetch = require('node-fetch');
+const https = require('https');
+
+// Función para hacer requests HTTPS sin depender de fetch
+const makeHttpsRequest = (url, options) => {
+  return new Promise((resolve, reject) => {
+    const urlObj = new URL(url);
+    const postData = options.body;
+    
+    const requestOptions = {
+      hostname: urlObj.hostname,
+      port: urlObj.port || 443,
+      path: urlObj.pathname + urlObj.search,
+      method: options.method || 'POST',
+      headers: options.headers || {}
+    };
+
+    const req = https.request(requestOptions, (res) => {
+      let data = '';
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      res.on('end', () => {
+        try {
+          const jsonData = JSON.parse(data);
+          resolve({
+            json: () => Promise.resolve(jsonData),
+            ok: res.statusCode >= 200 && res.statusCode < 300
+          });
+        } catch (error) {
+          reject(new Error('Invalid JSON response'));
+        }
+      });
+    });
+
+    req.on('error', (error) => {
+      reject(error);
+    });
+
+    if (postData) {
+      req.write(postData);
+    }
+    req.end();
+  });
+};
 
 // Configuración de Turnstile
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY;
@@ -84,18 +127,19 @@ const verifyTurnstile = async (req, res, next) => {
       console.warn('⚠️ TURNSTILE_SECRET_KEY no configurada, saltando verificación');
       return next();
     }
+
     const ip = securityModel.getClientIP(req);
     console.log('🔍 Enviando verificación a Cloudflare con IP:', ip);
     console.log('🔍 Token a verificar:', token.substring(0, 20) + '...');
     
-    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+    const response = await makeHttpsRequest('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
         secret: TURNSTILE_SECRET_KEY,
         response: token,
         remoteip: ip
-      })
+      }).toString()
     });
     const data = await response.json();
     console.log('🔍 Respuesta de Cloudflare:', data);

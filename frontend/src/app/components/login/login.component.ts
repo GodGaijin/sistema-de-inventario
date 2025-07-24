@@ -51,11 +51,10 @@ export class LoginComponent {
   ngOnInit() {
     // Registrar callback global para Turnstile
     (window as any).onTurnstileSuccess = (token: string) => {
-      console.log('Turnstile token recibido:', token);
       this.turnstileToken = token;
     };
 
-    // Verificar si Turnstile se está cargando
+    // Verificar si Turnstile se está cargando y renderizar widgets
     this.checkTurnstileLoading();
   }
 
@@ -63,43 +62,44 @@ export class LoginComponent {
     // Verificar si el script de Turnstile se cargó
     setTimeout(() => {
       if (typeof (window as any).turnstile !== 'undefined') {
-        console.log('✅ Turnstile script cargado correctamente');
+        // Renderizar widgets inmediatamente
+        this.renderTurnstileWidgets();
       } else {
-        console.error('❌ Turnstile script no se cargó');
         // Intentar cargar el script manualmente
         this.loadTurnstileScript();
       }
-    }, 2000);
+    }, 1000);
   }
 
   private loadTurnstileScript(): void {
-    console.log('🔄 Intentando cargar Turnstile manualmente...');
     const script = document.createElement('script');
     script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
     script.async = true;
     script.defer = true;
     script.onload = () => {
-      console.log('✅ Turnstile script cargado manualmente');
       // Renderizar los widgets después de cargar el script
       setTimeout(() => {
         this.renderTurnstileWidgets();
       }, 500);
     };
     script.onerror = () => {
-      console.error('❌ Error al cargar Turnstile script');
+      console.error('Error al cargar Turnstile script');
     };
     document.head.appendChild(script);
   }
 
   private renderTurnstileWidgets(): void {
     if (typeof (window as any).turnstile !== 'undefined') {
-      console.log('🎨 Renderizando widgets de Turnstile...');
       // Renderizar widgets en todos los contenedores
       const containers = document.querySelectorAll('.cf-turnstile');
       containers.forEach((container, index) => {
+        // Limpiar el contenedor primero
+        container.innerHTML = '';
+        // Renderizar el widget
         (window as any).turnstile.render(container, {
           sitekey: '0x4AAAAAABmYB-iNDrW2Yw0I',
-          callback: 'onTurnstileSuccess'
+          callback: 'onTurnstileSuccess',
+          theme: 'light'
         });
       });
     }
@@ -260,7 +260,7 @@ export class LoginComponent {
     // Renderizar widgets de Turnstile después del cambio
     setTimeout(() => {
       this.renderTurnstileWidgets();
-    }, 100);
+    }, 200);
   }
 
   toggleForgotPassword(): void {
@@ -273,7 +273,7 @@ export class LoginComponent {
     // Renderizar widgets de Turnstile después del cambio
     setTimeout(() => {
       this.renderTurnstileWidgets();
-    }, 100);
+    }, 200);
   }
 
   private showMessage(message: string, type: string): void {

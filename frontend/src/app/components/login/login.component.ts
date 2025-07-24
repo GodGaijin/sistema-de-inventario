@@ -53,6 +53,39 @@ export class LoginComponent {
     (window as any).onTurnstileSuccess = (token: string) => {
       this.turnstileToken = token;
     };
+
+    // Renderizar widgets de Turnstile cuando el DOM esté listo
+    this.renderTurnstileWidgets();
+  }
+
+  private renderTurnstileWidgets(): void {
+    // Esperar a que Turnstile esté disponible
+    if (typeof (window as any).turnstile !== 'undefined') {
+      this.renderWidgets();
+    } else {
+      // Si Turnstile no está disponible, esperar y reintentar
+      setTimeout(() => {
+        this.renderTurnstileWidgets();
+      }, 1000);
+    }
+  }
+
+  private renderWidgets(): void {
+    if (typeof (window as any).turnstile !== 'undefined') {
+      // Renderizar widget de login
+      (window as any).turnstile.render('#turnstile-login', {
+        sitekey: '0x4AAAAAABmYB-iNDrW2Yw0I',
+        callback: 'onTurnstileSuccess',
+        theme: 'light'
+      });
+
+      // Renderizar widget de registro
+      (window as any).turnstile.render('#turnstile-register', {
+        sitekey: '0x4AAAAAABmYB-iNDrW2Yw0I',
+        callback: 'onTurnstileSuccess',
+        theme: 'light'
+      });
+    }
   }
 
   onLogin(): void {
@@ -206,6 +239,11 @@ export class LoginComponent {
     this.showEmailVerification = false;
     this.message = '';
     this.turnstileToken = null; // Reset token when switching forms
+    
+    // Re-renderizar widgets después del cambio
+    setTimeout(() => {
+      this.renderWidgets();
+    }, 200);
   }
 
   toggleForgotPassword(): void {
@@ -214,6 +252,11 @@ export class LoginComponent {
     this.showEmailVerification = false;
     this.message = '';
     this.turnstileToken = null; // Reset token when switching forms
+    
+    // Re-renderizar widgets después del cambio
+    setTimeout(() => {
+      this.renderWidgets();
+    }, 200);
   }
 
   private showMessage(message: string, type: string): void {

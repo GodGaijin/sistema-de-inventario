@@ -53,56 +53,6 @@ export class LoginComponent {
     (window as any).onTurnstileSuccess = (token: string) => {
       this.turnstileToken = token;
     };
-
-    // Verificar si Turnstile se está cargando y renderizar widgets
-    this.checkTurnstileLoading();
-  }
-
-  private checkTurnstileLoading(): void {
-    // Verificar si el script de Turnstile se cargó
-    setTimeout(() => {
-      if (typeof (window as any).turnstile !== 'undefined') {
-        // Renderizar widgets inmediatamente
-        this.renderTurnstileWidgets();
-      } else {
-        // Intentar cargar el script manualmente
-        this.loadTurnstileScript();
-      }
-    }, 1000);
-  }
-
-  private loadTurnstileScript(): void {
-    const script = document.createElement('script');
-    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      // Renderizar los widgets después de cargar el script
-      setTimeout(() => {
-        this.renderTurnstileWidgets();
-      }, 500);
-    };
-    script.onerror = () => {
-      console.error('Error al cargar Turnstile script');
-    };
-    document.head.appendChild(script);
-  }
-
-  private renderTurnstileWidgets(): void {
-    if (typeof (window as any).turnstile !== 'undefined') {
-      // Renderizar widgets en todos los contenedores
-      const containers = document.querySelectorAll('.cf-turnstile');
-      containers.forEach((container, index) => {
-        // Limpiar el contenedor primero
-        container.innerHTML = '';
-        // Renderizar el widget
-        (window as any).turnstile.render(container, {
-          sitekey: '0x4AAAAAABmYB-iNDrW2Yw0I',
-          callback: 'onTurnstileSuccess',
-          theme: 'light'
-        });
-      });
-    }
   }
 
   onLogin(): void {
@@ -256,11 +206,6 @@ export class LoginComponent {
     this.showEmailVerification = false;
     this.message = '';
     this.turnstileToken = null; // Reset token when switching forms
-    
-    // Renderizar widgets de Turnstile después del cambio
-    setTimeout(() => {
-      this.renderTurnstileWidgets();
-    }, 200);
   }
 
   toggleForgotPassword(): void {
@@ -269,11 +214,6 @@ export class LoginComponent {
     this.showEmailVerification = false;
     this.message = '';
     this.turnstileToken = null; // Reset token when switching forms
-    
-    // Renderizar widgets de Turnstile después del cambio
-    setTimeout(() => {
-      this.renderTurnstileWidgets();
-    }, 200);
   }
 
   private showMessage(message: string, type: string): void {

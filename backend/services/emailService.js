@@ -135,8 +135,154 @@ const sendEmailVerification = (email, token, username) => {
   return transporter.sendMail(mailOptions);
 };
 
+// Función para enviar email de suspensión de cuenta
+const sendAccountSuspensionEmail = async (email, username, reason, durationHours, adminEmail) => {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Cuenta Suspendida - Sistema de Inventario',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #d32f2f;">⚠️ Cuenta Suspendida</h2>
+          <p>Hola <strong>${username}</strong>,</p>
+          <p>Tu cuenta en el Sistema de Inventario ha sido suspendida temporalmente por el siguiente motivo:</p>
+          <div style="background-color: #f5f5f5; padding: 15px; border-left: 4px solid #d32f2f; margin: 20px 0;">
+            <p><strong>Razón:</strong> ${reason}</p>
+            <p><strong>Duración:</strong> ${durationHours} horas</p>
+          </div>
+          <p>Si consideras que esto es un error o necesitas aclarar la situación, por favor contacta al administrador senior:</p>
+          <p><strong>Email del administrador:</strong> ${adminEmail}</p>
+          <p>Tu cuenta será reactivada automáticamente una vez que expire el período de suspensión.</p>
+          <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+          <p style="color: #666; font-size: 12px;">
+            Este es un mensaje automático del Sistema de Inventario. No respondas a este email.
+          </p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ Email de suspensión enviado a ${email}`);
+  } catch (error) {
+    console.error('❌ Error enviando email de suspensión:', error);
+    throw error;
+  }
+};
+
+// Función para enviar email de levantamiento de suspensión
+const sendAccountUnsuspensionEmail = async (email, username) => {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Cuenta Reactivada - Sistema de Inventario',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #388e3c;">✅ Cuenta Reactivada</h2>
+          <p>Hola <strong>${username}</strong>,</p>
+          <p>Tu cuenta en el Sistema de Inventario ha sido reactivada exitosamente.</p>
+          <p>Ya puedes acceder nuevamente al sistema con tus credenciales habituales.</p>
+          <div style="background-color: #f1f8e9; padding: 15px; border-left: 4px solid #388e3c; margin: 20px 0;">
+            <p><strong>Estado:</strong> Cuenta activa</p>
+            <p><strong>Fecha de reactivación:</strong> ${new Date().toLocaleString('es-ES')}</p>
+          </div>
+          <p>Si tienes alguna pregunta o necesitas ayuda, no dudes en contactar al administrador del sistema.</p>
+          <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+          <p style="color: #666; font-size: 12px;">
+            Este es un mensaje automático del Sistema de Inventario. No respondas a este email.
+          </p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ Email de reactivación enviado a ${email}`);
+  } catch (error) {
+    console.error('❌ Error enviando email de reactivación:', error);
+    throw error;
+  }
+};
+
+// Función para enviar email de alerta de seguridad
+const sendSecurityAlertEmail = async (email, username, alertType, details) => {
+  try {
+    let subject, content;
+    
+    switch (alertType) {
+      case 'suspicious_login':
+        subject = 'Alerta de Seguridad - Inicio de Sesión Sospechoso';
+        content = `
+          <h2 style="color: #ff9800;">🚨 Alerta de Seguridad</h2>
+          <p>Hola <strong>${username}</strong>,</p>
+          <p>Se ha detectado un inicio de sesión sospechoso en tu cuenta:</p>
+          <div style="background-color: #fff3e0; padding: 15px; border-left: 4px solid #ff9800; margin: 20px 0;">
+            <p><strong>IP:</strong> ${details.ip}</p>
+            <p><strong>Ubicación:</strong> ${details.location || 'Desconocida'}</p>
+            <p><strong>Dispositivo:</strong> ${details.device || 'Desconocido'}</p>
+            <p><strong>Fecha:</strong> ${new Date().toLocaleString('es-ES')}</p>
+          </div>
+          <p>Si no fuiste tú, te recomendamos cambiar tu contraseña inmediatamente.</p>
+        `;
+        break;
+      
+      case 'multiple_failed_attempts':
+        subject = 'Alerta de Seguridad - Múltiples Intentos Fallidos';
+        content = `
+          <h2 style="color: #f44336;">🔒 Alerta de Seguridad</h2>
+          <p>Hola <strong>${username}</strong>,</p>
+          <p>Se han detectado múltiples intentos fallidos de inicio de sesión en tu cuenta:</p>
+          <div style="background-color: #ffebee; padding: 15px; border-left: 4px solid #f44336; margin: 20px 0;">
+            <p><strong>Intentos fallidos:</strong> ${details.attempts}</p>
+            <p><strong>IP:</strong> ${details.ip}</p>
+            <p><strong>Fecha:</strong> ${new Date().toLocaleString('es-ES')}</p>
+          </div>
+          <p>Tu cuenta ha sido bloqueada temporalmente por seguridad.</p>
+        `;
+        break;
+      
+      default:
+        subject = 'Alerta de Seguridad - Sistema de Inventario';
+        content = `
+          <h2 style="color: #ff9800;">⚠️ Alerta de Seguridad</h2>
+          <p>Hola <strong>${username}</strong>,</p>
+          <p>Se ha detectado actividad sospechosa en tu cuenta:</p>
+          <div style="background-color: #fff3e0; padding: 15px; border-left: 4px solid #ff9800; margin: 20px 0;">
+            <p><strong>Detalles:</strong> ${details.message || 'Actividad sospechosa detectada'}</p>
+            <p><strong>Fecha:</strong> ${new Date().toLocaleString('es-ES')}</p>
+          </div>
+        `;
+    }
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: subject,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          ${content}
+          <p>Si tienes alguna pregunta, contacta al administrador del sistema.</p>
+          <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+          <p style="color: #666; font-size: 12px;">
+            Este es un mensaje automático del Sistema de Inventario. No respondas a este email.
+          </p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ Email de alerta de seguridad enviado a ${email}`);
+  } catch (error) {
+    console.error('❌ Error enviando email de alerta de seguridad:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   sendPasswordResetEmail,
   sendSeniorAdminPassword,
-  sendEmailVerification
+  sendEmailVerification,
+  sendAccountSuspensionEmail,
+  sendAccountUnsuspensionEmail,
+  sendSecurityAlertEmail
 }; 

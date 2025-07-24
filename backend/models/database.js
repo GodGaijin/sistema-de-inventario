@@ -110,7 +110,21 @@ class Database {
           reset_token_expires TIMESTAMP,
           is_email_verified BOOLEAN DEFAULT FALSE,
           email_verification_token VARCHAR(255),
-          last_verification_email_sent TIMESTAMP
+          last_verification_email_sent TIMESTAMP,
+          two_factor_secret VARCHAR(255),
+          two_factor_enabled BOOLEAN DEFAULT FALSE,
+          two_factor_backup_codes TEXT,
+          account_suspended BOOLEAN DEFAULT FALSE,
+          suspension_reason TEXT,
+          suspension_date TIMESTAMP,
+          suspension_expires TIMESTAMP,
+          failed_login_attempts INTEGER DEFAULT 0,
+          last_failed_login TIMESTAMP,
+          account_locked_until TIMESTAMP,
+          registration_ip VARCHAR(45),
+          last_login_ip VARCHAR(45),
+          last_login_timestamp TIMESTAMP,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
       `);
 
@@ -220,6 +234,58 @@ class Database {
         )
       `);
 
+      // Tabla para auditoría de seguridad
+      await this.run(`
+        CREATE TABLE IF NOT EXISTS security_audit_log (
+          id SERIAL PRIMARY KEY,
+          user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+          username VARCHAR(255),
+          ip_address VARCHAR(45),
+          user_agent TEXT,
+          action VARCHAR(100) NOT NULL,
+          details JSONB,
+          risk_score DECIMAL(3,2) DEFAULT 0.0,
+          location_data JSONB,
+          timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
+      // Tabla para IPs bloqueadas
+      await this.run(`
+        CREATE TABLE IF NOT EXISTS blocked_ips (
+          id SERIAL PRIMARY KEY,
+          ip_address VARCHAR(45) UNIQUE NOT NULL,
+          reason VARCHAR(255) NOT NULL,
+          blocked_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+          blocked_until TIMESTAMP,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
+      // Tabla para intentos de registro por IP
+      await this.run(`
+        CREATE TABLE IF NOT EXISTS registration_attempts (
+          id SERIAL PRIMARY KEY,
+          ip_address VARCHAR(45) NOT NULL,
+          email VARCHAR(255),
+          username VARCHAR(255),
+          success BOOLEAN DEFAULT FALSE,
+          timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
+      // Tabla para códigos de verificación 2FA
+      await this.run(`
+        CREATE TABLE IF NOT EXISTS two_factor_codes (
+          id SERIAL PRIMARY KEY,
+          user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          code VARCHAR(6) NOT NULL,
+          expires_at TIMESTAMP NOT NULL,
+          used BOOLEAN DEFAULT FALSE,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
       // Índices para mejorar el rendimiento
       await this.run(`
         CREATE INDEX IF NOT EXISTS idx_inventory_requests_status ON inventory_requests(status);
@@ -228,6 +294,14 @@ class Database {
         CREATE INDEX IF NOT EXISTS idx_inventory_transactions_fecha ON inventory_transactions(fecha);
         CREATE INDEX IF NOT EXISTS idx_inventory_transactions_user_id ON inventory_transactions(user_id);
         CREATE INDEX IF NOT EXISTS idx_inventory_transactions_codigo_prod ON inventory_transactions(codigo_prod);
+        CREATE INDEX IF NOT EXISTS idx_security_audit_user_id ON security_audit_log(user_id);
+        CREATE INDEX IF NOT EXISTS idx_security_audit_ip ON security_audit_log(ip_address);
+        CREATE INDEX IF NOT EXISTS idx_security_audit_timestamp ON security_audit_log(timestamp);
+        CREATE INDEX IF NOT EXISTS idx_blocked_ips_ip ON blocked_ips(ip_address);
+        CREATE INDEX IF NOT EXISTS idx_registration_attempts_ip ON registration_attempts(ip_address);
+        CREATE INDEX IF NOT EXISTS idx_registration_attempts_timestamp ON registration_attempts(timestamp);
+        CREATE INDEX IF NOT EXISTS idx_two_factor_codes_user_id ON two_factor_codes(user_id);
+        CREATE INDEX IF NOT EXISTS idx_two_factor_codes_expires ON two_factor_codes(expires_at);
       `);
 
   

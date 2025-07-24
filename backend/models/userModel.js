@@ -20,9 +20,9 @@ const findUserByEmail = async (email) => {
   }
 };
 
-const createUser = async (username, password, role, email) => {
+const createUser = async (username, password, role, email, registrationIP = null) => {
   try {
-    console.log('Creating user with:', { username, role, email });
+    console.log('Creating user with:', { username, role, email, registrationIP });
     
     // Validar datos de entrada
     if (!username || !password || !role || !email) {
@@ -38,8 +38,8 @@ const createUser = async (username, password, role, email) => {
     
     console.log('Executing INSERT user query...');
     const result = await db.run(
-      'INSERT INTO users (username, password, role, email) VALUES ($1, $2, $3, $4) RETURNING id',
-      [username.trim(), hashedPassword, role, email.trim()]
+      'INSERT INTO users (username, password, role, email, registration_ip) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+      [username.trim(), hashedPassword, role, email.trim(), registrationIP]
     );
     
     console.log('INSERT user result:', result);
@@ -324,6 +324,128 @@ const isSeniorAdmin = (email) => {
   return email === process.env.SENIOR_ADMIN_EMAIL;
 };
 
+// Funciones para gestión de intentos fallidos de login
+const incrementFailedLoginAttempts = async (userId) => {
+  try {
+    const result = await db.query(
+      'SELECT failed_login_attempts FROM users WHERE id = $1',
+      [userId]
+    );
+    
+    const user = result.rows ? result.rows[0] : result[0];
+    const currentAttempts = user ? user.failed_login_attempts : 0;
+    const newAttempts = currentAttempts + 1;
+    
+    let lockUntil = null;
+    if (newAttempts >= 5) {
+      // Bloquear cuenta por 30 minutos después de 5 intentos fallidos
+      lockUntil = new Date();
+      lockUntil.setMinutes(lockUntil.getMinutes() + 30);
+    }
+    
+    await db.run(`
+      UPDATE users 
+      SET failed_login_attempts = $1, 
+          last_failed_login = CURRENT_TIMESTAMP,
+          account_locked_until = $2
+      WHERE id = $3
+    `, [newAttempts, lockUntil ? lockUntil.toISOString() : null, userId]);
+    
+    return { attempts: newAttempts, locked: !!lockUntil, lockUntil };
+  } catch (error) {
+    console.error('Error incrementing failed login attempts:', error);
+    throw error;
+  }
+};
+
+const resetFailedLoginAttempts = async (userId) => {
+  try {
+    await db.run(`
+      UPDATE users 
+      SET failed_login_attempts = 0, 
+          last_failed_login = NULL,
+          account_locked_until = NULL
+      WHERE id = $1
+    `, [userId]);
+    
+    return true;
+  } catch (error) {
+    console.error('Error resetting failed login attempts:', error);
+    throw error;
+  }
+};
+
+const updateLastLoginInfo = async (userId, ipAddress) => {
+  try {
+    await db.run(`
+      UPDATE users 
+      SET last_login_ip = $1, 
+          last_login_timestamp = CURRENT_TIMESTAMP
+      WHERE id = $2
+    `, [ipAddress, userId]);
+    
+    return true;
+  } catch (error) {
+    console.error('Error updating last login info:', error);
+    throw error;
+  }
+};
+
+// Funciones para obtener información de seguridad del usuario
+const getUserSecurityInfo = async (userId) => {
+  try {
+    const result = await db.query(`
+      SELECT 
+        id, username, email, role,
+        two_factor_enabled,
+        account_suspended,
+        suspension_reason,
+        suspension_expires,
+        failed_login_attempts,
+        account_locked_until,
+        registration_ip,
+        last_login_ip,
+        last_login_timestamp,
+        created_at,
+        is_email_verified
+      FROM users WHERE id = $1
+    `, [userId]);
+    
+    return result.rows ? result.rows[0] : result[0];
+  } catch (error) {
+    console.error('Error getting user security info:', error);
+    throw error;
+  }
+};
+
+// Función para obtener todos los usuarios con información de seguridad (solo admin senior)
+const getAllUsersWithSecurityInfo = async () => {
+  try {
+    const result = await db.query(`
+      SELECT 
+        id, username, email, role,
+        two_factor_enabled,
+        account_suspended,
+        suspension_reason,
+        suspension_expires,
+        failed_login_attempts,
+        account_locked_until,
+        registration_ip,
+        last_login_ip,
+        last_login_timestamp,
+        created_at,
+        is_email_verified
+      FROM users 
+      ORDER BY username
+    `);
+    
+    return result.rows || result;
+  } catch (error) {
+    console.error('Error getting all users with security info:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   findUserByUsername,
   findUserByEmail,
@@ -345,4 +467,9 @@ module.exports = {
   getTimeUntilCanResend,
   isEmailVerified,
   isSeniorAdmin,
+  incrementFailedLoginAttempts,
+  resetFailedLoginAttempts,
+  updateLastLoginInfo,
+  getUserSecurityInfo,
+  getAllUsersWithSecurityInfo,
 }; 

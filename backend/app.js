@@ -35,6 +35,9 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
+// Import security middlewares
+const securityMiddleware = require('./middlewares/securityMiddleware');
+
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
@@ -43,14 +46,26 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const auditRoutes = require('./routes/auditRoutes');
 const ownCommerceRoutes = require('./routes/ownCommerceRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
+const securityRoutes = require('./routes/securityRoutes');
 
-app.use('/api/auth', authRoutes);
+// Aplicar middlewares de seguridad globales
+app.use(securityMiddleware.behaviorAnalysis);
+app.use(securityMiddleware.securityLogging);
+app.use(securityMiddleware.cleanupMiddleware);
+
+// Rutas con middlewares de seguridad específicos
+app.use('/api/auth', 
+  securityMiddleware.checkBlockedIP,
+  authRoutes
+);
+
 app.use('/api/products', productRoutes);
 app.use('/api/distributors', distributorRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/audits', auditRoutes);
 app.use('/api/own-commerce', ownCommerceRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api/security', securityRoutes);
 
 
 app.get('/', (req, res) => {

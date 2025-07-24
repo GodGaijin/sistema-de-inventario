@@ -25,9 +25,8 @@ const generateTokens = (user) => {
 
 exports.register = async (req, res) => {
   try {
-
-    
     const { username, password, email } = req.body;
+    const securityModel = require('../models/securityModel');
     
     // Validación de datos de entrada
     if (!username || !password) {
@@ -112,12 +111,18 @@ exports.register = async (req, res) => {
       return res.status(409).json({ message: 'El email ya está registrado.' });
     }
     
+    // Obtener IP de registro
+    const registrationIP = securityModel.getClientIP(req);
+    
     // Crear el usuario
-    const userId = await userModel.createUser(username, password, 'user', email);
+    const userId = await userModel.createUser(username, password, 'user', email, registrationIP);
     
     if (!userId) {
       throw new Error('No se pudo crear el usuario');
     }
+    
+    // Registrar intento de registro exitoso
+    await securityModel.logRegistrationAttempt(registrationIP, email, username, true);
     
     // Generar token de verificación y enviar email
     try {
@@ -159,9 +164,17 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
+    const securityModel = require('../models/securityModel');
     
     const user = await userModel.findUserByUsername(username);
-    if (!user) return res.status(401).json({ message: 'Credenciales inválidas.' });
+    if (!user) {
+      // Registrar intento fallido
+      await securityModel.logSecurityEvent(req, 'login_failed', {
+        username,
+        reason: 'user_not_found'
+      });
+      return res.status(401).json({ message: 'Credenciales inválidas.' });
+    }
     
     // Manejo especial para admin senior
     if (user.role === 'senior_admin') {
@@ -205,7 +218,39 @@ exports.login = async (req, res) => {
     
     // Validación normal para otros usuarios
     if (!userModel.validatePassword(user, password)) {
-      return res.status(401).json({ message: 'Credenciales inválidas.' });
+      // Incrementar intentos fallidos
+      const failedAttempts = await userModel.incrementFailedLoginAttempts(user.id);
+      
+      // Registrar intento fallido
+      await securityModel.logSecurityEvent(req, 'login_failed', {
+        username,
+        reason: 'invalid_password',
+        failedAttempts: failedAttempts.attempts
+      });
+      
+      // Si la cuenta está bloqueada, enviar email de alerta
+      if (failedAttempts.locked) {
+        try {
+          const emailService = require('../services/emailService');
+          await emailService.sendSecurityAlertEmail(
+            user.email,
+            user.username,
+            'multiple_failed_attempts',
+            {
+              attempts: failedAttempts.attempts,
+              ip: securityModel.getClientIP(req)
+            }
+          );
+        } catch (emailError) {
+          console.error('Error sending security alert email:', emailError);
+        }
+      }
+      
+      return res.status(401).json({ 
+        message: 'Credenciales inválidas.',
+        locked: failedAttempts.locked,
+        lockUntil: failedAttempts.lockUntil
+      });
     }
     
     // Verificar si el email está verificado (excepto para admin_senior)
@@ -221,10 +266,14 @@ exports.login = async (req, res) => {
       }
     }
     
+    // Resetear intentos fallidos y actualizar información de login
+    await userModel.resetFailedLoginAttempts(user.id);
+    const ipAddress = securityModel.getClientIP(req);
+    await userModel.updateLastLoginInfo(user.id, ipAddress);
+    
     const tokens = generateTokens(user);
     
     // Registrar sesión activa
-    const ipAddress = req.ip || req.connection.remoteAddress;
     const userAgent = req.get('User-Agent');
     await sessionModel.createOrUpdateSession(user.id, user.username, tokens.refreshToken, ipAddress, userAgent);
     

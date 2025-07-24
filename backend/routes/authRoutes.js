@@ -2,9 +2,24 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const { authenticateToken } = require('../middlewares/authMiddleware');
+const securityMiddleware = require('../middlewares/securityMiddleware');
 
-router.post('/register', authController.register);
-router.post('/login', authController.login);
+// Rutas con middlewares de seguridad específicos
+router.post('/register', 
+  securityMiddleware.registrationLimiter,
+  securityMiddleware.checkRegistrationLimits,
+  securityMiddleware.verifyTurnstile,
+  authController.register
+);
+
+router.post('/login', 
+  securityMiddleware.loginLimiter,
+  securityMiddleware.loginSlowDown,
+  securityMiddleware.checkAccountSuspension,
+  securityMiddleware.checkFailedLoginAttempts,
+  securityMiddleware.verifyTurnstile,
+  authController.login
+);
 router.post('/refresh', authController.refreshToken);
 router.post('/check-session', authController.checkSession);
 router.post('/logout', authController.logout);

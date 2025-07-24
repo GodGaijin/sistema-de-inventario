@@ -11,6 +11,20 @@ export interface User {
   username: string;
   email: string;
   role: 'user' | 'admin' | 'senior_admin';
+  // Propiedades de seguridad
+  two_factor_enabled?: boolean;
+  account_suspended?: boolean;
+  suspension_reason?: string;
+  suspension_date?: string;
+  suspension_expires?: string;
+  failed_login_attempts?: number;
+  last_failed_login?: string;
+  account_locked_until?: string;
+  registration_ip?: string;
+  last_login_ip?: string;
+  last_login_timestamp?: string;
+  created_at?: string;
+  is_email_verified?: boolean;
 }
 
 @Component({
@@ -70,7 +84,7 @@ export class UserManagementComponent {
         
         // Verificar que users sea un array válido
         if (Array.isArray(users)) {
-          this.users = users.sort((a: User, b: User) => a.id - b.id); // Ordenar por ID ascendente
+          this.users = users.sort((a: any, b: any) => a.id - b.id); // Ordenar por ID ascendente
         } else {
           this.users = [];
         }

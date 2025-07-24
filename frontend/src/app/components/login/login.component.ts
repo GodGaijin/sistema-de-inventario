@@ -72,19 +72,28 @@ export class LoginComponent {
 
   private renderWidgets(): void {
     if (typeof (window as any).turnstile !== 'undefined') {
-      // Renderizar widget de login
-      (window as any).turnstile.render('#turnstile-login', {
-        sitekey: '0x4AAAAAABmYB-iNDrW2Yw0I',
-        callback: 'onTurnstileSuccess',
-        theme: 'light'
-      });
-
-      // Renderizar widget de registro
-      (window as any).turnstile.render('#turnstile-register', {
-        sitekey: '0x4AAAAAABmYB-iNDrW2Yw0I',
-        callback: 'onTurnstileSuccess',
-        theme: 'light'
-      });
+      // Solo renderizar el widget que corresponde al formulario actual
+      if (!this.showRegister && !this.showForgotPassword && !this.showEmailVerification) {
+        // Estamos en el formulario de login
+        const loginContainer = document.getElementById('turnstile-login');
+        if (loginContainer) {
+          (window as any).turnstile.render('#turnstile-login', {
+            sitekey: '0x4AAAAAABmYB-iNDrW2Yw0I',
+            callback: 'onTurnstileSuccess',
+            theme: 'light'
+          });
+        }
+      } else if (this.showRegister) {
+        // Estamos en el formulario de registro
+        const registerContainer = document.getElementById('turnstile-register');
+        if (registerContainer) {
+          (window as any).turnstile.render('#turnstile-register', {
+            sitekey: '0x4AAAAAABmYB-iNDrW2Yw0I',
+            callback: 'onTurnstileSuccess',
+            theme: 'light'
+          });
+        }
+      }
     }
   }
 

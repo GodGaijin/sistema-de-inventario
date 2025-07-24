@@ -163,7 +163,7 @@ const sendAccountSuspensionEmail = async (email, username, reason, durationHours
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`✅ Email de suspensión enviado a ${email}`);
+    // Email de suspensión enviado exitosamente
   } catch (error) {
     console.error('❌ Error enviando email de suspensión:', error);
     throw error;
@@ -197,7 +197,7 @@ const sendAccountUnsuspensionEmail = async (email, username) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`✅ Email de reactivación enviado a ${email}`);
+    // Email de reactivación enviado exitosamente
   } catch (error) {
     console.error('❌ Error enviando email de reactivación:', error);
     throw error;
@@ -271,7 +271,7 @@ const sendSecurityAlertEmail = async (email, username, alertType, details) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`✅ Email de alerta de seguridad enviado a ${email}`);
+    // Email de alerta de seguridad enviado exitosamente
   } catch (error) {
     console.error('❌ Error enviando email de alerta de seguridad:', error);
     throw error;

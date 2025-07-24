@@ -188,4 +188,34 @@ backend/backups/audit/
 
 # Archivos temporales de análisis
 backend/temp/security-analysis/
-backend/temp/audit-logs/ 
+backend/temp/audit-logs/
+
+# ========================================
+# ARCHIVOS DE DESARROLLO Y DEBUG
+# ========================================
+# Archivos de debug y desarrollo
+**/debug/
+**/dev/
+**/test-files/
+**/temp-files/
+
+# Archivos de configuración local
+**/config.local.*
+**/settings.local.*
+**/local.*
+
+# Archivos de prueba temporal
+**/test-temp/
+**/temp-test/
+
+# ========================================
+# ARCHIVOS DE RENDER Y DEPLOY
+# ========================================
+# Archivos específicos de Render
+.render/
+render-debug.log
+render-build.log
+
+# Archivos de deploy temporal
+deploy-temp/
+build-temp/ 

@@ -22,7 +22,7 @@ const findUserByEmail = async (email) => {
 
 const createUser = async (username, password, role, email, registrationIP = null) => {
   try {
-    console.log('Creating user with:', { username, role, email, registrationIP });
+    // Creating user with registration data
     
     // Validar datos de entrada
     if (!username || !password || !role || !email) {
@@ -36,13 +36,13 @@ const createUser = async (username, password, role, email, registrationIP = null
     
     const hashedPassword = bcrypt.hashSync(password, 10);
     
-    console.log('Executing INSERT user query...');
+    // Executing INSERT user query
     const result = await db.run(
       'INSERT INTO users (username, password, role, email, registration_ip) VALUES ($1, $2, $3, $4, $5) RETURNING id',
       [username.trim(), hashedPassword, role, email.trim(), registrationIP]
     );
     
-    console.log('INSERT user result:', result);
+    // INSERT user result processed
     
     // Extraer el ID del resultado
     let userId;
@@ -54,7 +54,7 @@ const createUser = async (username, password, role, email, registrationIP = null
       throw new Error('No se pudo obtener el ID del usuario creado');
     }
     
-    console.log('User created with ID:', userId);
+    // User created successfully
     return userId;
   } catch (error) {
     console.error('Error in createUser:', error);

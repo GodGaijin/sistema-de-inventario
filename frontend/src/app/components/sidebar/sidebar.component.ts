@@ -96,8 +96,8 @@ import { SidebarService } from '../../services/sidebar.service';
         </div>
         
         <div *ngIf="isSeniorAdmin()" class="nav-item admin-senior" (click)="navigateTo('/user-management')" [class.active]="isActive('/user-management')">
-          <span class="nav-icon">👥</span>
-          <span class="nav-text">Gestión de Usuarios</span>
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-text">Panel de Control</span>
           <span class="admin-badge">Admin</span>
         </div>
         

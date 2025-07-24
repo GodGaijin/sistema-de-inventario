@@ -61,7 +61,10 @@ export class UserManagementComponent {
   loadUsers(): void {
     this.loading = true;
     this.securityService.getUsersWithSecurityInfo().subscribe({
-      next: (users: any) => {
+      next: (response: any) => {
+        // El backend devuelve { users: [...] }
+        const users = response.users || response;
+        
         // Verificar que users sea un array válido
         if (Array.isArray(users)) {
           this.users = users.sort((a: User, b: User) => a.id - b.id); // Ordenar por ID ascendente

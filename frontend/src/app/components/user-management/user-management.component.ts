@@ -18,7 +18,7 @@ export interface User {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './user-management.component.html',
-  styleUrls: ['./user-management.component.css']
+  styleUrls: ['./user-management.component.css', './security-panel.css']
 })
 export class UserManagementComponent {
   users: any[] = [];

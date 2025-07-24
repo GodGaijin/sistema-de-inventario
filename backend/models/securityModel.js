@@ -328,7 +328,7 @@ const unsuspendAccount = async (userId) => {
           suspension_reason = NULL, 
           suspension_date = NULL,
           suspension_expires = NULL
-      WHERE id = $3
+      WHERE id = $1
     `, [userId]);
     
     return true;

@@ -34,7 +34,6 @@ export class RegisterComponent {
   ngOnInit() {
     // Registrar callback global para Turnstile
     (window as any).onTurnstileSuccess = (token: string) => {
-      console.log('Token recibido en registro:', token);
       this.turnstileToken = token;
     };
 
@@ -63,7 +62,6 @@ export class RegisterComponent {
         (window as any).turnstile.render('#turnstile-register', {
           sitekey: '0x4AAAAAABmYB-iNDrW2Yw0I',
           callback: (token: string) => {
-            console.log('Callback ejecutado en registro con token:', token);
             this.turnstileToken = token;
           },
           theme: 'light'

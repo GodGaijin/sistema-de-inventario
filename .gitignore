@@ -98,6 +98,69 @@ backend/db/
 # ARCHIVOS DE LOCK
 # ========================================
 package-lock.json
+
+# ========================================
+# ARCHIVOS DE DEBUG Y DESARROLLO
+# ========================================
+# Archivos de debug y desarrollo
+**/debug/
+**/dev/
+**/test-files/
+**/temp-files/
+
+# Archivos de configuración local
+**/config.local.*
+**/settings.local.*
+**/local.*
+
+# Archivos de prueba temporal
+**/test-temp/
+**/temp-test/
+
+# ========================================
+# ARCHIVOS DE RENDER Y DEPLOY
+# ========================================
+# Archivos específicos de Render
+.render/
+render-debug.log
+render-build.log
+
+# Archivos de deploy temporal
+deploy-temp/
+build-temp/
+
+# ========================================
+# ARCHIVOS DE SEGURIDAD
+# ========================================
+# Archivos de configuración de seguridad
+backend/security-config.local.js
+backend/security-config.local.json
+
+# Archivos de logs de seguridad
+backend/logs/security/
+backend/logs/audit/
+
+# Archivos de reportes de seguridad
+backend/scripts/security-reports/
+backend/scripts/*.csv
+
+# ========================================
+# ARCHIVOS DE CLAVES Y CERTIFICADOS
+# ========================================
+# Claves privadas
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Certificados
+*.crt
+*.cer
+*.der
+
+# Archivos de backup de claves
+*.key.backup
+*.pem.backup
 yarn.lock
 pnpm-lock.yaml
 

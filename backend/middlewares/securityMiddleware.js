@@ -108,12 +108,8 @@ const loginSlowDown = slowDown({
 const verifyTurnstile = async (req, res, next) => {
   try {
     const token = req.body.turnstileToken;
-    console.log('🔍 Verificando Turnstile token:', token ? 'Presente' : 'Ausente');
-    console.log('🔍 TURNSTILE_SECRET_KEY configurada:', !!TURNSTILE_SECRET_KEY);
-    console.log('🔍 Request body:', JSON.stringify(req.body, null, 2));
     
     if (!token) {
-      console.log('❌ Token Turnstile ausente');
       await securityModel.logSecurityEvent(req, 'turnstile_missing', {
         action: req.path,
         username: req.body?.username || req.body?.email
@@ -124,13 +120,10 @@ const verifyTurnstile = async (req, res, next) => {
       });
     }
     if (!TURNSTILE_SECRET_KEY) {
-      console.warn('⚠️ TURNSTILE_SECRET_KEY no configurada, saltando verificación');
       return next();
     }
 
     const ip = securityModel.getClientIP(req);
-    console.log('🔍 Enviando verificación a Cloudflare con IP:', ip);
-    console.log('🔍 Token a verificar:', token.substring(0, 20) + '...');
     
     const response = await makeHttpsRequest('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
@@ -142,7 +135,6 @@ const verifyTurnstile = async (req, res, next) => {
       }).toString()
     });
     const data = await response.json();
-    console.log('🔍 Respuesta de Cloudflare:', data);
     
     if (!data.success) {
       await securityModel.logSecurityEvent(req, 'turnstile_failed', {

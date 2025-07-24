@@ -299,3 +299,7 @@
 .verification-actions .login-btn:disabled span {
   animation: pulse 1s ease-in-out infinite;
 } 
+
+.cf-turnstile {
+  margin: 16px 0;
+} 

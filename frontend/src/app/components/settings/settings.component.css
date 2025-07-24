@@ -250,6 +250,26 @@ input:checked + .slider:before {
   font-size: 0.9rem;
 }
 
+.settings-2fa {
+  margin-top: 32px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fafafa;
+}
+.settings-2fa img {
+  margin: 16px 0;
+  max-width: 200px;
+}
+.settings-2fa ul {
+  list-style: disc inside;
+  margin: 8px 0 16px 0;
+}
+.settings-2fa input {
+  margin-right: 8px;
+  width: 100px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .settings-container {

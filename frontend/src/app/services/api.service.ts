@@ -149,4 +149,11 @@ export class ApiService {
   checkResendVerificationStatus(email: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/auth/check-resend-status/${email}`);
   }
+
+  // Registro de usuario (sin token)
+  register(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/register`, data, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    });
+  }
 } 

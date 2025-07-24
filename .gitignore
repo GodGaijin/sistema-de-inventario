@@ -158,4 +158,34 @@ angular-cli.json
 # ========================================
 # SCRIPTS DE MIGRACIÓN Y UTILIDAD
 # ========================================
-backend/migrate-*.js 
+backend/migrate-*.js
+
+# ========================================
+# ARCHIVOS DE SEGURIDAD
+# ========================================
+# Reportes de análisis de seguridad
+backend/scripts/security-reports/
+backend/scripts/*.csv
+
+# Logs de auditoría de seguridad (solo en desarrollo)
+backend/logs/security/
+backend/logs/audit/
+
+# Archivos de configuración de seguridad local
+backend/security-config.local.js
+backend/security-config.local.json
+
+# Claves privadas y certificados
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Archivos de backup de seguridad
+backend/backups/security/
+backend/backups/audit/
+
+# Archivos temporales de análisis
+backend/temp/security-analysis/
+backend/temp/audit-logs/ 

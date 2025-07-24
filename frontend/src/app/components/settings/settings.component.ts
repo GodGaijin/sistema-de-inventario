@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { StateService } from '../../services/state.service';
 import { ApiService } from '../../services/api.service';
+import { SecurityService } from 'src/app/services/security.service';
 
 interface SettingsForm {
   email: string;
@@ -159,6 +160,7 @@ export class SettingsComponent {
   private authService = inject(AuthService);
   private stateService = inject(StateService);
   private apiService = inject(ApiService);
+  private securityService = inject(SecurityService);
 
   // Signals reactivos
   currentUser = this.stateService.currentUser;
@@ -172,6 +174,11 @@ export class SettingsComponent {
     confirmPassword: '',
     notificationsEnabled: true
   };
+
+  twoFAStatus: any = null;
+  qrCode: string | null = null;
+  backupCodes: string[] = [];
+  twoFACode: string = '';
 
   updateEmail(): void {
     if (!this.form.email) return;
@@ -242,5 +249,37 @@ export class SettingsComponent {
       case 'admin': return 'Administrador';
       default: return 'Usuario';
     }
+  }
+
+  ngOnInit() {
+    this.load2FAStatus();
+  }
+
+  load2FAStatus() {
+    this.securityService.getTwoFAStatus().subscribe(status => this.twoFAStatus = status);
+  }
+
+  setup2FA() {
+    this.securityService.setup2FA().subscribe(data => {
+      this.qrCode = data.qrCode;
+      this.backupCodes = data.backupCodes;
+    });
+  }
+
+  verify2FA() {
+    this.securityService.verify2FA(this.twoFACode).subscribe(() => {
+      this.qrCode = null;
+      this.backupCodes = [];
+      this.twoFACode = '';
+      this.load2FAStatus();
+      // Mostrar mensaje de éxito
+    });
+  }
+
+  disable2FA() {
+    this.securityService.disable2FA(this.twoFACode).subscribe(() => {
+      this.load2FAStatus();
+      // Mostrar mensaje de éxito
+    });
   }
 } 

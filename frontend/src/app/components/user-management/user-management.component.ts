@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ApiService } from '../../services/api.service';
+import { SecurityService } from '../../services/security.service';
 
 export interface User {
   id: number;
@@ -20,7 +21,7 @@ export interface User {
   styleUrls: ['./user-management.component.css']
 })
 export class UserManagementComponent {
-  users: User[] = [];
+  users: any[] = [];
   filteredUsers: User[] = [];
   loading = false;
   message = '';
@@ -37,17 +38,29 @@ export class UserManagementComponent {
   // Función Math para usar en el template
   Math = Math;
 
+  blockedIPs: any[] = [];
+  suspiciousActivity: any[] = [];
+
   private authService = inject(AuthService);
   private apiService = inject(ApiService);
   private router = inject(Router);
+  private securityService = inject(SecurityService);
 
   constructor() {
     this.loadUsers();
+    this.loadBlockedIPs();
+    this.loadSuspiciousActivity();
+  }
+
+  ngOnInit() {
+    this.loadUsers();
+    this.loadBlockedIPs();
+    this.loadSuspiciousActivity();
   }
 
   loadUsers(): void {
     this.loading = true;
-    this.apiService.getUsers().subscribe({
+    this.apiService.getUsersWithSecurityInfo().subscribe({
       next: (users: User[]) => {
         this.users = users.sort((a, b) => a.id - b.id); // Ordenar por ID ascendente
         this.applyFilters();
@@ -182,6 +195,30 @@ export class UserManagementComponent {
 
   navigateToDashboard(): void {
     this.router.navigate(['/dashboard']);
+  }
+
+  suspendUser(userId: number, reason: string) {
+    this.securityService.suspendUser(userId, reason).subscribe(() => this.loadUsers());
+  }
+
+  unsuspendUser(userId: number) {
+    this.securityService.unsuspendUser(userId).subscribe(() => this.loadUsers());
+  }
+
+  loadBlockedIPs() {
+    this.securityService.getBlockedIPs().subscribe(data => this.blockedIPs = data.blockedIPs);
+  }
+
+  blockIP(ip: string, reason: string) {
+    this.securityService.blockIP(ip, reason).subscribe(() => this.loadBlockedIPs());
+  }
+
+  unblockIP(ip: string) {
+    this.securityService.unblockIP(ip).subscribe(() => this.loadBlockedIPs());
+  }
+
+  loadSuspiciousActivity() {
+    this.securityService.getSuspiciousActivity().subscribe(data => this.suspiciousActivity = data.suspiciousActivity);
   }
 
   private showMessage(message: string, type: string): void {

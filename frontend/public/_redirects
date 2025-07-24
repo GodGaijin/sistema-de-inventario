@@ -3,6 +3,8 @@
 
 /verify-email/*    /index.html   200
 /reset-password/*  /index.html   200
+/security/*        /index.html   200
+/auth/*            /index.html   200
 
 /*    /index.html   200
 
@@ -20,6 +22,8 @@
 /settings    /index.html   200
 /inventory    /index.html   200
 /requests    /index.html   200
+/security        /index.html   200
+/auth            /index.html   200
 
 # Handle any other routes
 /*    /index.html   200 

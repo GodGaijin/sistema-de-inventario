@@ -24,6 +24,7 @@ export class LoginComponent {
   pendingEmail = '';
   resendTimer = 0;
   canResend = true;
+  turnstileToken: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -47,10 +48,28 @@ export class LoginComponent {
     });
   }
 
+  ngOnInit() {
+    // Registrar callback global para Turnstile
+    (window as any).onTurnstileSuccess = (token: string) => {
+      this.turnstileToken = token;
+    };
+  }
+
   onLogin(): void {
     if (this.loginForm.valid) {
       const { username, password } = this.loginForm.value;
       
+      if (!this.turnstileToken) {
+        alert('Por favor completa el captcha de seguridad.');
+        return;
+      }
+
+      const loginData = {
+        username,
+        password,
+        turnstileToken: this.turnstileToken
+      };
+
       this.authService.login(username, password).subscribe({
         next: () => {
           this.router.navigate(['/dashboard']);

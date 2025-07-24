@@ -476,3 +476,13 @@
     padding: 40px;
   }
 } 
+
+.panel-seguridad {
+  padding: 24px;
+}
+
+mat-tab-group {
+  margin-top: 16px;
+}
+
+/* Mantener estilos de tablas y botones existentes */ 

@@ -1,0 +1,22 @@
+<div class="settings-2fa">
+  <h3>Autenticación en dos pasos (2FA)</h3>
+  <div *ngIf="twoFAStatus?.enabled; else activar2FA">
+    <p>2FA está <strong>activado</strong> en tu cuenta.</p>
+    <button (click)="disable2FA()">Desactivar 2FA</button>
+  </div>
+  <ng-template #activar2FA>
+    <p>2FA está <strong>desactivado</strong> en tu cuenta.</p>
+    <button (click)="setup2FA()">Activar 2FA</button>
+  </ng-template>
+  <div *ngIf="qrCode">
+    <p>Escanea este código QR con tu app de autenticación:</p>
+    <img [src]="qrCode" alt="QR 2FA">
+    <p><strong>Códigos de respaldo:</strong></p>
+    <ul>
+      <li *ngFor="let code of backupCodes">{{ code }}</li>
+    </ul>
+    <p>Ingresa el código generado por tu app para completar la activación:</p>
+    <input [(ngModel)]="twoFACode" maxlength="6">
+    <button (click)="verify2FA()">Verificar y Activar</button>
+  </div>
+</div> 

@@ -17,6 +17,9 @@ const db = require('./models/database');
 const sessionModel = require('./models/sessionModel');
 const app = express();
 
+// Configurar Express para confiar en el proxy (necesario para rate limiting en Render)
+app.set('trust proxy', 1);
+
 // Configurar CORS para permitir el frontend en Render
 const corsOptions = {
   origin: [

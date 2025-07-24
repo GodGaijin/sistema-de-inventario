@@ -128,6 +128,9 @@ class Database {
         )
       `);
 
+      // Migrar tabla users existente - agregar columnas faltantes
+      await this.migrateUsersTable();
+
       await this.run(`
         CREATE TABLE IF NOT EXISTS categories (
           id SERIAL PRIMARY KEY,
@@ -308,6 +311,57 @@ class Database {
     } catch (error) {
       console.error('❌ Error inicializando tablas:', error);
       throw error;
+    }
+  }
+
+  // Método para migrar la tabla users y agregar columnas de seguridad
+  async migrateUsersTable() {
+    try {
+      console.log('🔄 Iniciando migración de tabla users...');
+      
+      // Lista de columnas de seguridad a agregar
+      const securityColumns = [
+        { name: 'two_factor_secret', type: 'VARCHAR(255)' },
+        { name: 'two_factor_enabled', type: 'BOOLEAN DEFAULT FALSE' },
+        { name: 'two_factor_backup_codes', type: 'TEXT' },
+        { name: 'account_suspended', type: 'BOOLEAN DEFAULT FALSE' },
+        { name: 'suspension_reason', type: 'TEXT' },
+        { name: 'suspension_date', type: 'TIMESTAMP' },
+        { name: 'suspension_expires', type: 'TIMESTAMP' },
+        { name: 'failed_login_attempts', type: 'INTEGER DEFAULT 0' },
+        { name: 'last_failed_login', type: 'TIMESTAMP' },
+        { name: 'account_locked_until', type: 'TIMESTAMP' },
+        { name: 'registration_ip', type: 'VARCHAR(45)' },
+        { name: 'last_login_ip', type: 'VARCHAR(45)' },
+        { name: 'last_login_timestamp', type: 'TIMESTAMP' },
+        { name: 'created_at', type: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP' }
+      ];
+
+      // Verificar y agregar cada columna si no existe
+      for (const column of securityColumns) {
+        try {
+          // Verificar si la columna existe
+          const columnExists = await this.query(`
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name = 'users' AND column_name = $1
+          `, [column.name]);
+
+          if (!columnExists.rows || columnExists.rows.length === 0) {
+            console.log(`➕ Agregando columna: ${column.name}`);
+            await this.run(`ALTER TABLE users ADD COLUMN ${column.name} ${column.type}`);
+          } else {
+            console.log(`✅ Columna ya existe: ${column.name}`);
+          }
+        } catch (error) {
+          console.error(`❌ Error agregando columna ${column.name}:`, error);
+        }
+      }
+
+      console.log('✅ Migración de tabla users completada');
+    } catch (error) {
+      console.error('❌ Error en migración de tabla users:', error);
+      // No lanzar error para no interrumpir el inicio del servidor
     }
   }
 }

@@ -57,7 +57,7 @@ const registrationLimiter = rateLimit({
 const loginSlowDown = slowDown({
   windowMs: 15 * 60 * 1000, // 15 minutos
   delayAfter: 2, // después de 2 intentos
-  delayMs: 1000, // 1 segundo de delay por intento adicional
+  delayMs: () => 1000, // 1 segundo de delay por intento adicional
   maxDelayMs: 10000 // máximo 10 segundos de delay
 });
 
@@ -65,10 +65,15 @@ const loginSlowDown = slowDown({
 const verifyTurnstile = async (req, res, next) => {
   try {
     const token = req.body.turnstileToken;
+    console.log('🔍 Verificando Turnstile token:', token ? 'Presente' : 'Ausente');
+    console.log('🔍 TURNSTILE_SECRET_KEY configurada:', !!TURNSTILE_SECRET_KEY);
+    console.log('🔍 Request body:', JSON.stringify(req.body, null, 2));
+    
     if (!token) {
+      console.log('❌ Token Turnstile ausente');
       await securityModel.logSecurityEvent(req, 'turnstile_missing', {
         action: req.path,
-        username: req.body.username || req.body.email
+        username: req.body?.username || req.body?.email
       });
       return res.status(400).json({
         message: 'Verificación Turnstile requerida.',
@@ -76,10 +81,13 @@ const verifyTurnstile = async (req, res, next) => {
       });
     }
     if (!TURNSTILE_SECRET_KEY) {
-      console.warn('TURNSTILE_SECRET_KEY no configurada, saltando verificación');
+      console.warn('⚠️ TURNSTILE_SECRET_KEY no configurada, saltando verificación');
       return next();
     }
     const ip = securityModel.getClientIP(req);
+    console.log('🔍 Enviando verificación a Cloudflare con IP:', ip);
+    console.log('🔍 Token a verificar:', token.substring(0, 20) + '...');
+    
     const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -90,6 +98,8 @@ const verifyTurnstile = async (req, res, next) => {
       })
     });
     const data = await response.json();
+    console.log('🔍 Respuesta de Cloudflare:', data);
+    
     if (!data.success) {
       await securityModel.logSecurityEvent(req, 'turnstile_failed', {
         action: req.path,
@@ -104,9 +114,10 @@ const verifyTurnstile = async (req, res, next) => {
     }
     // Puedes usar data.score si quieres lógica adicional
     req.turnstileData = data;
+    console.log('✅ Turnstile verificado exitosamente');
     next();
   } catch (error) {
-    console.error('Error verificando Turnstile:', error);
+    console.error('❌ Error verificando Turnstile:', error);
     await securityModel.logSecurityEvent(req, 'turnstile_error', {
       action: req.path,
       error: error.message
@@ -307,8 +318,8 @@ const securityLogging = async (req, res, next) => {
           method: req.method,
           statusCode: res.statusCode,
           username: (req.body && (req.body.username || req.body.email)) || null,
-          turnstileData: req.turnstileData,
-          securityAnalysis: req.securityAnalysis
+          turnstileData: req.turnstileData || null,
+          securityAnalysis: req.securityAnalysis || null
         };
         
         // Determinar el tipo de acción

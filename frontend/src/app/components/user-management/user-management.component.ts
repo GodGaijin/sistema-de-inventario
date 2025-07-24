@@ -262,12 +262,15 @@ export class UserManagementComponent {
   }
 
   viewSuspensionDetails(user: any) {
+    const suspensionDate = user.suspension_date ? new Date(user.suspension_date).toLocaleString() : 'Fecha no disponible';
+    const expirationDate = user.suspension_expires ? new Date(user.suspension_expires).toLocaleString() : 'Suspensión permanente';
+    
     const details = `
 Usuario: ${user.username}
 Email: ${user.email}
 Razón: ${user.suspension_reason || 'Sin razón especificada'}
-Fecha de suspensión: ${new Date(user.suspension_date).toLocaleString()}
-${user.suspension_expires ? `Expira: ${new Date(user.suspension_expires).toLocaleString()}` : 'Suspensión permanente'}
+Fecha de suspensión: ${suspensionDate}
+Expira: ${expirationDate}
     `;
     alert(details);
   }

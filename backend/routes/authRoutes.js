@@ -20,6 +20,7 @@ router.post('/login',
   securityMiddleware.verifyTurnstile,
   authController.login
 );
+router.post('/verify-2fa-login', authController.verify2FALogin);
 router.post('/refresh', authController.refreshToken);
 router.post('/check-session', authController.checkSession);
 router.post('/logout', authController.logout);

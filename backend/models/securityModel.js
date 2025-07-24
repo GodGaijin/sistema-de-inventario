@@ -299,7 +299,7 @@ const disableTwoFactor = async (userId) => {
 };
 
 // Funciones para gestión de cuentas suspendidas
-const suspendAccount = async (userId, reason, suspendedBy, durationHours = 24) => {
+const suspendAccount = async (userId, reason, suspendedBy, durationHours = 336) => { // 14 días = 336 horas
   try {
     const suspensionExpires = new Date();
     suspensionExpires.setHours(suspensionExpires.getHours() + durationHours);
@@ -365,6 +365,72 @@ const isAccountSuspended = async (userId) => {
   } catch (error) {
     console.error('Error checking account suspension:', error);
     return null;
+  }
+};
+
+// Función para verificar si una IP es conocida para un usuario
+const isKnownIP = async (userId, ip) => {
+  try {
+    const result = await db.query(`
+      SELECT 
+        registration_ip,
+        last_login_ip,
+        COUNT(DISTINCT ip_address) as known_ips_count
+      FROM users u
+      LEFT JOIN security_audit_log sal ON u.id = sal.user_id 
+        AND sal.action = 'login_success' 
+        AND sal.timestamp > NOW() - INTERVAL '30 days'
+      WHERE u.id = $1
+      GROUP BY u.registration_ip, u.last_login_ip
+    `, [userId]);
+    
+    const user = result.rows ? result.rows[0] : result[0];
+    
+    if (!user) return false;
+    
+    // IPs conocidas: IP de registro, última IP de login, y IPs de los últimos 30 días
+    const knownIPs = new Set();
+    if (user.registration_ip) knownIPs.add(user.registration_ip);
+    if (user.last_login_ip) knownIPs.add(user.last_login_ip);
+    
+    // Obtener IPs de los últimos 30 días
+    const recentIPs = await db.query(`
+      SELECT DISTINCT ip_address 
+      FROM security_audit_log 
+      WHERE user_id = $1 
+        AND action = 'login_success' 
+        AND timestamp > NOW() - INTERVAL '30 days'
+    `, [userId]);
+    
+    const recentIPsList = recentIPs.rows || recentIPs;
+    recentIPsList.forEach(row => knownIPs.add(row.ip_address));
+    
+    return knownIPs.has(ip);
+  } catch (error) {
+    console.error('Error checking known IP:', error);
+    return false;
+  }
+};
+
+// Función para requerir 2FA en login desde IP no conocida
+const require2FAForUnknownIP = async (userId, ip) => {
+  try {
+    const user = await db.query(`
+      SELECT two_factor_enabled 
+      FROM users WHERE id = $1
+    `, [userId]);
+    
+    const userData = user.rows ? user.rows[0] : user[0];
+    
+    if (!userData || !userData.two_factor_enabled) {
+      return false; // No requiere 2FA si no está habilitado
+    }
+    
+    const isKnown = await isKnownIP(userId, ip);
+    return !isKnown; // Requiere 2FA si la IP no es conocida
+  } catch (error) {
+    console.error('Error checking 2FA requirement:', error);
+    return false;
   }
 };
 
@@ -469,6 +535,8 @@ module.exports = {
   suspendAccount,
   unsuspendAccount,
   isAccountSuspended,
+  isKnownIP,
+  require2FAForUnknownIP,
   getSecurityAnalytics,
   getSuspiciousActivity,
   cleanupOldData

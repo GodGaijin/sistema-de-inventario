@@ -271,11 +271,39 @@ exports.login = async (req, res) => {
     const ipAddress = securityModel.getClientIP(req);
     await userModel.updateLastLoginInfo(user.id, ipAddress);
     
+    // Verificar si requiere 2FA por IP no conocida
+    const requires2FA = await securityModel.require2FAForUnknownIP(user.id, ipAddress);
+    
+    if (requires2FA) {
+      // Registrar evento de 2FA requerido
+      await securityModel.logSecurityEvent(req, '2fa_required_unknown_ip', {
+        username: user.username,
+        ip: ipAddress,
+        reason: 'unknown_ip'
+      });
+      
+      return res.status(200).json({
+        requires2FA: true,
+        message: 'Se requiere verificación 2FA para acceder desde esta ubicación.',
+        tempToken: jwt.sign(
+          { id: user.id, username: user.username, requires2FA: true },
+          process.env.JWT_SECRET,
+          { expiresIn: '5m' }
+        )
+      });
+    }
+    
     const tokens = generateTokens(user);
     
     // Registrar sesión activa
     const userAgent = req.get('User-Agent');
     await sessionModel.createOrUpdateSession(user.id, user.username, tokens.refreshToken, ipAddress, userAgent);
+    
+    // Registrar login exitoso
+    await securityModel.logSecurityEvent(req, 'login_success', {
+      username: user.username,
+      ip: ipAddress
+    }, user.id);
     
     res.json({
       accessToken: tokens.accessToken,
@@ -289,6 +317,70 @@ exports.login = async (req, res) => {
     });
   } catch (error) {
     console.error('Error in login:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// Endpoint para verificar 2FA durante el login
+exports.verify2FALogin = async (req, res) => {
+  try {
+    const { tempToken, code } = req.body;
+    
+    if (!tempToken || !code) {
+      return res.status(400).json({ message: 'Token temporal y código 2FA requeridos.' });
+    }
+    
+    // Verificar token temporal
+    const decoded = jwt.verify(tempToken, process.env.JWT_SECRET);
+    if (!decoded.requires2FA) {
+      return res.status(400).json({ message: 'Token inválido.' });
+    }
+    
+    const userId = decoded.id;
+    
+    // Verificar código 2FA
+    const isValid = await securityModel.verifyTwoFactorCode(userId, code);
+    if (!isValid) {
+      return res.status(401).json({ message: 'Código 2FA inválido.' });
+    }
+    
+    // Obtener usuario actualizado
+    const user = await userModel.findUserById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado.' });
+    }
+    
+    // Generar tokens finales
+    const tokens = generateTokens(user);
+    
+    // Registrar sesión activa
+    const ipAddress = req.ip || req.connection.remoteAddress;
+    const userAgent = req.get('User-Agent');
+    await sessionModel.createOrUpdateSession(user.id, user.username, tokens.refreshToken, ipAddress, userAgent);
+    
+    // Registrar login exitoso con 2FA
+    await securityModel.logSecurityEvent(req, 'login_success_2fa', {
+      username: user.username,
+      ip: ipAddress,
+      method: '2fa_verification'
+    }, user.id);
+    
+    res.json({
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error in verify2FALogin:', error);
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: 'Token temporal inválido o expirado.' });
+    }
     res.status(500).json({ message: 'Error interno del servidor.' });
   }
 };

@@ -60,7 +60,7 @@ export class LoginComponent {
       const { username, password } = this.loginForm.value;
       
       if (!this.turnstileToken) {
-        alert('Por favor completa el captcha de seguridad.');
+        this.showMessage('Por favor completa el captcha de seguridad.', 'error');
         return;
       }
 
@@ -70,7 +70,7 @@ export class LoginComponent {
         turnstileToken: this.turnstileToken
       };
 
-      this.authService.login(username, password).subscribe({
+      this.authService.login(username, password, this.turnstileToken).subscribe({
         next: () => {
           this.router.navigate(['/dashboard']);
         },
@@ -93,17 +93,30 @@ export class LoginComponent {
     if (this.registerForm.valid) {
       const { username, email, password } = this.registerForm.value;
       
+      if (!this.turnstileToken) {
+        this.showMessage('Por favor completa el captcha de seguridad.', 'error');
+        return;
+      }
+
       // Validate password
       if (!this.authService.validatePassword(password)) {
         this.showMessage('La contraseña debe contener al menos una letra, un número y un caracter especial.', 'error');
         return;
       }
 
-      this.authService.register(username, email, password).subscribe({
+      const registerData = {
+        username,
+        email,
+        password,
+        turnstileToken: this.turnstileToken
+      };
+
+      this.apiService.register(registerData).subscribe({
         next: () => {
           this.showMessage('¡Registro exitoso! Por favor verifica tu email para completar el registro.', 'success');
           this.showRegister = false;
           this.registerForm.reset();
+          this.turnstileToken = null;
         },
         error: (error) => {
           this.showMessage(error.error?.message || 'Error al registrarse', 'error');
@@ -192,6 +205,7 @@ export class LoginComponent {
     this.showForgotPassword = false;
     this.showEmailVerification = false;
     this.message = '';
+    this.turnstileToken = null; // Reset token when switching forms
   }
 
   toggleForgotPassword(): void {
@@ -199,6 +213,7 @@ export class LoginComponent {
     this.showRegister = false;
     this.showEmailVerification = false;
     this.message = '';
+    this.turnstileToken = null; // Reset token when switching forms
   }
 
   private showMessage(message: string, type: string): void {

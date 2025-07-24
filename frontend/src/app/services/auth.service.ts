@@ -50,11 +50,17 @@ export class AuthService {
     }
   }
 
-  login(username: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, {
+  login(username: string, password: string, turnstileToken?: string): Observable<AuthResponse> {
+    const payload: any = {
       username,
       password
-    }).pipe(
+    };
+    
+    if (turnstileToken) {
+      payload.turnstileToken = turnstileToken;
+    }
+    
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, payload).pipe(
       map(response => {
         localStorage.setItem('accessToken', response.accessToken);
         localStorage.setItem('refreshToken', response.refreshToken);

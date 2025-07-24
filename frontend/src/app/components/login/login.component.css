@@ -302,4 +302,13 @@
 
 .cf-turnstile {
   margin: 16px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 65px;
+}
+
+.cf-turnstile iframe {
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
 } 

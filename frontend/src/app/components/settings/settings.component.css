@@ -257,14 +257,61 @@ input:checked + .slider:before {
   border-radius: 8px;
   background: #fafafa;
 }
+
+.twofa-settings {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #28a745;
+}
+
+.qr-section {
+  margin-top: 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  border: 2px dashed #28a745;
+}
+
+.qr-code {
+  max-width: 200px;
+  height: auto;
+  display: block;
+  margin: 15px auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.backup-codes {
+  background: #fff3cd;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #ffeaa7;
+  margin: 15px 0;
+  list-style: none;
+}
+
+.backup-codes li {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  color: #856404;
+  margin: 5px 0;
+  padding: 5px;
+  background: white;
+  border-radius: 4px;
+  text-align: center;
+}
+
 .settings-2fa img {
   margin: 16px 0;
   max-width: 200px;
 }
+
 .settings-2fa ul {
   list-style: disc inside;
   margin: 8px 0 16px 0;
 }
+
 .settings-2fa input {
   margin-right: 8px;
   width: 100px;

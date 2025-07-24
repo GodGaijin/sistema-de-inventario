@@ -6,15 +6,26 @@ import { StateService } from '../services/state.service';
 import { SessionConfirmationService } from '../services/session-confirmation.service';
 import { Router } from '@angular/router';
 
-// Función para verificar si el token está a 1 minuto de expirar
+// Función para verificar si el token está a 5 minutos de expirar
 function isTokenExpiringSoon(token: string): boolean {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
     const currentTime = Date.now() / 1000;
     const timeUntilExpiry = payload.exp - currentTime;
-    return timeUntilExpiry <= 60 && timeUntilExpiry > 0; // Entre 0 y 60 segundos
+    return timeUntilExpiry <= 300 && timeUntilExpiry > 0; // Entre 0 y 5 minutos
   } catch (error) {
     return false;
+  }
+}
+
+// Función para verificar si el token ha expirado
+function isTokenExpired(token: string): boolean {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const currentTime = Date.now() / 1000;
+    return payload.exp < currentTime;
+  } catch (error) {
+    return true;
   }
 }
 
@@ -24,77 +35,84 @@ export const TokenInterceptor: HttpInterceptorFn = (request, next) => {
   const sessionConfirmationService = inject(SessionConfirmationService);
   const router = inject(Router);
 
+  // Obtener el token del localStorage
+  const token = localStorage.getItem('accessToken');
+  
+  // Si hay token y la URL no es de login/registro, agregar el header de autorización
+  if (token && !request.url.includes('/auth/login') && !request.url.includes('/auth/register')) {
+    // Verificar si el token está expirado
+    if (isTokenExpired(token)) {
+      // Token expirado, intentar renovar automáticamente
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (refreshToken) {
+        return authService.refreshToken().pipe(
+          switchMap((response: any) => {
+            // Token renovado exitosamente, continuar con la petición original
+            const newRequest = request.clone({
+              setHeaders: {
+                Authorization: `Bearer ${response.accessToken}`
+              }
+            });
+            return next(newRequest);
+          }),
+          catchError((refreshError) => {
+            // Error al renovar token, cerrar sesión
+            authService.logout();
+            router.navigate(['/login']);
+            return throwError(() => refreshError);
+          })
+        );
+      } else {
+        // No hay refresh token, cerrar sesión
+        authService.logout();
+        router.navigate(['/login']);
+        return throwError(() => new Error('No refresh token available'));
+      }
+    } else {
+      // Token válido, agregar header de autorización
+      request = request.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    }
+  }
+
   return next(request).pipe(
     catchError((error: HttpErrorResponse) => {
-      // Si es un error 401 (Unauthorized), puede ser token expirado
+      // Si es un error 401 (Unauthorized), intentar renovar el token
       if (error.status === 401) {
         // Verificar si es un logout manual
         const isManualLogout = localStorage.getItem('manualLogout');
         if (isManualLogout) {
-          // Es un logout manual, no mostrar mensajes de sesión inválida
           return throwError(() => error);
         }
         
-        const accessToken = localStorage.getItem('accessToken');
         const refreshToken = localStorage.getItem('refreshToken');
-        
         if (refreshToken) {
-          // Verificar si el token está a punto de expirar (último minuto)
-          if (accessToken && isTokenExpiringSoon(accessToken)) {
-            // Mostrar popup de confirmación al usuario
-            return from(sessionConfirmationService.showSessionConfirmation()).pipe(
-              switchMap((userConfirmed) => {
-                if (userConfirmed) {
-                  // Usuario confirmó, intentar refresh
-                  return authService.checkSession().pipe(
-                    switchMap((response: any) => {
-                      if (response.sessionExpired) {
-                        // Refresh token también expirado, cerrar sesión
-                        authService.logout();
-                        router.navigate(['/login']);
-                        return throwError(() => new Error('Session expired'));
-                      } else {
-                        // Refresh token válido, extender sesión silenciosamente
-                        
-                        // Reintentar la petición original con el nuevo token
-                        const newToken = localStorage.getItem('accessToken');
-                        if (newToken) {
-                          const newRequest = request.clone({
-                            setHeaders: {
-                              Authorization: `Bearer ${newToken}`
-                            }
-                          });
-                          return next(newRequest);
-                        }
-                      }
-                      return throwError(() => error);
-                    }),
-                    catchError((sessionError) => {
-                      // Error al verificar sesión, cerrar sesión
-                      authService.logout();
-                      router.navigate(['/login']);
-                      return throwError(() => sessionError);
-                    })
-                  );
-                } else {
-                  // Usuario canceló o se agotó el tiempo, cerrar sesión
-                  return throwError(() => new Error('User cancelled session refresh'));
+          // Intentar renovar el token automáticamente
+          return authService.refreshToken().pipe(
+            switchMap((response: any) => {
+              // Token renovado exitosamente, reintentar la petición original
+              const newRequest = request.clone({
+                setHeaders: {
+                  Authorization: `Bearer ${response.accessToken}`
                 }
-              }),
-              catchError(() => {
-                return throwError(() => error);
-              })
-            );
-          } else {
-            // Token ya expiró completamente, cerrar sesión directamente
-            authService.logout();
-            router.navigate(['/login']);
-            return throwError(() => error);
-          }
+              });
+              return next(newRequest);
+            }),
+            catchError((refreshError) => {
+              // Error al renovar token, cerrar sesión
+              authService.logout();
+              router.navigate(['/login']);
+              return throwError(() => refreshError);
+            })
+          );
         } else {
           // No hay refresh token, cerrar sesión
           authService.logout();
           router.navigate(['/login']);
+          return throwError(() => error);
         }
       }
       

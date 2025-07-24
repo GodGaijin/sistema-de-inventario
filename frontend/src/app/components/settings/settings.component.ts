@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { StateService } from '../../services/state.service';
 import { ApiService } from '../../services/api.service';
-import { SecurityService } from 'src/app/services/security.service';
+import { SecurityService } from '../../services/security.service';
 
 interface SettingsForm {
   email: string;
@@ -136,6 +136,32 @@ interface SettingsForm {
           </div>
         </div>
 
+        <!-- Autenticación en dos pasos (2FA) -->
+        <div class="settings-section">
+          <h2>🔐 Autenticación en dos pasos (2FA)</h2>
+          <div class="twofa-settings">
+            <div *ngIf="twoFAStatus?.enabled; else activar2FA">
+              <p>2FA está <strong>activado</strong> en tu cuenta.</p>
+              <button (click)="disable2FA()" class="btn btn-warning">Desactivar 2FA</button>
+            </div>
+            <ng-template #activar2FA>
+              <p>2FA está <strong>desactivado</strong> en tu cuenta.</p>
+              <button (click)="setup2FA()" class="btn btn-primary">Activar 2FA</button>
+            </ng-template>
+            <div *ngIf="qrCode" class="qr-section">
+              <p>Escanea este código QR con tu app de autenticación:</p>
+              <img [src]="qrCode" alt="QR 2FA" class="qr-code">
+              <p><strong>Códigos de respaldo:</strong></p>
+              <ul class="backup-codes">
+                <li *ngFor="let code of backupCodes">{{ code }}</li>
+              </ul>
+              <p>Ingresa el código generado por tu app para completar la activación:</p>
+              <input [(ngModel)]="twoFACode" maxlength="6" class="form-control" placeholder="Código 2FA">
+              <button (click)="verify2FA()" class="btn btn-primary">Verificar y Activar</button>
+            </div>
+          </div>
+        </div>
+
         <!-- Acciones de Cuenta -->
         <div class="settings-section">
           <h2>⚠️ Acciones de Cuenta</h2>
@@ -256,11 +282,11 @@ export class SettingsComponent {
   }
 
   load2FAStatus() {
-    this.securityService.getTwoFAStatus().subscribe(status => this.twoFAStatus = status);
+    this.securityService.getTwoFAStatus().subscribe((status: any) => this.twoFAStatus = status);
   }
 
   setup2FA() {
-    this.securityService.setup2FA().subscribe(data => {
+    this.securityService.setup2FA().subscribe((data: any) => {
       this.qrCode = data.qrCode;
       this.backupCodes = data.backupCodes;
     });
@@ -272,14 +298,20 @@ export class SettingsComponent {
       this.backupCodes = [];
       this.twoFACode = '';
       this.load2FAStatus();
-      // Mostrar mensaje de éxito
+      this.stateService.addNotification({
+        message: '2FA activado correctamente',
+        type: 'success'
+      });
     });
   }
 
   disable2FA() {
     this.securityService.disable2FA(this.twoFACode).subscribe(() => {
       this.load2FAStatus();
-      // Mostrar mensaje de éxito
+      this.stateService.addNotification({
+        message: '2FA desactivado correctamente',
+        type: 'success'
+      });
     });
   }
 } 

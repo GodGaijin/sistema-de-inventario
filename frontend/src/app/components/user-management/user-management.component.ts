@@ -61,12 +61,20 @@ export class UserManagementComponent {
   loadUsers(): void {
     this.loading = true;
     this.securityService.getUsersWithSecurityInfo().subscribe({
-      next: (users: User[]) => {
-        this.users = users.sort((a, b) => a.id - b.id); // Ordenar por ID ascendente
-        this.filteredUsers = this.users;
+      next: (users: any) => {
+        // Verificar que users sea un array válido
+        if (Array.isArray(users)) {
+          this.users = users.sort((a: User, b: User) => a.id - b.id); // Ordenar por ID ascendente
+        } else {
+          this.users = [];
+        }
+        this.filteredUsers = [...this.users];
         this.loading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
+        console.error('Error loading users:', error);
+        this.users = [];
+        this.filteredUsers = [];
         this.loading = false;
         this.showMessage('Error al cargar usuarios', 'error');
       }
@@ -205,7 +213,7 @@ export class UserManagementComponent {
   }
 
   loadBlockedIPs() {
-    this.securityService.getBlockedIPs().subscribe(data => this.blockedIPs = data.blockedIPs);
+    this.securityService.getBlockedIPs().subscribe((data: any) => this.blockedIPs = data.blockedIPs || []);
   }
 
   blockIP(ip: string, reason: string) {
@@ -217,7 +225,7 @@ export class UserManagementComponent {
   }
 
   loadSuspiciousActivity() {
-    this.securityService.getSuspiciousActivity().subscribe(data => this.suspiciousActivity = data.suspiciousActivity);
+    this.securityService.getSuspiciousActivity().subscribe((data: any) => this.suspiciousActivity = data.suspiciousActivity || []);
   }
 
   private showMessage(message: string, type: string): void {

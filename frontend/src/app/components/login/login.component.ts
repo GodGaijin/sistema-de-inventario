@@ -43,6 +43,7 @@ export class LoginComponent {
   ngOnInit() {
     // Registrar callback global para Turnstile
     (window as any).onTurnstileSuccess = (token: string) => {
+      console.log('Token recibido:', token);
       this.turnstileToken = token;
     };
 
@@ -70,7 +71,10 @@ export class LoginComponent {
       if (loginContainer) {
         (window as any).turnstile.render('#turnstile-login', {
           sitekey: '0x4AAAAAABmYB-iNDrW2Yw0I',
-          callback: 'onTurnstileSuccess',
+          callback: (token: string) => {
+            console.log('Callback ejecutado con token:', token);
+            this.turnstileToken = token;
+          },
           theme: 'light'
         });
       }

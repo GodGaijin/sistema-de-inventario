@@ -138,6 +138,15 @@ const sendEmailVerification = (email, token, username) => {
 // Función para enviar email de suspensión de cuenta
 const sendAccountSuspensionEmail = async (email, username, reason, durationHours, adminEmail) => {
   try {
+    // Mostrar siempre en días, redondeando hacia arriba
+    let durationText;
+    if (durationHours >= 24) {
+      const days = Math.ceil(durationHours / 24);
+      durationText = `${days} día${days > 1 ? 's' : ''}`;
+    } else {
+      durationText = `${durationHours} hora${durationHours > 1 ? 's' : ''}`;
+    }
+
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -149,7 +158,7 @@ const sendAccountSuspensionEmail = async (email, username, reason, durationHours
           <p>Tu cuenta en el Sistema de Inventario ha sido suspendida temporalmente por el siguiente motivo:</p>
           <div style="background-color: #f5f5f5; padding: 15px; border-left: 4px solid #d32f2f; margin: 20px 0;">
             <p><strong>Razón:</strong> ${reason}</p>
-            <p><strong>Duración:</strong> ${durationHours} horas</p>
+            <p><strong>Duración:</strong> ${durationText}</p>
           </div>
           <p>Si consideras que esto es un error o necesitas aclarar la situación, por favor contacta al administrador senior:</p>
           <p><strong>Email del administrador:</strong> ${adminEmail}</p>

@@ -133,12 +133,12 @@ exports.suspendUser = async (req, res) => {
       return res.status(400).json({ message: 'No se pueden suspender cuentas de administradores senior.' });
     }
     
-    // Suspender cuenta
+    // Suspender cuenta (14 días por defecto = 336 horas)
     const success = await securityModel.suspendAccount(
       userId, 
       reason, 
       req.user.id, 
-      durationHours || 24
+      durationHours || 336
     );
     
     if (!success) {
@@ -151,7 +151,7 @@ exports.suspendUser = async (req, res) => {
         userToSuspend.email, 
         userToSuspend.username, 
         reason, 
-        durationHours || 24,
+        durationHours || 336,
         process.env.SENIOR_ADMIN_EMAIL
       );
     } catch (emailError) {

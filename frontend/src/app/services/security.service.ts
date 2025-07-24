@@ -14,7 +14,8 @@ export class SecurityService {
   }
 
   suspendUser(userId: number, reason: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/users/suspend`, { userId, reason }, {
+    // Forzar 14 días (336 horas)
+    return this.http.post(`${this.apiUrl}/users/suspend`, { userId, reason, durationHours: 336 }, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     });
   }
@@ -29,8 +30,12 @@ export class SecurityService {
     return this.http.get(`${this.apiUrl}/ips/blocked`);
   }
 
-  blockIP(ipAddress: string, reason: string, durationHours: number = 24): Observable<any> {
-    return this.http.post(`${this.apiUrl}/ips/block`, { ipAddress, reason, durationHours }, {
+  blockIP(ipAddress: string, reason: string, durationHours?: number): Observable<any> {
+    const body: any = { ipAddress, reason };
+    if (durationHours !== undefined) {
+      body.durationHours = durationHours;
+    }
+    return this.http.post(`${this.apiUrl}/ips/block`, body, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     });
   }

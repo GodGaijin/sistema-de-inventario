@@ -824,6 +824,7 @@ exports.checkResendVerificationStatus = async (req, res) => {
 module.exports = {
   register: exports.register,
   login: exports.login,
+  verify2FALogin: exports.verify2FALogin,
   refreshToken: exports.refreshToken,
   checkSession: exports.checkSession,
   forgotPassword: exports.forgotPassword,

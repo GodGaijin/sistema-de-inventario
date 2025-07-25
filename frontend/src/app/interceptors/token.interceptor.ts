@@ -56,15 +56,15 @@ export const TokenInterceptor: HttpInterceptorFn = (request, next) => {
             return next(newRequest);
           }),
           catchError((refreshError) => {
-            // Error al renovar token, cerrar sesión
-            authService.logout();
+            // Error al renovar token, limpiar sesión sin notificación
+            authService.clearSession();
             router.navigate(['/login']);
             return throwError(() => refreshError);
           })
         );
       } else {
-        // No hay refresh token, cerrar sesión
-        authService.logout();
+        // No hay refresh token, limpiar sesión sin notificación
+        authService.clearSession();
         router.navigate(['/login']);
         return throwError(() => new Error('No refresh token available'));
       }
@@ -102,15 +102,15 @@ export const TokenInterceptor: HttpInterceptorFn = (request, next) => {
               return next(newRequest);
             }),
             catchError((refreshError) => {
-              // Error al renovar token, cerrar sesión
-              authService.logout();
+              // Error al renovar token, limpiar sesión sin notificación
+              authService.clearSession();
               router.navigate(['/login']);
               return throwError(() => refreshError);
             })
           );
         } else {
-          // No hay refresh token, cerrar sesión
-          authService.logout();
+          // No hay refresh token, limpiar sesión sin notificación
+          authService.clearSession();
           router.navigate(['/login']);
           return throwError(() => error);
         }

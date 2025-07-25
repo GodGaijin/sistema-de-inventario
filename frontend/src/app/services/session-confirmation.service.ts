@@ -34,7 +34,23 @@ export class SessionConfirmationService {
         onConfirm: () => {
           if (timer) clearInterval(timer);
           this.confirmationSubject.next(null);
-          resolve(true);
+          
+          // Renovar token automáticamente cuando el usuario confirma
+          const refreshToken = localStorage.getItem('refreshToken');
+          if (refreshToken) {
+            this.authService.refreshToken().subscribe({
+              next: (response: any) => {
+                console.log('✅ Token renovado por confirmación de usuario');
+                resolve(true);
+              },
+              error: (error) => {
+                console.error('❌ Error al renovar token:', error);
+                resolve(false);
+              }
+            });
+          } else {
+            resolve(true);
+          }
         }
       };
       

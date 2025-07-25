@@ -96,6 +96,16 @@ export class AuthService {
     });
   }
 
+  // Método para limpiar sesión sin mostrar notificación (usado por interceptores automáticos)
+  clearSession(): void {
+    // Limpiar datos locales sin mostrar notificación
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('currentUser');
+    this.currentUserSubject.next(null);
+    this.stateService.clearUser();
+  }
+
   logout(): void {
     // Marcar que es un logout manual para evitar mensajes de sesión inválida
     localStorage.setItem('manualLogout', 'true');
@@ -119,10 +129,15 @@ export class AuthService {
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
     this.stateService.clearUser();
-    this.stateService.addNotification({
-      message: 'Sesión cerrada exitosamente',
-      type: 'info'
-    });
+    
+    // Solo mostrar notificación si es un logout manual (no automático por expiración)
+    const isManualLogout = localStorage.getItem('manualLogout');
+    if (isManualLogout === 'true') {
+      this.stateService.addNotification({
+        message: 'Sesión cerrada exitosamente',
+        type: 'info'
+      });
+    }
     
     // Limpiar la bandera después de un breve delay
     setTimeout(() => {
@@ -179,7 +194,7 @@ export class AuthService {
       return true;
     } catch (error) {
       console.error('Error validating token:', error);
-      this.logout();
+      // No llamar a logout() automáticamente, solo retornar false
       return false;
     }
   }

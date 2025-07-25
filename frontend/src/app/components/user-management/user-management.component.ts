@@ -25,6 +25,10 @@ export interface User {
   last_login_timestamp?: string;
   created_at?: string;
   is_email_verified?: boolean;
+  // Propiedades de baneo
+  account_banned?: boolean;
+  ban_reason?: string;
+  ban_date?: string;
 }
 
 @Component({

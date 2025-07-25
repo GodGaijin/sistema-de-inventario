@@ -70,8 +70,8 @@
           </td>
           <td>
             <span [title]="user.account_banned ? 'Baneado permanentemente' : 'No baneado'">
-              <span *ngIf="user.account_banned; else notBanned" class="ban-icon banned">🚫</span>
-              <ng-template #notBanned><span class="ban-icon not-banned">✅</span></ng-template>
+              <span *ngIf="user.account_banned; else notBanned" class="ban-icon banned">✅</span>
+              <ng-template #notBanned><span class="ban-icon not-banned">🚫</span></ng-template>
             </span>
           </td>
           <td>

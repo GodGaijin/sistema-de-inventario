@@ -150,7 +150,6 @@ const verifyTurnstile = async (req, res, next) => {
     }
     // Puedes usar data.score si quieres lógica adicional
     req.turnstileData = data;
-    console.log('✅ Turnstile verificado exitosamente');
     next();
   } catch (error) {
     console.error('❌ Error verificando Turnstile:', error);

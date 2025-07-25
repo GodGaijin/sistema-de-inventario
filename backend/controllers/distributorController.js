@@ -24,7 +24,6 @@ exports.getDistributorById = async (req, res) => {
 
 exports.createDistributor = async (req, res) => {
   try {
-    console.log('Creating distributor with data:', req.body);
     
     // Validar datos de entrada
     const { name, contact, phone, email, rif, location } = req.body;
@@ -33,7 +32,6 @@ exports.createDistributor = async (req, res) => {
     }
     
     const id = await distributorModel.createDistributor(req.body);
-    console.log('Distributor created with ID:', id);
     
     if (req.user && req.user.id) {
       try {

@@ -128,7 +128,7 @@ async function startServer() {
     
     // Iniciar el servidor
     app.listen(PORT, () => {
-      console.log(`✅ Server running on port ${PORT}`);
+      // console.log(`✅ Server running on port ${PORT}`);
     });
   } catch (error) {
     console.error('❌ Error starting server:', error);

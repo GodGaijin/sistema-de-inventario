@@ -2,7 +2,6 @@ const auditModel = require('../models/auditModel');
 
 exports.getAllAudits = async (req, res) => {
   try {
-    console.log('🔍 Obteniendo auditorías...');
     const audits = await auditModel.getAllAudits();
     
     // Formatear fechas para el frontend
@@ -12,7 +11,6 @@ exports.getAllAudits = async (req, res) => {
       formatted_timestamp: audit.formatted_timestamp || new Date().toISOString()
     }));
     
-    console.log(`✅ ${formattedAudits.length} auditorías enviadas al frontend`);
     res.json(formattedAudits);
   } catch (error) {
     console.error('❌ Error getting audits:', error);

@@ -131,9 +131,8 @@ export class UserManagementComponent {
   }
 
   goToPage(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-    }
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
   }
 
   getPageNumbers(): number[] {

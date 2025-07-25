@@ -27,14 +27,10 @@ const createCategory = async (category) => {
       throw new Error('El nombre de la categoría es requerido');
     }
     
-    console.log('Executing INSERT query with:', { name, description });
-    
     const result = await db.run(
       'INSERT INTO categories (name, description) VALUES ($1, $2) RETURNING id',
       [name.trim(), description || '']
     );
-    
-    console.log('INSERT result:', result);
     
     // Extraer el ID del resultado
     let id;
@@ -46,7 +42,6 @@ const createCategory = async (category) => {
       throw new Error('No se pudo obtener el ID de la categoría creada');
     }
     
-    console.log('Category created with ID:', id);
     return id;
   } catch (error) {
     console.error('Error in createCategory:', error);

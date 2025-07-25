@@ -24,7 +24,6 @@ exports.getCategoryById = async (req, res) => {
 
 exports.createCategory = async (req, res) => {
   try {
-    console.log('Creating category with data:', req.body);
     
     // Validar datos de entrada
     if (!req.body.name || req.body.name.trim() === '') {
@@ -32,7 +31,6 @@ exports.createCategory = async (req, res) => {
     }
     
     const id = await categoryModel.createCategory(req.body);
-    console.log('Category created with ID:', id);
     
     if (req.user && req.user.id) {
       try {
@@ -77,7 +75,6 @@ exports.updateCategory = async (req, res) => {
 
 exports.deleteCategory = async (req, res) => {
   try {
-    console.log('Deleting category with ID:', req.params.id);
     
     const changes = await categoryModel.deleteCategory(req.params.id);
     if (!changes) return res.status(404).json({ message: 'Categoría no encontrada' });
@@ -91,7 +88,6 @@ exports.deleteCategory = async (req, res) => {
       }
     }
     
-    console.log('Category deleted successfully');
     res.json({ message: 'Categoría eliminada' });
   } catch (error) {
     console.error('Error deleting category:', error);

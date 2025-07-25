@@ -317,7 +317,6 @@ class Database {
   // Método para migrar la tabla users y agregar columnas de seguridad
   async migrateUsersTable() {
     try {
-      console.log('🔄 Iniciando migración de tabla users...');
       
       // Lista de columnas de seguridad a agregar
       const securityColumns = [
@@ -348,17 +347,13 @@ class Database {
           `, [column.name]);
 
           if (!columnExists.rows || columnExists.rows.length === 0) {
-            console.log(`➕ Agregando columna: ${column.name}`);
             await this.run(`ALTER TABLE users ADD COLUMN ${column.name} ${column.type}`);
-          } else {
-            console.log(`✅ Columna ya existe: ${column.name}`);
           }
         } catch (error) {
           console.error(`❌ Error agregando columna ${column.name}:`, error);
         }
       }
 
-      console.log('✅ Migración de tabla users completada');
     } catch (error) {
       console.error('❌ Error en migración de tabla users:', error);
       // No lanzar error para no interrumpir el inicio del servidor

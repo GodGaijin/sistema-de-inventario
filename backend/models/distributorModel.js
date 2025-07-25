@@ -27,14 +27,10 @@ const createDistributor = async (distributor) => {
       throw new Error('Todos los campos son requeridos');
     }
     
-    console.log('Executing INSERT distributor query with:', { name, contact, phone, email, rif, location });
-    
     const result = await db.run(
       'INSERT INTO distributors (name, contact, phone, email, rif, location) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
       [name.trim(), contact.trim(), phone.trim(), email.trim(), rif.trim(), location.trim()]
     );
-    
-    console.log('INSERT distributor result:', result);
     
     // Extraer el ID del resultado
     let id;
@@ -46,7 +42,6 @@ const createDistributor = async (distributor) => {
       throw new Error('No se pudo obtener el ID del distribuidor creado');
     }
     
-    console.log('Distributor created with ID:', id);
     return id;
   } catch (error) {
     console.error('Error in createDistributor:', error);

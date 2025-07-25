@@ -15,7 +15,6 @@ const createOrUpdateSession = async (userId, username, refreshToken, ipAddress, 
       [userId, username, refreshToken, ipAddress, userAgent]
     );
 
-    console.log(`✅ Sesión creada/actualizada para usuario: ${username}`);
   } catch (error) {
     console.error('❌ Error creando/actualizando sesión:', error);
     throw error;
@@ -42,7 +41,6 @@ const removeSession = async (userId) => {
       'DELETE FROM active_sessions WHERE user_id = $1',
       [userId]
     );
-    console.log(`✅ Sesión eliminada para usuario ID: ${userId}`);
   } catch (error) {
     console.error('❌ Error eliminando sesión:', error);
     throw error;
@@ -56,7 +54,6 @@ const removeSessionByToken = async (refreshToken) => {
       'DELETE FROM active_sessions WHERE refresh_token = $1',
       [refreshToken]
     );
-    console.log('✅ Sesión eliminada por token');
   } catch (error) {
     console.error('❌ Error eliminando sesión por token:', error);
     throw error;
@@ -154,7 +151,6 @@ const cleanupInactiveSessions = async () => {
     const result = await db.run(
       'DELETE FROM active_sessions WHERE last_activity < NOW() - INTERVAL \'1 hour\''
     );
-    console.log(`🧹 ${result.changes} sesiones inactivas eliminadas`);
     return result.changes;
   } catch (error) {
     console.error('❌ Error limpiando sesiones inactivas:', error);

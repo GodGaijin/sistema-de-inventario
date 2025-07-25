@@ -46,6 +46,7 @@
           <th>Usuario</th>
           <th>Email</th>
           <th>Rol Actual</th>
+          <th>Verificado</th>
           <th>Acciones</th>
           <th>Eliminar</th>
         </tr>
@@ -58,6 +59,12 @@
           <td>
             <span class="role-badge" [ngClass]="user.role">
               {{ getRoleDisplayName(user.role) }}
+            </span>
+          </td>
+          <td>
+            <span [title]="user.is_email_verified ? 'Verificado' : 'No verificado'">
+              <span *ngIf="user.is_email_verified; else notVerified" class="verification-icon verified">✅</span>
+              <ng-template #notVerified><span class="verification-icon not-verified">❌</span></ng-template>
             </span>
           </td>
           <td>

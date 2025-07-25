@@ -434,7 +434,10 @@ const getAllUsersWithSecurityInfo = async () => {
         last_login_ip,
         last_login_timestamp,
         created_at,
-        is_email_verified
+        is_email_verified,
+        account_banned,
+        ban_reason,
+        ban_date
       FROM users 
       ORDER BY username
     `);

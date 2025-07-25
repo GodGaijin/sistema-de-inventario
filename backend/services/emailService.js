@@ -287,11 +287,72 @@ const sendSecurityAlertEmail = async (email, username, alertType, details) => {
   }
 };
 
+const sendAccountBanEmail = async (email, username, reason, adminEmail) => {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Cuenta Baneada Permanentemente - Sistema de Inventario',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #d32f2f;">🚫 Cuenta Baneada Permanentemente</h2>
+          <p>Hola <strong>${username}</strong>,</p>
+          <p>Tu cuenta en el Sistema de Inventario ha sido <strong>baneada permanentemente</strong> por el siguiente motivo:</p>
+          <div style="background-color: #f5f5f5; padding: 15px; border-left: 4px solid #d32f2f; margin: 20px 0;">
+            <p><strong>Razón:</strong> ${reason}</p>
+          </div>
+          <p>Si consideras que esto es un error o necesitas aclarar la situación, por favor contacta al administrador senior:</p>
+          <p><strong>Email del administrador:</strong> ${adminEmail}</p>
+          <p>Tu cuenta permanecerá inactiva hasta que un administrador senior decida reactivarla.</p>
+          <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+          <p style="color: #666; font-size: 12px;">
+            Este es un mensaje automático del Sistema de Inventario. No respondas a este email.
+          </p>
+        </div>
+      `
+    };
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error('❌ Error enviando email de baneo:', error);
+    throw error;
+  }
+};
+
+const sendAccountUnbanEmail = async (email, username, adminEmail) => {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Cuenta Reactivada - Sistema de Inventario',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #388e3c;">✅ Cuenta Reactivada</h2>
+          <p>Hola <strong>${username}</strong>,</p>
+          <p>Tu cuenta en el Sistema de Inventario ha sido <strong>reactivada</strong> por un administrador senior.</p>
+          <p>Ya puedes acceder nuevamente al sistema con tus credenciales habituales.</p>
+          <p>Si tienes alguna pregunta o necesitas ayuda, contacta al administrador senior:</p>
+          <p><strong>Email del administrador:</strong> ${adminEmail}</p>
+          <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+          <p style="color: #666; font-size: 12px;">
+            Este es un mensaje automático del Sistema de Inventario. No respondas a este email.
+          </p>
+        </div>
+      `
+    };
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error('❌ Error enviando email de desbaneo:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   sendPasswordResetEmail,
   sendSeniorAdminPassword,
   sendEmailVerification,
   sendAccountSuspensionEmail,
   sendAccountUnsuspensionEmail,
-  sendSecurityAlertEmail
+  sendSecurityAlertEmail,
+  sendAccountBanEmail,
+  sendAccountUnbanEmail,
 }; 

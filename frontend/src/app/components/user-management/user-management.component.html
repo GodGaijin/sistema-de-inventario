@@ -47,6 +47,7 @@
           <th>Email</th>
           <th>Rol Actual</th>
           <th>Verificado</th>
+          <th>Baneado</th>
           <th>Acciones</th>
           <th>Eliminar</th>
         </tr>
@@ -68,6 +69,12 @@
             </span>
           </td>
           <td>
+            <span [title]="user.account_banned ? 'Baneado permanentemente' : 'No baneado'">
+              <span *ngIf="user.account_banned; else notBanned" class="ban-icon banned">🚫</span>
+              <ng-template #notBanned><span class="ban-icon not-banned">✅</span></ng-template>
+            </span>
+          </td>
+          <td>
             <div class="actions" *ngIf="canChangeRole(user)">
               <select 
                 [value]="user.role" 
@@ -83,6 +90,21 @@
           </td>
           <td>
             <div class="user-actions" *ngIf="canManageUser(user)">
+              <!-- Botón de banear/desbanear usuario -->
+              <button 
+                *ngIf="!user.account_banned"
+                (click)="banUser(user.id, user.username)"
+                class="btn-ban"
+                title="Banear usuario permanentemente">
+                🚫
+              </button>
+              <button 
+                *ngIf="user.account_banned"
+                (click)="unbanUser(user.id, user.username)"
+                class="btn-unban"
+                title="Desbanear usuario">
+                ✅
+              </button>
               <!-- Botón de suspender/activar usuario -->
               <button 
                 *ngIf="!user.account_suspended"
@@ -98,7 +120,6 @@
                 title="Activar usuario">
                 ▶️
               </button>
-              
               <!-- Botón de eliminar -->
               <button 
                 *ngIf="canDeleteUser(user)"

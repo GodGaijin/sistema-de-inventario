@@ -425,3 +425,72 @@ exports.cleanupOldData = async (req, res) => {
     res.status(500).json({ message: 'Error interno del servidor.' });
   }
 }; 
+
+// Banear usuario (solo admin senior)
+exports.banUser = async (req, res) => {
+  try {
+    const { userId, reason } = req.body;
+    if (req.user.role !== 'senior_admin') {
+      return res.status(403).json({ message: 'Acceso denegado. Solo administradores senior pueden banear usuarios.' });
+    }
+    if (!userId || !reason) {
+      return res.status(400).json({ message: 'ID de usuario y razón requeridos.' });
+    }
+    const userToBan = await userModel.getUserById(userId);
+    if (!userToBan) {
+      return res.status(404).json({ message: 'Usuario no encontrado.' });
+    }
+    if (parseInt(userId) === req.user.id) {
+      return res.status(400).json({ message: 'No puedes banear tu propia cuenta.' });
+    }
+    if (userToBan.role === 'senior_admin') {
+      return res.status(400).json({ message: 'No se pueden banear cuentas de administradores senior.' });
+    }
+    // Banear usuario
+    const success = await userModel.banUser(userId, reason);
+    if (!success) {
+      return res.status(500).json({ message: 'Error al banear la cuenta.' });
+    }
+    // Enviar email de notificación
+    try {
+      await emailService.sendAccountBanEmail(userToBan.email, userToBan.username, reason, process.env.SENIOR_ADMIN_EMAIL);
+    } catch (emailError) {
+      console.error('Error sending ban email:', emailError);
+    }
+    res.json({ message: 'Cuenta baneada permanentemente.', banned: true });
+  } catch (error) {
+    console.error('Error banning user:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// Desbanear usuario (solo admin senior)
+exports.unbanUser = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (req.user.role !== 'senior_admin') {
+      return res.status(403).json({ message: 'Acceso denegado. Solo administradores senior pueden desbanear usuarios.' });
+    }
+    if (!userId) {
+      return res.status(400).json({ message: 'ID de usuario requerido.' });
+    }
+    const userToUnban = await userModel.getUserById(userId);
+    if (!userToUnban) {
+      return res.status(404).json({ message: 'Usuario no encontrado.' });
+    }
+    const success = await userModel.unbanUser(userId);
+    if (!success) {
+      return res.status(500).json({ message: 'Error al desbanear la cuenta.' });
+    }
+    // Enviar email de notificación
+    try {
+      await emailService.sendAccountUnbanEmail(userToUnban.email, userToUnban.username, process.env.SENIOR_ADMIN_EMAIL);
+    } catch (emailError) {
+      console.error('Error sending unban email:', emailError);
+    }
+    res.json({ message: 'Cuenta desbaneada exitosamente.', unbanned: true });
+  } catch (error) {
+    console.error('Error unbanning user:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+}; 

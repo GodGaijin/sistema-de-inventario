@@ -251,6 +251,35 @@ export class UserManagementComponent {
     }
   }
 
+  banUser(userId: number, username: string) {
+    const reason = prompt(`Ingresa la razón para banear permanentemente al usuario "${username}":`);
+    if (reason && reason.trim()) {
+      this.securityService.banUser(userId, reason.trim()).subscribe({
+        next: () => {
+          this.showMessage(`Usuario "${username}" baneado permanentemente. Se envió notificación por email.`, 'success');
+          this.loadUsers();
+        },
+        error: (error: any) => {
+          this.showMessage(error.error?.message || 'Error al banear usuario', 'error');
+        }
+      });
+    }
+  }
+
+  unbanUser(userId: number, username: string) {
+    if (confirm(`¿Estás seguro de que quieres desbanear al usuario "${username}"?`)) {
+      this.securityService.unbanUser(userId).subscribe({
+        next: () => {
+          this.showMessage(`Usuario "${username}" desbaneado exitosamente. Se envió notificación por email.`, 'success');
+          this.loadUsers();
+        },
+        error: (error: any) => {
+          this.showMessage(error.error?.message || 'Error al desbanear usuario', 'error');
+        }
+      });
+    }
+  }
+
   viewSuspensionDetails(user: any) {
     const suspensionDate = user.suspension_date ? new Date(user.suspension_date).toLocaleString() : 'Fecha no disponible';
     let expirationDate = 'Suspensión permanente';

@@ -310,3 +310,43 @@
 .verification-icon.not-verified {
   color: #ff4136; /* rojo */
 } 
+
+.ban-icon {
+  font-size: 1.5em;
+  display: inline-block;
+  vertical-align: middle;
+}
+.ban-icon.banned {
+  color: #ff4136; /* rojo */
+}
+.ban-icon.not-banned {
+  color: #2ecc40; /* verde */
+}
+.btn-ban {
+  background: #ff4136;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin-right: 4px;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-ban:hover {
+  background: #c82333;
+}
+.btn-unban {
+  background: #2ecc40;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin-right: 4px;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-unban:hover {
+  background: #218838;
+} 

@@ -446,6 +446,30 @@ const getAllUsersWithSecurityInfo = async () => {
   }
 };
 
+const banUser = async (userId, reason) => {
+  try {
+    await db.run(`
+      UPDATE users SET account_banned = TRUE, ban_reason = $1, ban_date = CURRENT_TIMESTAMP WHERE id = $2
+    `, [reason, userId]);
+    return true;
+  } catch (error) {
+    console.error('Error banning user:', error);
+    return false;
+  }
+};
+
+const unbanUser = async (userId) => {
+  try {
+    await db.run(`
+      UPDATE users SET account_banned = FALSE, ban_reason = NULL, ban_date = NULL WHERE id = $1
+    `, [userId]);
+    return true;
+  } catch (error) {
+    console.error('Error unbanning user:', error);
+    return false;
+  }
+};
+
 module.exports = {
   findUserByUsername,
   findUserByEmail,
@@ -472,4 +496,6 @@ module.exports = {
   updateLastLoginInfo,
   getUserSecurityInfo,
   getAllUsersWithSecurityInfo,
+  banUser,
+  unbanUser,
 }; 

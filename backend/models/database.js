@@ -333,7 +333,11 @@ class Database {
         { name: 'registration_ip', type: 'VARCHAR(45)' },
         { name: 'last_login_ip', type: 'VARCHAR(45)' },
         { name: 'last_login_timestamp', type: 'TIMESTAMP' },
-        { name: 'created_at', type: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP' }
+        { name: 'created_at', type: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP' },
+        // Nuevas columnas de baneo
+        { name: 'account_banned', type: 'BOOLEAN DEFAULT FALSE' },
+        { name: 'ban_reason', type: 'TEXT' },
+        { name: 'ban_date', type: 'TIMESTAMP' }
       ];
 
       // Verificar y agregar cada columna si no existe

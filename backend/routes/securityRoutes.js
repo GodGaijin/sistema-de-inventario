@@ -12,6 +12,8 @@ router.post('/2fa/disable', authMiddleware.authenticateToken, securityController
 // Rutas para gestión de cuentas suspendidas (solo admin senior)
 router.post('/users/suspend', authMiddleware.authenticateToken, securityController.suspendUser);
 router.post('/users/unsuspend', authMiddleware.authenticateToken, securityController.unsuspendUser);
+router.post('/users/ban', authMiddleware.authenticateToken, securityController.banUser);
+router.post('/users/unban', authMiddleware.authenticateToken, securityController.unbanUser);
 
 // Rutas para gestión de IPs bloqueadas (solo admin senior)
 router.post('/ips/block', authMiddleware.authenticateToken, securityController.blockIP);

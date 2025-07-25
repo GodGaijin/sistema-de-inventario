@@ -26,6 +26,18 @@ export class SecurityService {
     });
   }
 
+  banUser(userId: number, reason: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/users/ban`, { userId, reason }, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    });
+  }
+
+  unbanUser(userId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/users/unban`, { userId }, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    });
+  }
+
   getBlockedIPs(): Observable<any> {
     return this.http.get(`${this.apiUrl}/ips/blocked`);
   }

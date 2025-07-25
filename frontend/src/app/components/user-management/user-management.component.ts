@@ -79,30 +79,34 @@ export class UserManagementComponent {
     this.loading = true;
     this.securityService.getUsersWithSecurityInfo().subscribe({
       next: (response: any) => {
-        // El backend devuelve { users: [...] }
         const users = response.users || response;
-        
-        // Verificar que users sea un array válido
         if (Array.isArray(users)) {
-          this.users = users.sort((a: any, b: any) => a.id - b.id); // Ordenar por ID ascendente
+          this.users = users.sort((a: any, b: any) => a.id - b.id);
         } else {
           this.users = [];
         }
         this.filteredUsers = [...this.users];
+        this.totalPages = Math.ceil(this.filteredUsers.length / this.pageSize);
+        this.currentPage = 1;
         this.loading = false;
       },
       error: (error: any) => {
         console.error('Error loading users:', error);
         this.users = [];
         this.filteredUsers = [];
+        this.totalPages = 1;
+        this.currentPage = 1;
         this.loading = false;
         this.showMessage('Error al cargar usuarios', 'error');
       }
     });
   }
 
+  onSearchChange(): void {
+    this.applyFilters();
+  }
+
   applyFilters(): void {
-    // Aplicar búsqueda
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase();
       this.filteredUsers = this.users.filter(user =>
@@ -114,14 +118,13 @@ export class UserManagementComponent {
     } else {
       this.filteredUsers = [...this.users];
     }
-    
-    // Calcular paginación
     this.totalPages = Math.ceil(this.filteredUsers.length / this.pageSize);
-    this.currentPage = 1; // Reset a la primera página cuando se aplican filtros
+    this.currentPage = 1;
   }
 
-  onSearchChange(): void {
-    this.applyFilters();
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
   }
 
   getCurrentPageUsers(): User[] {
@@ -130,35 +133,23 @@ export class UserManagementComponent {
     return this.filteredUsers.slice(startIndex, endIndex);
   }
 
-  goToPage(page: number): void {
-    if (page < 1 || page > this.totalPages) return;
-    this.currentPage = page;
-  }
-
   getPageNumbers(): number[] {
     const pages: number[] = [];
     const maxVisiblePages = 5;
-    
     if (this.totalPages <= maxVisiblePages) {
-      // Mostrar todas las páginas si hay 5 o menos
       for (let i = 1; i <= this.totalPages; i++) {
         pages.push(i);
       }
     } else {
-      // Mostrar páginas alrededor de la página actual
       let start = Math.max(1, this.currentPage - 2);
       let end = Math.min(this.totalPages, start + maxVisiblePages - 1);
-      
-      // Ajustar si estamos cerca del final
       if (end - start < maxVisiblePages - 1) {
         start = Math.max(1, end - maxVisiblePages + 1);
       }
-      
       for (let i = start; i <= end; i++) {
         pages.push(i);
       }
     }
-    
     return pages;
   }
 
